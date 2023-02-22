@@ -1,13 +1,17 @@
 package fr.abes.convergence.kbartws.web;
 
 import fr.abes.convergence.kbartws.entity.RowKbart;
+import fr.abes.convergence.kbartws.service.Isbn2ppnService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
 @Slf4j
 public class KbartController {
+    @Autowired
+    Isbn2ppnService isbn2ppnService;
 
     @GetMapping("/online_identifier_2_ppn")
     public String onlineIdentifier2Ppn() {
@@ -23,10 +27,9 @@ public class KbartController {
         //SI publication_type == "monograph" ALORS isbn
         // Epurer l'online_identifier (isbn peut être codé sur 10 ou 13 caractères, et peut éventuellement contenir des -)
         if(publicationType.equals("monograph")) {
-            onlineIdentifier = onlineIdentifier.replaceAll("-", "");
-            if (!onlineIdentifier.matches("[^\\d|X|x|-]")){
-                System.out.println("ERREUR"); //TODO gerer le cas où le isbn est pas bon
-            }
+            //TODO getService.isbn2ppn(this.normalizeOnlineIdentifier(onlineIdentifier))
+            //isbn2ppnService.getNoticeXml(this.normalizeOnlineIdentifier(onlineIdentifier));
+        }else if(publicationType.equals("serial")) {
 
         }
 
@@ -44,5 +47,14 @@ public class KbartController {
 
         // renvoyer tout les ppns restant.
         return "Hello World but in controller";
+    }
+
+    /**
+     * Supprimera tous les caractères différents de 0-9, X, x. Supprimera le - d'un issn.
+     * @param onlineIdentifier identifiant reçu en entrée, isbn ou issn
+     * @return un identifiant ne pouvant comporter que des chiffres, X, x
+     */
+    private String normalizeOnlineIdentifier(String onlineIdentifier){
+        return onlineIdentifier.replaceAll("[^\\d|X|x]", "");
     }
 }
