@@ -1,3 +1,3 @@
-# kbart-webservices
+# convergence-webservices
 
-kbart-webservices contiendra les 2 web services pour online_identifier et print_identifier.
+convergence-webservices contiendra les web services
