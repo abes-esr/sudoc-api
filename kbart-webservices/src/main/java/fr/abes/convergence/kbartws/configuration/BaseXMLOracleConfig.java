@@ -84,10 +84,4 @@ public class BaseXMLOracleConfig  {
 		 return new JdbcTemplate(baseXmlDataSource());
 	 }
 
-	 @Bean
-	public XmlMapper xmlMapper() {
-		 JacksonXmlModule module = new JacksonXmlModule();
-		 module.setDefaultUseWrapper(false);
-		 return new XmlMapper(module);
-	 }
 }

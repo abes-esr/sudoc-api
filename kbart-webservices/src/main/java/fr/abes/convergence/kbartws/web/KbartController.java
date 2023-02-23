@@ -1,7 +1,8 @@
 package fr.abes.convergence.kbartws.web;
 
-import fr.abes.convergence.kbartws.entity.NoticeBibio;
+import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
+import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.service.*;
 import fr.abes.convergence.kbartws.utils.TYPE_ID;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -24,24 +23,22 @@ public class KbartController {
     private NoticeService noticeService;
 
     @GetMapping("/v1/online_identifier_2_ppn/{type}/{onlineIdentifier}")
-    public List<String> onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
+    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
         TYPE_ID enumType = Utilitaire.getEnumFromString(type);
-        List<String> resultats = new ArrayList<>();
-        List<String> erreurs = new ArrayList<>();
+        ResultWsDto resultat = new ResultWsDto();
         IIdentifiantService service = factory.getService(enumType);
         if (service.checkFormat(onlineIdentifier)) {
             for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
-                NoticeXml notice;
                 try {
-                    notice = noticeService.getNoticeXmlFromNoticeBibio(noticeService.getNoticeByPpn(ppn));
+                    NoticeXml notice = noticeService.getNoticeXmlFromNoticeBibio(noticeService.getNoticeByPpn(ppn));
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
-                            resultats.add(notice.getPpn());
+                            resultat.addPpn(notice.getPpn());
                         } else {
-                            erreurs.add("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
+                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
                     }
-                } catch (SQLException | IOException ex) {
+                } catch (SQLException | IOException | IllegalPpnException ex) {
                     log.error("erreur dans la récupération de la notice XML");
                     throw new IOException(ex);
                 }
@@ -49,7 +46,7 @@ public class KbartController {
         } else {
             throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
         }
-        return resultats;
+        return resultat;
     }
 
     /**

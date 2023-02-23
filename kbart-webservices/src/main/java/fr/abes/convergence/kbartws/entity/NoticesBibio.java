@@ -13,7 +13,7 @@ import java.sql.Clob;
 @Table(name = "NOTICESBIBIO", schema = "AUTORITES")
 @NoArgsConstructor
 @Getter @Setter
-public class NoticeBibio implements Serializable {
+public class NoticesBibio implements Serializable {
     @Id
     @Column(name = "ID")
     private Integer id;
