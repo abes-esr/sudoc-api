@@ -1,6 +1,5 @@
 package fr.abes.convergence.kbartws.web;
 
-import fr.abes.convergence.kbartws.entity.RowKbart;
 import fr.abes.convergence.kbartws.service.Isbn2ppnService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ public class KbartController {
     @GetMapping("/online_identifier_2_ppn")
     public String onlineIdentifier2Ppn() {
         //test :
-        RowKbart rowKbart = new RowKbart("9789004401501","monograph");
+        /*RowKbart rowKbart = new RowKbart("9789004401501","monograph");
 
         // recuperation du champ online_identifier de rowKbart
         String onlineIdentifier = rowKbart.getOnline_identifier();
@@ -31,7 +30,7 @@ public class KbartController {
             //isbn2ppnService.getNoticeXml(this.normalizeOnlineIdentifier(onlineIdentifier));
         }else if(publicationType.equals("serial")) {
 
-        }
+        }*/
 
         //SI publication_type == "serial" ALORS issn
         // Epurer l'online_identifier (issn est codé sur 8 positions et peut contenir un - entre les positions 4 et 5)
