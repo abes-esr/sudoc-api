@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,14 +28,14 @@ public class NoticeXml {
     private String leader;
 
     @JacksonXmlProperty(localName = "controlfield")
-    private List<Controlfield> controlfields;
+    private List<Controlfield> controlfields = new ArrayList<>();
 
     @JacksonXmlProperty(localName = "datafield")
-    private List<Datafield> datafields;
+    private List<Datafield> datafields = new ArrayList<>();
 
     @Override
     public String toString() {
-        return "Notice {" + "leader=" + leader + "}";
+        return "Notice {leader=" + leader + ", ppn=" + getPpn() + "}";
     }
 
 

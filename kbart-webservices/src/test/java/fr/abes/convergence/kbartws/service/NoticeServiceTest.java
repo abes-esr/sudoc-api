@@ -3,6 +3,7 @@ package fr.abes.convergence.kbartws.service;
 import fr.abes.convergence.kbartws.configuration.BaseXMLOracleConfig;
 import fr.abes.convergence.kbartws.configuration.BaseXmlMapper;
 import fr.abes.convergence.kbartws.entity.NoticesBibio;
+import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.repository.NoticesBibioRepository;
 import org.apache.commons.io.IOUtils;
@@ -54,6 +55,14 @@ class NoticeServiceTest {
     }
 
     @Test
-    void getNoticeXmlFromNoticeBibio() {
+    void getNoticeXmlFromNoticeBibio() throws IOException, SQLException {
+        NoticesBibio notice = new NoticesBibio();
+        String xml = IOUtils.toString(new FileInputStream(xmlNoticeBiblio.getFile()), StandardCharsets.UTF_8);
+        notice.setId(1);
+        notice.setPpn("143519379");
+        notice.setDataXml(new SerialClob(xml.toCharArray()));
+
+        NoticeXml result = service.getNoticeXmlFromNoticeBibio(notice);
+        Assertions.assertEquals(notice.getPpn(), result.getPpn());
     }
 }
