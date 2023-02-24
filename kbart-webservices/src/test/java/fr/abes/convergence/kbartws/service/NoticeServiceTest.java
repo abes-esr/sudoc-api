@@ -1,7 +1,6 @@
 package fr.abes.convergence.kbartws.service;
 
-import fr.abes.convergence.kbartws.configuration.BaseXMLOracleConfig;
-import fr.abes.convergence.kbartws.configuration.BaseXmlMapper;
+import fr.abes.convergence.kbartws.configuration.MapperConfig;
 import fr.abes.convergence.kbartws.entity.NoticesBibio;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
@@ -25,7 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = {NoticeService.class, BaseXmlMapper.class})
+@SpringBootTest(classes = {NoticeService.class, MapperConfig.class})
 class NoticeServiceTest {
     @Autowired
     private NoticeService service;

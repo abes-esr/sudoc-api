@@ -23,6 +23,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiReturnError, apiReturnError.getStatus());
     }
 
+
     /**
      * Erreur dans la validité des paramètres de la requête
      *
