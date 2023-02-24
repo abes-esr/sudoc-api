@@ -46,22 +46,9 @@ class NoticeServiceTest {
 
         //cas ou le service renvoie une notice bibliographique
         Mockito.when(repositoryBiblio.findByPpn("143519379")).thenReturn(Optional.of(notice));
-        Assertions.assertEquals(notice.getId(), service.getNoticeByPpn(ppn).getId());
         Assertions.assertEquals(notice.getPpn(), service.getNoticeByPpn(ppn).getPpn());
 
         //cas ou le ppn en entrée est null
         assertThrows(IllegalPpnException.class, () -> service.getNoticeByPpn(null));
-    }
-
-    @Test
-    void getNoticeXmlFromNoticeBibio() throws IOException, SQLException {
-        NoticesBibio notice = new NoticesBibio();
-        String xml = IOUtils.toString(new FileInputStream(xmlNoticeBiblio.getFile()), StandardCharsets.UTF_8);
-        notice.setId(1);
-        notice.setPpn("143519379");
-        notice.setDataXml(new SerialClob(xml.toCharArray()));
-
-        NoticeXml result = service.getNoticeXmlFromNoticeBibio(notice);
-        Assertions.assertEquals(notice.getPpn(), result.getPpn());
     }
 }

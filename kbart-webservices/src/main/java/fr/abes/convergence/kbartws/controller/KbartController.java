@@ -8,6 +8,7 @@ import fr.abes.convergence.kbartws.utils.TYPE_ID;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -24,7 +25,8 @@ public class KbartController {
     @Autowired
     private NoticeService noticeService;
 
-    @GetMapping("/online_identifier_2_ppn/{type}/{onlineIdentifier}")
+    //TODO faire le checkformat en TDD pour finir la tache de creation du ws
+    @GetMapping(value = "/online_identifier_2_ppn/{type}/{onlineIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
         TYPE_ID enumType = Utilitaire.getEnumFromString(type);
         ResultWsDto resultat = new ResultWsDto();
@@ -32,7 +34,7 @@ public class KbartController {
         if (service.checkFormat(onlineIdentifier)) {
             for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
                 try {
-                    NoticeXml notice = noticeService.getNoticeXmlFromNoticeBibio(noticeService.getNoticeByPpn(ppn));
+                    NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
                             resultat.addPpn(notice.getPpn());
