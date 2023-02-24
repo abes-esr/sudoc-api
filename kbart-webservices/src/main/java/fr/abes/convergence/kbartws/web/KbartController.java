@@ -17,6 +17,7 @@ import java.sql.SQLException;
 @CrossOrigin(origins = "*")
 @Slf4j
 public class KbartController {
+    @Autowired
     private IdentifiantFactory factory;
 
     @Autowired
