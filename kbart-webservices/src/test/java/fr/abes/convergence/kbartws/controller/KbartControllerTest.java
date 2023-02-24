@@ -1,4 +1,4 @@
-package fr.abes.convergence.kbartws.web;
+package fr.abes.convergence.kbartws.controller;
 
 import fr.abes.convergence.kbartws.exception.ExceptionControllerHandler;
 import fr.abes.convergence.kbartws.service.IdentifiantFactory;
@@ -17,8 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {KbartController.class})
 @ContextConfiguration

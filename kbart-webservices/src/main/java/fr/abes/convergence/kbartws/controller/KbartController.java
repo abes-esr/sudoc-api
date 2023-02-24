@@ -1,4 +1,4 @@
-package fr.abes.convergence.kbartws.web;
+package fr.abes.convergence.kbartws.controller;
 
 import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
@@ -16,6 +16,7 @@ import java.sql.SQLException;
 @RestController
 @CrossOrigin(origins = "*")
 @Slf4j
+@RequestMapping("/v1")
 public class KbartController {
     @Autowired
     private IdentifiantFactory factory;
@@ -23,7 +24,7 @@ public class KbartController {
     @Autowired
     private NoticeService noticeService;
 
-    @GetMapping("/v1/online_identifier_2_ppn/{type}/{onlineIdentifier}")
+    @GetMapping("/online_identifier_2_ppn/{type}/{onlineIdentifier}")
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
         TYPE_ID enumType = Utilitaire.getEnumFromString(type);
         ResultWsDto resultat = new ResultWsDto();
