@@ -14,10 +14,10 @@ ENV LC_ALL fr_FR.UTF-8
 # On lance la compilation Java
 # On débute par une mise en cache docker des dépendances Java
 # cf https://www.baeldung.com/ops/docker-cache-maven-dependencies
-COPY ./kbart-webservices/pom.xml /build/kbart-webservices/pom.xml
+COPY pom.xml /build/kbart-webservices/pom.xml
 RUN mvn verify --fail-never
 # et la compilation du code Java
-COPY ./kbart-webservices/   /build/kbart-webservices/
+COPY ./   /build/
 
 RUN mvn --batch-mode \
         -Dmaven.test.skip=false \
@@ -33,7 +33,7 @@ RUN mvn --batch-mode \
 #CMD [ "catalina.sh", "run" ]
 FROM eclipse-temurin:17-jre as api-image
 WORKDIR /app/
-COPY --from=build-image /build/web/target/*.jar /app/convergence.jar
+COPY --from=build-image /build/target/*.jar /app/convergence.jar
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENTRYPOINT ["java","-jar","/app/convergence.jar"]
