@@ -12,9 +12,6 @@ on:
   push:
     paths:
       - 'kbart-webservices/**'
-    paths-ignore:
-      - '**.md'
-      - '.github/**'
   workflow_dispatch:
 
 jobs:
