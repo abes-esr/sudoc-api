@@ -15,6 +15,12 @@ public class IssnService implements IIdentifiantService {
 
     @Override
     public boolean checkFormat(String issn) {
+        if (issn != null && issn.length() >= 8) {
+            if (issn.split("")[4].equals("-")){
+                issn = issn.replace("-", "");
+            }
+            return issn.matches("(^\\d{8}$)|(^\\d{7}[xX]$)");
+        }
         return false;
     }
 
