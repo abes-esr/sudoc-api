@@ -10,7 +10,8 @@ public class BaseXmlFunctionsCaller {
     private JdbcTemplate baseXmlJdbcTemplate;
 
     public String issnToPpn(String issn){
-        StringBuilder request = new StringBuilder("SELECT AUTORITES.ISSN2PPNJSON")
+        StringBuilder request = new StringBuilder("SELECT AUTORITES.ISSN2PPNJSON");
+        return "";
     }
 }
 
