@@ -47,3 +47,4 @@ jobs:
             docker build ./kbart-webservices --target front-image -t ${DOCKER_TAG}-api
             docker push ${DOCKER_TAG}-api
           done
+  
