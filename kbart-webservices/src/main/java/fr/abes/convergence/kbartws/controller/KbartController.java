@@ -3,7 +3,9 @@ package fr.abes.convergence.kbartws.controller;
 import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
-import fr.abes.convergence.kbartws.service.*;
+import fr.abes.convergence.kbartws.service.IIdentifiantService;
+import fr.abes.convergence.kbartws.service.IdentifiantFactory;
+import fr.abes.convergence.kbartws.service.NoticeService;
 import fr.abes.convergence.kbartws.utils.TYPE_ID;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,6 @@ public class KbartController {
     @Autowired
     private NoticeService noticeService;
 
-    //TODO faire le checkformat en TDD pour finir la tache de creation du ws
     @GetMapping(value = "/online_identifier_2_ppn/{type}/{onlineIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
         TYPE_ID enumType = Utilitaire.getEnumFromString(type);
