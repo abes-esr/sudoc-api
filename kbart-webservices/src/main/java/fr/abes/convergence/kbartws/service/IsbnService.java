@@ -16,7 +16,7 @@ public class IsbnService implements IIdentifiantService {
 
     @Override
     public boolean checkFormat(String isbn) {
-        return false;
+        return isbn != null && isbn.replace("-", "").matches("^[0-9]{10}$");
     }
 
     @Override
