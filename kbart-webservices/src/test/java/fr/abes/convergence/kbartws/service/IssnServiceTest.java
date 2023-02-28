@@ -74,6 +74,15 @@ class IssnServiceTest {
 
         String issn6 = "0000-000x";
         Assertions.assertTrue(issnService.checkFormat(issn6));
+
+        String issn7 = "00000-000";
+        Assertions.assertFalse(issnService.checkFormat(issn7));
+
+        String issn8 = "0345--322";
+        Assertions.assertFalse(issnService.checkFormat(issn8));
+
+        String issn9 = "-345-032-";
+        Assertions.assertFalse(issnService.checkFormat(issn9));
     }
 
 }
