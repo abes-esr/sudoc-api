@@ -54,7 +54,7 @@ class IsbnServiceTest {
         Assertions.assertTrue(isbnService.checkFormat(isbn5));
 
         String isbn6 = "-22225-555---3--1";
-        Assertions.assertTrue(isbnService.checkFormat(isbn6));
+        Assertions.assertFalse(isbnService.checkFormat(isbn6));
     }
     @Test
     @DisplayName("Isbn n caractères avec et sans trait(s) d'union")
@@ -71,6 +71,25 @@ class IsbnServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Isbn 13 caractères avec et sans trait(s) d'union")
+    void checkFormatIsbn13Characters() {
+        String isbn1 = "979-2-492283-49-9";
+        Assertions.assertTrue(isbnService.checkFormat(isbn1));
 
+        String isbn2 = "1234567891011";
+        Assertions.assertTrue(isbnService.checkFormat(isbn2));
+
+        String isbn3 = "123-45-67-891-010";
+        Assertions.assertTrue(isbnService.checkFormat(isbn3));
+
+        String isbn4 = "123--45-67-891-010";
+        Assertions.assertFalse(isbnService.checkFormat(isbn4));
+
+        String isbn5 = "-123-45-67-891-010";
+        Assertions.assertFalse(isbnService.checkFormat(isbn5));
+
+
+    }
 
 }
