@@ -33,8 +33,8 @@ public class KbartController {
         ResultWsDto resultat = new ResultWsDto();
         IIdentifiantService service = factory.getService(enumType);
         if (service.checkFormat(onlineIdentifier)) {
-            for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
-                try {
+            try {
+                for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
@@ -43,10 +43,10 @@ public class KbartController {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
                     }
-                } catch (SQLException | IOException | IllegalPpnException ex) {
-                    log.error("erreur dans la récupération de la notice XML");
-                    throw new IOException(ex);
                 }
+            } catch (IOException | IllegalPpnException ex) {
+                log.error("erreur dans la récupération de la notice XML");
+                throw new IOException(ex);
             }
         } else {
             throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");

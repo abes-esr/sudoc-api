@@ -22,12 +22,16 @@ public class NoticeService {
         this.xmlMapper = xmlMapper;
     }
 
-    public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, SQLException, IOException {
+    public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
         Optional<NoticesBibio> noticeOpt = this.repository.findByPpn(ppn);
         if(noticeOpt.isPresent()){
-            return xmlMapper.readValue(noticeOpt.get().getDataXml().getCharacterStream(), NoticeXml.class);
+            try{
+                return xmlMapper.readValue(noticeOpt.get().getDataXml().getCharacterStream(), NoticeXml.class);
+            }catch (SQLException ex){
+                throw new IOException(ex);
+            }
         }
         return null;
     }
