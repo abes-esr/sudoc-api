@@ -1,13 +1,18 @@
 package fr.abes.convergence.kbartws.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
+import fr.abes.convergence.kbartws.exception.IllegalPpnException;
+import fr.abes.convergence.kbartws.utils.Utilitaire;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +26,9 @@ class IssnServiceTest {
 
     @MockBean
     BaseXmlFunctionsCaller caller;
+
+    @MockBean
+    Utilitaire utilitaire;
 
     @Test
     @DisplayName("Issn null")
@@ -85,4 +93,10 @@ class IssnServiceTest {
         Assertions.assertFalse(issnService.checkFormat(issn9));
     }
 
+    @Test
+    @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
+    void testgetPpnUncategorizedException() {
+        Mockito.doThrow(UncategorizedSQLException.class).when(caller).issnToPpn(Mockito.anyString());
+        Assertions.assertThrows(IllegalPpnException.class, () -> issnService.getPpnFromIdentifiant("11111111"));
+    }
 }

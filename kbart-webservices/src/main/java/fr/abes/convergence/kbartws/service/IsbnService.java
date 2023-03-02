@@ -1,12 +1,15 @@
 package fr.abes.convergence.kbartws.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.utils.TYPE_ID;
+import fr.abes.convergence.kbartws.utils.Utilitaire;
 import oracle.jdbc.OracleDatabaseException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,11 +27,13 @@ public class IsbnService implements IIdentifiantService {
     }
 
     @Override
-    public List<String> getPpnFromIdentifiant(String isbn) throws IllegalPpnException {
+    public List<String> getPpnFromIdentifiant(String isbn) throws IllegalPpnException, IOException {
         try{
-            return caller.isbnToPpn(isbn);
-        }catch (UncategorizedSQLException ex){
+            return Utilitaire.parseJson(caller.isbnToPpn(isbn));
+        } catch (UncategorizedSQLException ex){
             throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
+        } catch (JsonProcessingException ex) {
+            throw new IOException("Impossible de récupérer les ppns correspondant à cet identifiant");
         }
     }
 }

@@ -45,7 +45,7 @@ public class KbartController {
                     }
                 }
             } catch (IOException | IllegalPpnException ex) {
-                log.error("erreur dans la récupération de la notice XML");
+                log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
                 throw new IOException(ex);
             }
         } else {

@@ -1,13 +1,16 @@
 package fr.abes.convergence.kbartws.service;
 
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
+import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +59,7 @@ class IsbnServiceTest {
         String isbn6 = "-22225-555---3--1";
         Assertions.assertFalse(isbnService.checkFormat(isbn6));
     }
+
     @Test
     @DisplayName("Isbn n caractères avec et sans trait(s) d'union")
     void checkFormatIsbnNCharacters() {
@@ -88,8 +92,13 @@ class IsbnServiceTest {
 
         String isbn5 = "-123-45-67-891-010";
         Assertions.assertFalse(isbnService.checkFormat(isbn5));
+    }
 
-
+    @Test
+    @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
+    void testgetPpnUncategorizedException() {
+        Mockito.doThrow(UncategorizedSQLException.class).when(caller).isbnToPpn(Mockito.anyString());
+        Assertions.assertThrows(IllegalPpnException.class, () -> isbnService.getPpnFromIdentifiant("1111111111"));
     }
 
 }
