@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -147,7 +148,7 @@ class KbartControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
-        Mockito.doThrow(SQLException.class).when(noticeService).getNoticeByPpn(Mockito.any());
+        Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isServiceUnavailable());
