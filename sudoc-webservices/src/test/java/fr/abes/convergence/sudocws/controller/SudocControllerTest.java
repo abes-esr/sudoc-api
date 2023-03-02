@@ -1,6 +1,6 @@
 package fr.abes.convergence.sudocws.controller;
 
-import fr.abes.cbs.process.ProcessCBS;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.convergence.sudocws.dto.ResultWebDto;
 import fr.abes.convergence.sudocws.dto.SearchDatWebDto;
 import fr.abes.convergence.sudocws.service.SudocService;
@@ -19,10 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {SudocController.class, SudocService.class})
@@ -32,13 +34,13 @@ class SudocControllerTest {
     @Autowired
     WebApplicationContext context;
 
-    @MockBean
-    SudocService service;
-
     @InjectMocks
     SudocController controller;
 
     MockMvc mockMvc;
+
+    @MockBean
+    SudocService service;
 
     @BeforeEach
     void init() {
@@ -65,11 +67,15 @@ class SudocControllerTest {
 
         Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenReturn(ppnList);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
 
-        this.mockMvc.perform(post("/api/v1/dat2ppn").contentType(MediaType.APPLICATION_JSON).content(String.valueOf(searchDatRequest)))
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$.ppns[0]").value("123456789"));
-
+        this.mockMvc.perform(post("/api/v1/dat2ppn")
+                        .accept(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ppns[0]").value("123456789"));
     }
 }
 
