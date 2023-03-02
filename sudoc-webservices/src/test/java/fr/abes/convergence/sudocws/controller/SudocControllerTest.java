@@ -36,9 +36,6 @@ class SudocControllerTest {
     @Autowired
     WebApplicationContext context;
 
-    @InjectMocks
-    SudocController controller;
-
     MockMvc mockMvc;
 
     @MockBean
