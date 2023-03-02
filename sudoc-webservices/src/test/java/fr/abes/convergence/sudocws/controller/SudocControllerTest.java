@@ -1,6 +1,7 @@
 package fr.abes.convergence.sudocws.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.abes.cbs.exception.CBSException;
 import fr.abes.convergence.sudocws.dto.ResultWebDto;
 import fr.abes.convergence.sudocws.dto.SearchDatWebDto;
 import fr.abes.convergence.sudocws.exception.ControllerExceptionHandler;
@@ -53,8 +54,28 @@ class SudocControllerTest {
     }
 
     @Test
+    @DisplayName("datToPpn titreIsNull")
+    void datToPpnTitreIsNull() throws Exception {
+
+        SearchDatWebDto searchDatRequest = new SearchDatWebDto();
+        searchDatRequest.setDate(2008);
+        searchDatRequest.setAuteur("");
+        searchDatRequest.setTitre(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
+
+        this.mockMvc.perform(post("/api/v1/dat2ppn")
+                        .accept(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
+                        .content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
+    }
+
+    @Test
     @DisplayName("datToPpn tryCatchWorks")
-    void datToPpnTryWorks() throws Exception {
+    void datToPpnTryCatchWorks() throws Exception {
 
         SearchDatWebDto searchDatRequest = new SearchDatWebDto();
         searchDatRequest.setDate(2008);
@@ -78,35 +99,26 @@ class SudocControllerTest {
     }
 
     @Test
-    @DisplayName("datToPpn titreIsNull")
-    void datToPpnTitreIsNull() throws Exception {
+    @DisplayName("datToPpn tryCatchNotWorks")
+    void datToPpnTryCatchNotWorks() throws Exception {
 
         SearchDatWebDto searchDatRequest = new SearchDatWebDto();
         searchDatRequest.setDate(2008);
         searchDatRequest.setAuteur("");
-        searchDatRequest.setTitre(null);
+        searchDatRequest.setTitre("Ours");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
+
+        CBSException cbsException = new CBSException("404", "La rechercher n'a pas donné de résultat");
+
+        Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenThrow(cbsException);
 
         this.mockMvc.perform(post("/api/v1/dat2ppn")
                         .accept(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
                         .content(jsonRequest))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.erreurs[0]").value("La rechercher n'a pas donné de résultat"));
     }
 }
-
-//    @Test
-//    @DisplayName("test WS : Serial + ISSN au mauvais format")
-//    void onlineIdentifier2PpnCas4() throws Exception {
-//        String type = "serial";
-//        String onlineIdentifier = "1234ZE234";
-//
-//        Mockito.when(issnService.checkFormat("1234ZE234")).thenReturn(false);
-//
-//        this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
-//                .andExpect(status().isBadRequest());
-//    }
-//}
