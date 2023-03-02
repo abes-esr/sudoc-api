@@ -18,7 +18,7 @@ import javax.validation.Valid;
 public class SudocController {
     @Autowired
     private SudocService service;
-    @PostMapping("/dat2ppn")
+    @PostMapping(value = "/dat2ppn", consumes = "application/json", produces = "application/json")
     public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) {
         if (request.getTitre() == null) {
             throw new IllegalArgumentException("Le titre ne peut pas être null");
