@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -29,29 +29,33 @@ public class KbartController {
 
     @GetMapping(value = "/online_identifier_2_ppn/{type}/{onlineIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
-        TYPE_ID enumType = Utilitaire.getEnumFromString(type);
-        ResultWsDto resultat = new ResultWsDto();
-        IIdentifiantService service = factory.getService(enumType);
-        if (service.checkFormat(onlineIdentifier)) {
-            try {
-                for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
-                    NoticeXml notice = noticeService.getNoticeByPpn(ppn);
-                    if (!notice.isDeleted()) {
-                        if (notice.isNoticeElectronique()) {
-                            resultat.addPpn(notice.getPpn());
-                        } else {
-                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
+        try {
+            TYPE_ID enumType = Utilitaire.getEnumFromString(type);
+            ResultWsDto resultat = new ResultWsDto();
+            IIdentifiantService service = factory.getService(enumType);
+            if (service.checkFormat(onlineIdentifier)) {
+                try {
+                    for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
+                        NoticeXml notice = noticeService.getNoticeByPpn(ppn);
+                        if (!notice.isDeleted()) {
+                            if (notice.isNoticeElectronique()) {
+                                resultat.addPpn(notice.getPpn());
+                            } else {
+                                resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
+                            }
                         }
                     }
+                } catch (IOException | IllegalPpnException ex) {
+                    log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
+                    throw new IOException(ex);
                 }
-            } catch (IOException | IllegalPpnException ex) {
-                log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
-                throw new IOException(ex);
+            } else {
+                throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
             }
-        } else {
-            throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
+            return resultat;
+        } catch (IllegalStateException ex) {
+            throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
         }
-        return resultat;
     }
 
     /**

@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Utilitaire {
-    public static TYPE_ID getEnumFromString(String type) {
+    public static TYPE_ID getEnumFromString(String type) throws IllegalStateException {
         return switch (type.toLowerCase()) {
             case "monograph" -> TYPE_ID.ISBN;
             case "serial" -> TYPE_ID.ISSN;
