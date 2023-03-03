@@ -16,7 +16,6 @@ public class KbartWebservicesApplication implements CommandLineRunner {
     }
     @Override
     public void run(String... args) {
-        System.out.println("HELLO WORLD");
     }
 
 }

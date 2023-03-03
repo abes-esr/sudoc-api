@@ -1,7 +1,8 @@
 package fr.abes.convergence.kbartws.configuration;
 
 
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -21,7 +22,6 @@ import java.util.HashMap;
 @EnableJpaRepositories(transactionManagerRef = "baseXmlTransactionManager",
 		entityManagerFactoryRef = "baseXmlEntityManager",
 		basePackages = "fr.abes.convergence.kbartws.repository")
-@NoArgsConstructor
 public class BaseXMLOracleConfig  {
 	@Value("${spring.jpa.basexml.database-platform}")
 	protected String platform;

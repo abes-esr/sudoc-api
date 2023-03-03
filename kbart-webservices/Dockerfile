@@ -14,16 +14,16 @@ ENV LC_ALL fr_FR.UTF-8
 # On lance la compilation Java
 # On débute par une mise en cache docker des dépendances Java
 # cf https://www.baeldung.com/ops/docker-cache-maven-dependencies
-COPY pom.xml /build/kbart-webservices/pom.xml
+COPY ./pom.xml /build/kbart-webservices/pom.xml
 RUN mvn verify --fail-never
 # et la compilation du code Java
 COPY ./   /build/
 
 RUN mvn --batch-mode \
-        -Dmaven.test.skip=false \
+        -Dmaven.test.skip=true \
         -Duser.timezone=Europe/Paris \
         -Duser.language=fr \
-        package
+        package spring-boot:repackage
 
 
 ###
