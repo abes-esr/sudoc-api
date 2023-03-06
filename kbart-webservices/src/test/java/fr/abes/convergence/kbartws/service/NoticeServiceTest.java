@@ -25,10 +25,9 @@ import javax.sql.rowset.serial.SerialClob;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Array;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -132,6 +131,93 @@ class NoticeServiceTest {
         Assertions.assertFalse(ppnLiees.isEmpty());
         Assertions.assertEquals(1, ppnLiees.size());
         Assertions.assertEquals("111111111", ppnLiees.get(0));
+
+    }
+
+    @Test
+    @DisplayName("test getEquivalentElectronique : seconde condition")
+    void getEquivalentElectroniqueSecondeCondition() throws IOException, SQLException, IllegalPpnException {
+        String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
+        NoticesBibio noticeWith452 = new NoticesBibio();
+        noticeWith452.setId(1);
+        noticeWith452.setPpn("111111111");
+        noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
+
+        NoticeXml noticeSource = new NoticeXml();
+        Datafield datafield = new Datafield();
+        datafield.setTag("455");
+        SubField subField = new SubField();
+        subField.setCode("0");
+        subField.setValue("111111111");
+        datafield.setSubFields(Lists.newArrayList(subField));
+        noticeSource.setDatafields(Lists.newArrayList(datafield));
+
+        Mockito.when(repositoryBiblio.findByPpn("111111111")).thenReturn(Optional.of(noticeWith452));
+
+        List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
+        Assertions.assertFalse(ppnLiees.isEmpty());
+        Assertions.assertEquals(1, ppnLiees.size());
+        Assertions.assertEquals("111111111", ppnLiees.get(0));
+
+    }
+
+    @Test
+    @DisplayName("test getEquivalentElectronique : BiblioTableFrBr4XX first condition")
+    void getEquivalentElectroniqueBiblioTableFrBr4XXFirstCondition() throws IOException, SQLException, IllegalPpnException {
+        String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
+        NoticesBibio noticeWith452 = new NoticesBibio();
+        noticeWith452.setId(1);
+        noticeWith452.setPpn("111111111");
+        noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
+
+        NoticeXml noticeSource = new NoticeXml();
+
+        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(noticeWith452.getPpn()));
+
+        List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
+        Assertions.assertFalse(ppnLiees.isEmpty());
+        Assertions.assertEquals(1, ppnLiees.size());
+        Assertions.assertEquals("111111111", ppnLiees.get(0));
+
+    }
+
+    @Test
+    @DisplayName("test getEquivalentElectronique : BiblioTableFrBr4XX second condition")
+    void getEquivalentElectroniqueBiblioTableFrBr4XXSecondCondition() throws IOException, SQLException, IllegalPpnException {
+        String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
+        NoticesBibio noticeWith452 = new NoticesBibio();
+        noticeWith452.setId(1);
+        noticeWith452.setPpn("111111111");
+        noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
+
+        NoticeXml noticeSource = new NoticeXml();
+
+        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(noticeWith452.getPpn()));
+
+        List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
+        Assertions.assertFalse(ppnLiees.isEmpty());
+        Assertions.assertEquals(1, ppnLiees.size());
+        Assertions.assertEquals("111111111", ppnLiees.get(0));
+
+    }
+
+    @Test
+    @DisplayName("test getEquivalentElectronique : Nothing condition")
+    void getEquivalentElectroniqueNothingCondition() throws IOException, SQLException, IllegalPpnException {
+        String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
+        NoticesBibio noticeWith452 = new NoticesBibio();
+        noticeWith452.setId(1);
+        noticeWith452.setPpn("111111111");
+        noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
+
+        NoticeXml noticeSource = new NoticeXml();
+
+        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+
+        List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
+        Assertions.assertTrue(ppnLiees.isEmpty());
 
     }
 }

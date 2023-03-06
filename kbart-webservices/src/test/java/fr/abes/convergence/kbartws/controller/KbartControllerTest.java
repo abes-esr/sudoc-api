@@ -169,6 +169,61 @@ class KbartControllerTest {
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
 
+    //todo: ajouter un test genre "monography"
+
+    @Test
+    @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN non supprimé de doc imprimé")
+    void printIdentifier2PpnCas1() throws Exception, IllegalPpnException {
+        String type = "serial";
+        String printIdentifier = "1234-1234";
+
+        Controlfield ctrlPpn = new Controlfield();
+        ctrlPpn.setTag("001");
+        ctrlPpn.setValue("123456789");
+
+        Controlfield ctrlType = new Controlfield();
+        ctrlType.setTag("008");
+        ctrlType.setValue("Aax3");
+
+        NoticeXml notice = new NoticeXml();
+        notice.setLeader("     gam0 22        450 ");
+        notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
+
+        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
+
+        this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"));
+    }
+
+    @Test
+    @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN supprimé de doc imprimé")
+    void printIdentifier2PpnCas1Supprime() throws Exception, IllegalPpnException {
+        String type = "serial";
+        String printIdentifier = "1234-1234";
+
+        Controlfield ctrlPpn = new Controlfield();
+        ctrlPpn.setTag("001");
+        ctrlPpn.setValue("123456789");
+
+        Controlfield ctrlType = new Controlfield();
+        ctrlType.setTag("008");
+        ctrlType.setValue("Aax3");
+
+        NoticeXml notice = new NoticeXml();
+        notice.setLeader("     dam0 22        450 ");
+        notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
+
+        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
+
+        this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 2 PPN non supprimés dont un ppn qui n'est pas une notice imprimée")
     void printIdentifier2PpnCas2() throws Exception, IllegalPpnException {
