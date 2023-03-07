@@ -13,7 +13,6 @@ import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +24,11 @@ import javax.sql.rowset.serial.SerialClob;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Array;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -170,6 +171,7 @@ class NoticeServiceTest {
         noticeWith452.setPpn("111111111");
         noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
 
+        //notice sans rien, car le but est de chercher la notice dans la table FrBr4XX via le ppn de la notice source
         NoticeXml noticeSource = new NoticeXml();
 
         Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(noticeWith452.getPpn()));
