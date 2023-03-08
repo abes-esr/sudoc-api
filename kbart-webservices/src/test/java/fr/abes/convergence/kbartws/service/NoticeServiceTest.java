@@ -54,14 +54,6 @@ class NoticeServiceTest {
     @Value("classpath:noticeWith452.xml")
     private Resource noticeWith452;
 
-    @Value("classpath:noticeWith455.xml")
-    private Resource noticeWith455;
-
-    @Value("classpath:noticeLieeWith452.xml")
-    private Resource noticeLieeWith452;
-
-    @Value("classpath:noticeLieeWith456.xml")
-    private Resource noticeLieeWith456;
 
     @Test
     void getNoticeByPpn() throws SQLException, IOException, IllegalPpnException {
