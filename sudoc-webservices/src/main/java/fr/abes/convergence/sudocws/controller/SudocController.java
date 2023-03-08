@@ -26,10 +26,8 @@ public class SudocController {
         }
         ResultWebDto result = new ResultWebDto();
         try {
-            service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()).forEach(ppn -> {
-                result.addPpn(ppn);
-            });
-        }catch (CBSException ex) {
+            result.addPpns(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
+        } catch (CBSException ex) {
             result.addErreur(ex.getMessage());
         }
         return result;

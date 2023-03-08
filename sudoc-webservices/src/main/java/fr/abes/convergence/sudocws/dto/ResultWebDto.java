@@ -21,6 +21,10 @@ public class ResultWebDto {
         this.ppns.add(ppn);
     }
 
+    public void addPpns(List<String> ppns) {
+        this.ppns.addAll(ppns);
+    }
+
     public void addErreur(String erreur) {
         this.erreurs.add(erreur);
     }
