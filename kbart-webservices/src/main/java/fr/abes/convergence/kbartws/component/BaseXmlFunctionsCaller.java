@@ -1,14 +1,10 @@
 package fr.abes.convergence.kbartws.component;
 
 import org.hibernate.annotations.ColumnTransformer;
-import oracle.jdbc.OracleDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
-import java.sql.SQLException;
-import java.util.List;
 
 @Component
 public class BaseXmlFunctionsCaller {

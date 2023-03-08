@@ -110,6 +110,10 @@
             <groupId>com.oracle.database.xml</groupId>
             <artifactId>xdb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xmlparserv2</artifactId>
+        </dependency>
 
         <!-- parser xml -->
         <dependency>
