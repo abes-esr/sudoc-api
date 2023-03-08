@@ -19,7 +19,7 @@ public class BaseXmlFunctionsCaller {
     public String issnToPpn(String issn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISSN2PPNJSON('");
         request.append(issn);
-        request.append("') from DUAL");
+        request.append("') as data_xml from DUAL");
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
@@ -27,7 +27,7 @@ public class BaseXmlFunctionsCaller {
     public String isbnToPpn(String isbn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISBN2PPNJSON('");
         request.append(isbn);
-        request.append("') from DUAL");
+        request.append("') as data_xml from DUAL");
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 }
