@@ -4,7 +4,7 @@
 
     <groupId>fr.abes.convergence</groupId>
     <artifactId>kbart-webservices</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <properties>
@@ -109,6 +109,10 @@
         <dependency>
             <groupId>com.oracle.database.xml</groupId>
             <artifactId>xdb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xmlparserv2</artifactId>
         </dependency>
 
         <!-- parser xml -->
