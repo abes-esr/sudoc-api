@@ -1,6 +1,7 @@
 package fr.abes.convergence.kbartws.service;
 
 import fr.abes.convergence.kbartws.configuration.MapperConfig;
+import fr.abes.convergence.kbartws.entity.BiblioTableFrbr4XX;
 import fr.abes.convergence.kbartws.entity.NoticesBibio;
 import fr.abes.convergence.kbartws.entity.notice.Datafield;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
@@ -165,8 +166,10 @@ class NoticeServiceTest {
 
         //notice sans rien, car le but est de chercher la notice dans la table FrBr4XX via le ppn de la notice source
         NoticeXml noticeSource = new NoticeXml();
+        BiblioTableFrbr4XX biblioTableFrbr4XX = new BiblioTableFrbr4XX();
+        biblioTableFrbr4XX.setPpn(noticeWith452.getPpn());
 
-        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(noticeWith452.getPpn()));
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(biblioTableFrbr4XX));
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertFalse(ppnLiees.isEmpty());
@@ -185,9 +188,11 @@ class NoticeServiceTest {
         noticeWith452.setDataXml(new SerialClob(xml.toCharArray()));
 
         NoticeXml noticeSource = new NoticeXml();
+        BiblioTableFrbr4XX biblioTableFrbr4XX = new BiblioTableFrbr4XX();
+        biblioTableFrbr4XX.setPpn(noticeWith452.getPpn());
 
-        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
-        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(noticeWith452.getPpn()));
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(biblioTableFrbr4XX));
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertFalse(ppnLiees.isEmpty());
@@ -207,8 +212,8 @@ class NoticeServiceTest {
 
         NoticeXml noticeSource = new NoticeXml();
 
-        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
-        Mockito.when(biblioTableFrbr4XXRepository.findPpnByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertTrue(ppnLiees.isEmpty());

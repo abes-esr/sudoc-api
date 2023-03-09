@@ -28,6 +28,6 @@ public class BiblioTableFrbr4XX {
     @Column(name = "TAG")
     private String tag;
 
-    @Column(name = "DATAS")
+    @Column(name = "DATAS", length = 4000)
     private String datas;
 }
