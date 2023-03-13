@@ -34,18 +34,18 @@ public class SudocService {
     public List<String> getPpnFromDat(Integer annee, String auteur, String titre) throws CBSException {
         this.cbs.authenticate(this.serveurCbs, this.port, this.loginCbs, this.passCbs);
         if (annee != null && auteur != null) {
-            this.query = "tno t ; tdo b ; apu " + annee + " ; che aut " + auteur + " et mti " + titre;
+            this.query = "tno t ; apu " + annee + " ; che aut " + auteur + " et mti " + titre;
         } else if (annee != null) {
-            this.query = "tno t ; tdo b ; apu " + annee + " ; che mti " + titre;
+            this.query = "tno t ; apu " + annee + " ; che mti " + titre;
         } else {
             if (auteur != null) {
-                this.query = "tno t ; tdo b ; che aut " + auteur + " et mti " + titre;
+                this.query = "tno t ; che aut " + auteur + " et mti " + titre;
             } else {
-                this.query = "tno t ; tdo b ; che mti " + titre;
+                this.query = "tno t ; che mti " + titre;
             }
         }
 
-        log.info("requête : " + this.query);
+        log.debug("requête : " + this.query);
         this.cbs.search(this.query);
         return switch (this.cbs.getNbNotices()) {
             case 0 -> new ArrayList<>();
