@@ -42,6 +42,6 @@ jobs:
           do
             # publication de l'image pour l'API
             docker build ./sudoc-webservices --target sudocws-image -t ${DOCKER_TAG}-sudoc-api
-            docker push ${DOCKER_TAG}-api
+            docker push ${DOCKER_TAG}-sudoc-api
           done
   
