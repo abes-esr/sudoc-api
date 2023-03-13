@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
       - name: "Build: build docker image"
         run: |
-          docker build ./kbart-webservices -t localimage:latest
+          docker build ./sudoc-webservices -t localimage:latest
       - name: "Push: prepare version from git tags/branchs"
         id: docker_tag_meta
         uses: docker/metadata-action@v3
