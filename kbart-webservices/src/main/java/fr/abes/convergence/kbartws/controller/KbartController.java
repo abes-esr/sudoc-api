@@ -31,12 +31,11 @@ public class KbartController {
 
     @GetMapping(value = "/online_identifier_2_ppn/{type}/{onlineIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier) throws IOException {
+        ResultWsDto resultat = new ResultWsDto();
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
-            ResultWsDto resultat = new ResultWsDto();
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
-                try {
                     for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
                         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                         if (!notice.isDeleted()) {
@@ -47,17 +46,19 @@ public class KbartController {
                             }
                         }
                     }
-                } catch (IOException | IllegalPpnException ex) {
-                    log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
-                    throw new IOException(ex);
                 }
-            } else {
+            else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
             }
-            return resultat;
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
+        } catch (IOException ex) {
+            log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
+            throw new IOException(ex);
+        } catch (IllegalPpnException ex) {
+            log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
         }
+        return resultat;
     }
 
     @GetMapping(value = "/print_identifier_2_ppn/{type}/{printIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
