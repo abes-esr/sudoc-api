@@ -45,6 +45,20 @@ class NoticesBibioTest {
     }
 
     @Test
+    void isNoticeImprimee() {
+        NoticeXml notice = new NoticeXml();
+        Controlfield controlfield = new Controlfield();
+        controlfield.setTag("008");
+        controlfield.setValue("Aax3");
+        notice.setControlfields(Lists.newArrayList(controlfield));
+        Assertions.assertTrue(notice.isNoticeImprimee());
+
+        controlfield.setTag("008");
+        controlfield.setValue("Oax3");
+        notice.setControlfields(Lists.newArrayList(controlfield));
+        Assertions.assertFalse(notice.isNoticeImprimee());
+    }
+    @Test
     void getPpn() {
         NoticeXml notice = new NoticeXml();
         Controlfield controlfield = new Controlfield();

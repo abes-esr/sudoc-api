@@ -13,15 +13,21 @@ import java.util.List;
 @NoArgsConstructor
 public class ResultWsDto {
     @JsonProperty(value = "ppns")
-    List<String> resultats = new ArrayList<>();
+    List<PpnWithTypeWebDto> resultats = new ArrayList<>();
     @JsonProperty(value = "erreurs")
     List<String> erreurs = new ArrayList<>();
 
-    public void addPpn(String ppn) {
+    public void addPpn(PpnWithTypeWebDto ppn) {
         this.resultats.add(ppn);
+    }
+
+    public void addPpns(List<PpnWithTypeWebDto> ppns) {
+        this.resultats.addAll(ppns);
     }
 
     public void addErreur(String erreur) {
         this.erreurs.add(erreur);
     }
+
+    public void addErreurs(List<String> erreurs) { this.erreurs.addAll(erreurs); }
 }
