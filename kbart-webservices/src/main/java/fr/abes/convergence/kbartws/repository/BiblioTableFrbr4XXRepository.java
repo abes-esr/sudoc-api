@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface BiblioTableFrbr4XXRepository extends JpaRepository<BiblioTableFrbr4XX, Integer> {
     List<BiblioTableFrbr4XX> findAllByTagAndDatas(String tag, String datas);
+    List<BiblioTableFrbr4XX> findAllByTagAndPpn(String tag, String ppn);
 }
