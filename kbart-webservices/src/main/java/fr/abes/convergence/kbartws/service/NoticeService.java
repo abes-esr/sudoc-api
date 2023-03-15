@@ -57,11 +57,11 @@ public class NoticeService {
         if (ppnlies.size() > 0) return ppnlies;
 
         //Si pas de résultat trouvé, on interroge la table biblio_table_frbr_4XX
-        ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndPpn("452$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getDatas).toList());
+        ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getPpn).toList());
         //on renvoie les ppn trouvés via la requête
         if (ppnlies.size() > 0) return ppnlies;
 
-        ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndPpn("456$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getDatas).toList());
+        ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndDatas("456$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getPpn).toList());
         //on renvoie les ppn trouvés via la requête
         if (ppnlies.size() > 0) return ppnlies;
 
