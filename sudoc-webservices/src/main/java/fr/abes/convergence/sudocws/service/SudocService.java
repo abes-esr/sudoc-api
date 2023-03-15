@@ -32,6 +32,7 @@ public class SudocService {
     private String query;
 
     public List<String> getPpnFromDat(Integer annee, String auteur, String titre) throws CBSException {
+        log.debug("serveur : " + this.serveurCbs + " / port : " + this.port);
         this.cbs.authenticate(this.serveurCbs, this.port, this.loginCbs, this.passCbs);
         if (annee != null && auteur != null) {
             this.query = "tno t ; apu " + annee + " ; che aut " + auteur + " et mti " + titre;
