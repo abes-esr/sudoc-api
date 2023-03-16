@@ -139,7 +139,7 @@ class NoticeServiceTest {
 
         NoticeXml noticeSource = new NoticeXml();
         Datafield datafield = new Datafield();
-        datafield.setTag("455");
+        datafield.setTag("456");
         SubField subField = new SubField();
         subField.setCode("0");
         subField.setValue("111111111");
@@ -192,7 +192,7 @@ class NoticeServiceTest {
         biblioTableFrbr4XX.setPpn(noticeWith452.getPpn());
 
         Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", noticeSource.getPpn())).thenReturn(new ArrayList<>());
-        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("456$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(biblioTableFrbr4XX));
+        Mockito.when(biblioTableFrbr4XXRepository.findAllByTagAndDatas("455$0", noticeSource.getPpn())).thenReturn(Collections.singletonList(biblioTableFrbr4XX));
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertFalse(ppnLiees.isEmpty());
