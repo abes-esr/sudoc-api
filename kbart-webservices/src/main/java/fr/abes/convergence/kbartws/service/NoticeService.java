@@ -52,8 +52,8 @@ public class NoticeService {
         if (ppnlies.size() > 0) return ppnlies;
 
         //on cherche une 455$0 dans la notice
-        List<String> ppn455 = notice.get4XXDollar0("456");
-        ppnlies = getNoticeElectroniqueLiee(ppn455);
+        List<String> ppn456 = notice.get4XXDollar0("456");
+        ppnlies = getNoticeElectroniqueLiee(ppn456);
         if (ppnlies.size() > 0) return ppnlies;
 
         //Si pas de résultat trouvé, on interroge la table biblio_table_frbr_4XX
