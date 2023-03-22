@@ -15,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.sql.SQLRecoverableException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -95,7 +97,7 @@ class IssnServiceTest {
 
     @Test
     @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
-    void testgetPpnUncategorizedException() {
+    void testgetPpnUncategorizedException() throws SQLRecoverableException {
         Mockito.doThrow(UncategorizedSQLException.class).when(caller).issnToPpn(Mockito.anyString());
         Assertions.assertThrows(IllegalPpnException.class, () -> issnService.getPpnFromIdentifiant("11111111"));
     }

@@ -79,4 +79,14 @@ class UtilitaireTest {
         Assertions.assertEquals("111111111", ppns.get(2));
         Assertions.assertEquals("222222222", ppns.get(3));
     }
+
+    @Test
+    @DisplayName("test replaceDiacritics")
+    void testReplaceDiacritics() {
+        String chaine = "àâäéèêëîïôöùûüç";
+        Assertions.assertEquals("aaaeeeeiioouuuc", Utilitaire.replaceDiacritics(chaine));
+
+        chaine = "çüûùöôïîëêèéäâà";
+        Assertions.assertEquals("cuuuooiieeeeaaa", Utilitaire.replaceDiacritics(chaine));
+    }
 }
