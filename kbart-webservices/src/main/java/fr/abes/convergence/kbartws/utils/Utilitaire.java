@@ -52,5 +52,28 @@ public class Utilitaire {
             }
         }
     }
+
+    /**
+     * Méthode permettant de remplacer les caractères diacritiques d'une chaine par leur équivalent non diacritique
+     * @param src chaine à transformer
+     * @return chaine transformée
+     */
+    public static String replaceDiacritics(String src) {
+        StringBuffer result = new StringBuffer();
+        if(src!=null && src.length()!=0) {
+            int index = -1;
+            char c;
+            String chars= "àâäéèêëîïôöùûüç";
+            String replace= "aaaeeeeiioouuuc";
+            for(int i=0; i<src.length(); i++) {
+                c = src.charAt(i);
+                if( (index=chars.indexOf(c))!=-1 )
+                    result.append(replace.charAt(index));
+                else
+                    result.append(c);
+            }
+        }
+        return result.toString();
+    }
 }
 

@@ -1,6 +1,6 @@
 package fr.abes.convergence.kbartws.service;
 
-import fr.abes.convergence.kbartws.configuration.MapperConfig;
+import fr.abes.convergence.kbartws.configuration.UtilsConfig;
 import fr.abes.convergence.kbartws.entity.BiblioTableFrbr4XX;
 import fr.abes.convergence.kbartws.entity.NoticesBibio;
 import fr.abes.convergence.kbartws.entity.notice.Datafield;
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {NoticeService.class, MapperConfig.class})
+@SpringBootTest(classes = {NoticeService.class, UtilsConfig.class})
 class NoticeServiceTest {
     @Autowired
     private NoticeService service;

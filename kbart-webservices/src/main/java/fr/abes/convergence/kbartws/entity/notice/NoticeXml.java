@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -93,5 +94,39 @@ public class NoticeXml {
             }
         }
         return ppns;
+    }
+
+    /**
+     * Méthode vérifiant si un provider est présent en début d'une 035 $a
+     * @param provider provider à vérifier
+     * @return true si le provider est présent en début d'une 035$a, false sinon
+     */
+    public boolean checkProviderIn035a(String provider) {
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals("035")).collect(Collectors.toList());
+        if (!listeZone.isEmpty()) {
+            for (Datafield datafield : listeZone) {
+                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("a")).collect(Collectors.toList());
+                if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().startsWith(provider.toLowerCase()))) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Méthode permettant de vérifier si un provider est contenu dans une zone
+     * @param provider : le provider à vérifier
+     * @param zone : la zone à chercher dans la notice
+     * @param sousZone : la sous zone à chercher dans la zone
+     * @return true si le provider est contenu dans la zone / sous zone passée en paramètre
+     */
+    public boolean checkProviderInZone(String provider, String zone, String sousZone) {
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals(zone)).collect(Collectors.toList());
+        if (!listeZone.isEmpty()) {
+            for (Datafield datafield : listeZone) {
+                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals(sousZone)).collect(Collectors.toList());
+                if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().contains(provider.toLowerCase(Locale.ROOT)))) return true;
+            }
+        }
+        return false;
     }
 }

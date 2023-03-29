@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
 import java.util.List;
 
 @Service
@@ -34,6 +35,8 @@ public class IsbnService implements IIdentifiantService {
             throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
         } catch (JsonProcessingException ex) {
             throw new IOException("Impossible de récupérer les ppns correspondant à cet identifiant");
+        } catch (SQLRecoverableException ex) {
+            throw new IOException("Incident technique lors de l'accès à la base de données");
         }
     }
 }
