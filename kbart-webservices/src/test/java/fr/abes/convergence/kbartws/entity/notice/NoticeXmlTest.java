@@ -40,4 +40,142 @@ class NoticeXmlTest {
         notice.setDatafields(Lists.newArrayList(datafield));
         Assertions.assertTrue(notice.get4XXDollar0("452").isEmpty());
     }
+
+    @Test
+    void checkProviderIn035a() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        //cas 1 seule occurrence
+        Datafield datafield = new Datafield();
+        datafield.setTag("035");
+        SubField subField1 = new SubField();
+        subField1.setCode("a");
+        subField1.setValue("test");
+        datafield.setSubFields(Lists.newArrayList(subField1));
+        notice.setDatafields(Lists.newArrayList(datafield));
+
+        Assertions.assertFalse(notice.checkProviderIn035a(provider));
+
+        subField1.setValue("CAIRN123456");
+        Assertions.assertTrue(notice.checkProviderIn035a(provider));
+
+        subField1.setValue("123456CAIRN654987");
+        Assertions.assertFalse(notice.checkProviderIn035a(provider));
+
+        subField1.setCode("0");
+        Assertions.assertFalse(notice.checkProviderIn035a(provider));
+
+        datafield.setTag("200");
+        Assertions.assertFalse(notice.checkProviderIn035a(provider));
+    }
+
+    @Test
+    void checkProviderIn035aMultipleZone() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        Datafield datafield = new Datafield();
+        SubField subField1 = new SubField();
+        datafield.setTag("035");
+        subField1.setCode("a");
+        subField1.setValue("test");
+        datafield.setSubFields(Lists.newArrayList(subField1));
+
+        Datafield datafield1 = new Datafield();
+        datafield1.setTag("035");
+        SubField subField2 = new SubField();
+        subField2.setCode("a");
+        subField2.setValue("CAIRN");
+        datafield1.setSubFields(Lists.newArrayList(subField2));
+
+        notice.setDatafields(Lists.newArrayList(datafield, datafield1));
+        Assertions.assertTrue(notice.checkProviderIn035a(provider));
+    }
+
+    @Test
+    void checkProviderIn035aMultipleSousZone() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        Datafield datafield = new Datafield();
+        SubField subField1 = new SubField();
+        datafield.setTag("035");
+        subField1.setCode("a");
+        subField1.setValue("test");
+
+        SubField subField2 = new SubField();
+        subField2.setCode("a");
+        subField2.setValue("CAIRN");
+        datafield.setSubFields(Lists.newArrayList(subField1, subField2));
+
+        notice.setDatafields(Lists.newArrayList(datafield));
+        Assertions.assertTrue(notice.checkProviderIn035a(provider));
+    }
+
+    @Test
+    void checkProviderInZone() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        //cas 1 seule occurrence
+        Datafield datafield = new Datafield();
+        datafield.setTag("200");
+        SubField subField1 = new SubField();
+        subField1.setCode("c");
+        subField1.setValue("test");
+        datafield.setSubFields(Lists.newArrayList(subField1));
+        notice.setDatafields(Lists.newArrayList(datafield));
+
+        Assertions.assertFalse(notice.checkProviderInZone(provider, "200", "c"));
+
+        subField1.setValue("CAIRN123456");
+        Assertions.assertTrue(notice.checkProviderInZone(provider, "200", "c"));
+
+        subField1.setValue("123456CAIRN654987");
+        Assertions.assertTrue(notice.checkProviderInZone(provider, "200", "c"));
+
+        subField1.setCode("0");
+        Assertions.assertFalse(notice.checkProviderInZone(provider, "200", "c"));
+
+        datafield.setTag("215");
+        Assertions.assertFalse(notice.checkProviderInZone(provider, "200", "c"));
+    }
+
+    @Test
+    void checkProviderInZoneMultipleZone() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        Datafield datafield = new Datafield();
+        SubField subField1 = new SubField();
+        datafield.setTag("200");
+        subField1.setCode("c");
+        subField1.setValue("test");
+        datafield.setSubFields(Lists.newArrayList(subField1));
+
+        Datafield datafield1 = new Datafield();
+        datafield1.setTag("200");
+        SubField subField2 = new SubField();
+        subField2.setCode("c");
+        subField2.setValue("CAIRN");
+        datafield1.setSubFields(Lists.newArrayList(subField2));
+
+        notice.setDatafields(Lists.newArrayList(datafield, datafield1));
+        Assertions.assertTrue(notice.checkProviderInZone(provider, "200", "c"));
+    }
+
+    @Test
+    void checkProviderInZoneMultipleSousZone() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+        Datafield datafield = new Datafield();
+        SubField subField1 = new SubField();
+        datafield.setTag("200");
+        subField1.setCode("c");
+        subField1.setValue("test");
+
+        SubField subField2 = new SubField();
+        subField2.setCode("c");
+        subField2.setValue("CAIRN");
+        datafield.setSubFields(Lists.newArrayList(subField1, subField2));
+
+        notice.setDatafields(Lists.newArrayList(datafield));
+        Assertions.assertTrue(notice.checkProviderInZone(provider, "200", "c"));
+    }
 }

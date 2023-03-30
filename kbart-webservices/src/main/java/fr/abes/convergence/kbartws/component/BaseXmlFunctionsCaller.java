@@ -6,13 +6,15 @@ import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLRecoverableException;
+
 @Component
 public class BaseXmlFunctionsCaller {
     @Autowired
     private JdbcTemplate baseXmlJdbcTemplate;
 
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
-    public String issnToPpn(String issn) throws UncategorizedSQLException {
+    public String issnToPpn(String issn) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISSN2PPNJSON('");
         request.append(issn);
         request.append("') as data_xml from DUAL");
@@ -20,7 +22,7 @@ public class BaseXmlFunctionsCaller {
     }
 
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
-    public String isbnToPpn(String isbn) throws UncategorizedSQLException {
+    public String isbnToPpn(String isbn) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISBN2PPNJSON('");
         request.append(isbn);
         request.append("') as data_xml from DUAL");
