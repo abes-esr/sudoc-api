@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "BIBLIO_TABLE_FRBR_4XX")
+@Table(name = "BIBLIO_TABLE_FRBR_4XX", schema = "AUTORITES")
 @Getter
 @Setter
 public class BiblioTableFrbr4XX {
