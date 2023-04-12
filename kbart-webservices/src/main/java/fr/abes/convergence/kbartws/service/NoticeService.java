@@ -7,6 +7,7 @@ import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.repository.BiblioTableFrbr4XXRepository;
 import fr.abes.convergence.kbartws.repository.NoticesBibioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

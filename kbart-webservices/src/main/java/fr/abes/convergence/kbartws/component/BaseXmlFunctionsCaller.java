@@ -28,5 +28,13 @@ public class BaseXmlFunctionsCaller {
         request.append("') as data_xml from DUAL");
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
+
+    @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
+    public String baconProvider035(String provider) throws SQLRecoverableException, UncategorizedSQLException {
+        StringBuilder request = new StringBuilder("SELECT AUTORITES.BACON_PROVIDER_035_XML('");
+        request.append(provider);
+        request.append("') as data_xml from DUAL");
+        return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
+    }
 }
 

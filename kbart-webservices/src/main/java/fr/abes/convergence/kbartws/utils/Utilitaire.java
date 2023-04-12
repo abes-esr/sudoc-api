@@ -19,7 +19,7 @@ public class Utilitaire {
     }
 
     /**
-     * Méthode permettant d'extraire une liste de ppn du json en retour d'un appel à une procédure stockée pl/sql
+     * Méthode permettant d'extraire une liste de ppn du json en retour d'un appel à une procédure stockée pl/sql issn2ppn ou isbn2ppn
      * le json est composé d'un objet résult contenant une liste de ppn localisés (champ ppn) et une liste de ppn sans localisation (champ resultNoHolding)
      *
      * @param json le json à parser
