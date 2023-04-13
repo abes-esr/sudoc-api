@@ -38,9 +38,11 @@ public class ProviderService {
         List<String> listValeurs = new ArrayList<>();
         try {
             ResultProvider035Dto result = objectMapper.readValue(caller.baconProvider035(provider), ResultProvider035Dto.class);
-            String valeur035 = result.getBacon().getQuery().getResult().getElements().getValeur035();
-            if (valeur035 != null) {
-                listValeurs.addAll(Arrays.stream(valeur035.split("\\|")).toList());
+            if (result.getBacon().getQuery().getResult() != null) {
+                String valeur035 = result.getBacon().getQuery().getResult().getElements().getValeur035();
+                if (valeur035 != null) {
+                    listValeurs.addAll(Arrays.stream(valeur035.split("\\|")).toList());
+                }
             }
         } catch (JsonProcessingException ex) {
             throw new IOException("Impossible de récupérer les ppns correspondant à cet identifiant");

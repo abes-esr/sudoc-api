@@ -52,4 +52,13 @@ public class ProviderServiceTest {
         Assertions.assertEquals("PROQUEST_", result.get(0));
         Assertions.assertEquals("eeboln", result.get(1));
     }
+
+    @Test
+    void getProviderFor035TestWithNoResult() throws SQLRecoverableException, IOException {
+        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"CAIRN\",\"results\":null}}}";
+        Mockito.when(caller.baconProvider035(Mockito.anyString())).thenReturn(resultWs);
+
+        List<String> result = service.getProviderFor035("CAIRN");
+        Assertions.assertEquals(0, result.size());
+    }
 }
