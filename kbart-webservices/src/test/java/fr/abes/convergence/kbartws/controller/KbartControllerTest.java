@@ -172,43 +172,44 @@ class KbartControllerTest {
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
 
-    //TODO à reprendre lorsque l'US sur la 035 sera à faire
-//    @Test
-//    @DisplayName("test WS online_identifier_2_ppn : check provider ok en 035$a")
-//    void onlineIdentifierCheckProviderOk035a() throws Exception, IllegalPpnException {
-//        String type = "serial";
-//        String onlineIdentifier = "1234-1234";
-//        String provider = "CAIRN";
-//
-//        Controlfield ctrlPpn = new Controlfield();
-//        ctrlPpn.setTag("001");
-//        ctrlPpn.setValue("123456789");
-//
-//        Controlfield ctrlType = new Controlfield();
-//        ctrlType.setTag("008");
-//        ctrlType.setValue("Oax3");
-//
-//        Datafield datafield = new Datafield();
-//        datafield.setTag("035");
-//        SubField subField = new SubField();
-//        subField.setCode("a");
-//        subField.setValue("CAIRN");
-//        datafield.setSubFields(Lists.newArrayList(subField));
-//
-//        NoticeXml notice = new NoticeXml();
-//        notice.setLeader("     gam0 22        450 ");
-//        notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-//        notice.setDatafields(Lists.newArrayList(datafield));
-//
-//        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAIRN"));
-//        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-//        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
-//        Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
-//
-//        this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"));
-//    }
+
+    @Test
+    @DisplayName("test WS online_identifier_2_ppn : check provider ok en 035$a")
+    void onlineIdentifierCheckProviderOk035a() throws Exception, IllegalPpnException {
+        String type = "serial";
+        String onlineIdentifier = "1234-1234";
+        String provider = "CAIRN";
+
+        Controlfield ctrlPpn = new Controlfield();
+        ctrlPpn.setTag("001");
+        ctrlPpn.setValue("123456789");
+
+        Controlfield ctrlType = new Controlfield();
+        ctrlType.setTag("008");
+        ctrlType.setValue("Oax3");
+
+        Datafield datafield = new Datafield();
+        datafield.setTag("035");
+        SubField subField = new SubField();
+        subField.setCode("a");
+        subField.setValue("FRCAIRN");
+        datafield.setSubFields(Lists.newArrayList(subField));
+
+        NoticeXml notice = new NoticeXml();
+        notice.setLeader("     gam0 22        450 ");
+        notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
+        notice.setDatafields(Lists.newArrayList(datafield));
+
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAIRN"));
+        Mockito.when(providerService.getProviderFor035("CAIRN")).thenReturn(Lists.newArrayList("FRCAIRN"));
+        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
+
+        this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"));
+    }
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : check provider ok en 210$c")
