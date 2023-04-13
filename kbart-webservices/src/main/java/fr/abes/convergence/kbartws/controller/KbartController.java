@@ -1,5 +1,6 @@
 package fr.abes.convergence.kbartws.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.dto.PpnWithTypeWebDto;
 import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.io.IOException;
+import java.sql.SQLRecoverableException;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +80,7 @@ public class KbartController {
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(printIdentifier)) {
                 for (String ppn : service.getPpnFromIdentifiant(printIdentifier)) {
+                    log.debug("PPN : " + ppn);
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeImprimee()) {
@@ -119,7 +122,8 @@ public class KbartController {
         }
         return providerDisplayName;
     }
-    private void checkProviderDansNoticeGeneral(Optional<String> provider, ResultWsDto resultat, Optional<String> providerDisplayName, NoticeXml notice) {
+
+    private void checkProviderDansNoticeGeneral(Optional<String> provider, ResultWsDto resultat, Optional<String> providerDisplayName, NoticeXml notice) throws IOException {
         if (providerDisplayName.isPresent() && provider.isPresent()) {
             if (checkProviderDansNotice(providerDisplayName.get(), notice) || checkProviderDansNotice(provider.get(), notice))
                 resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
@@ -131,14 +135,15 @@ public class KbartController {
         }
     }
 
-    private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
+    private boolean checkProviderDansNotice(String provider, NoticeXml notice) throws IOException {
         String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-        //TODO : le test sur la 035 sera finalement fait dans une US ultérieure, manque une information pour la comparaison
-        //if (!notice.checkProviderIn035a(providerWithoutDiacritics)) {
+        List<String> providers035 = providerService.getProviderFor035(providerWithoutDiacritics);
+        for (String provider035 : providers035) {
+            if (notice.checkProviderIn035a(provider035)) {
+                return true;
+            }
+        }
         return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
 
-        //} else {
-        //    resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
-        //}
     }
 }
