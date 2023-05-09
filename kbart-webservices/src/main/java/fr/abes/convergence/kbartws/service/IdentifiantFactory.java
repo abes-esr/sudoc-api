@@ -12,11 +12,18 @@ public class IdentifiantFactory {
     @Autowired
     private IsbnService isbnService;
 
+    @Autowired
+    private DoiService doiService;
+
     public IIdentifiantService getService(TYPE_ID type) {
         return switch (type) {
             case ISBN -> isbnService;
             case ISSN -> issnService;
         };
+    }
+
+    public IIdentifiantService getDoiService() {
+        return doiService;
     }
 
 }
