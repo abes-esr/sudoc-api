@@ -111,8 +111,8 @@ public class KbartController {
         }
     }
 
-    @GetMapping(value = {"/doi_identifier_2_ppn/{doi_identifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@PathVariable String doi_identifier, @PathVariable Optional<String> provider) throws IOException {
+    @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi", required = true) String doi_identifier, @RequestParam(name = "provider", required = true) Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
         Optional<String> providerDisplayName = getProviderDisplayName(provider, resultat);
         try {

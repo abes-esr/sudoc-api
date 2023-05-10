@@ -39,9 +39,9 @@ public class BaseXmlFunctionsCaller {
 
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String doiToPpn(String doi) throws SQLRecoverableException, UncategorizedSQLException {
-        StringBuilder request = new StringBuilder("SELECT AUTORITES.DOI2PPN('");
+        StringBuilder request = new StringBuilder("select XMLTRANSFORM(XMLROOT(XMLElement(\"sudoc\",AUTORITES.DOI2PNN('");
         request.append(doi);
-        request.append("') as data_xml from DUAL");
+        request.append("')),version '1.0\" encoding=\"UTF-8'),lexsl) from xsl_html  where idxsl='JSON'");
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 }
