@@ -70,7 +70,6 @@ public class KbartController {
         return resultat;
     }
 
-
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
@@ -110,6 +109,36 @@ public class KbartController {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + printIdentifier);
             throw new IOException(ex);
         }
+    }
+
+    @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi", required = true) String doi_identifier, @RequestParam(name = "provider", required = true) Optional<String> provider) throws IOException {
+        ResultWsDto resultat = new ResultWsDto();
+        Optional<String> providerDisplayName = getProviderDisplayName(provider, resultat);
+        try {
+            IIdentifiantService service = factory.getDoiService();
+            if (service.checkFormat(doi_identifier)) {
+                for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
+                    log.debug("PPN : " + ppn);
+                    NoticeXml notice = noticeService.getNoticeByPpn(ppn);
+                    if (!notice.isDeleted()){
+                        if (notice.isNoticeElectronique()) {
+                            checkProviderDansNoticeGeneral(provider, resultat, providerDisplayName, notice);
+                        } else {
+                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
+                        }
+                    }
+                }
+            }
+        } catch (IllegalStateException ex) {
+            throw new IllegalArgumentException("Le DOI n'est pas au bon format");
+        } catch (IOException ex) {
+            log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
+        throw new IOException(ex);
+        } catch (IllegalPpnException ex) {
+            log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+        }
+        return resultat;
     }
 
     private Optional<String> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
