@@ -34,20 +34,20 @@ public class ProviderServiceTest {
 
     @Test
     void getProviderFor035Test() throws SQLRecoverableException, IOException {
-        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"CAIRN\",\"results\":{\"element\":{\"valeur_035\":\"FRCAIRN\"}}}}}";
-        Mockito.when(caller.baconProvider035(Mockito.anyString())).thenReturn(resultWs);
+        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"81\",\"results\":{\"element\":{\"valeur_035\":\"FRCAIRN\"}}}}}";
+        Mockito.when(caller.baconProvider035(Mockito.anyInt())).thenReturn(resultWs);
 
-        List<String> result = service.getProviderFor035("CAIRN");
+        List<String> result = service.getProviderFor035(81);
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals("FRCAIRN", result.get(0));
     }
 
     @Test
     void getProviderFor035TestWithPipe() throws SQLRecoverableException, IOException {
-        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"PROQUEST\",\"results\":{\"element\":{\"valeur_035\":\"PROQUEST_|eeboln\"}}}}}";
-        Mockito.when(caller.baconProvider035(Mockito.anyString())).thenReturn(resultWs);
+        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"81\",\"results\":{\"element\":{\"valeur_035\":\"PROQUEST_|eeboln\"}}}}}";
+        Mockito.when(caller.baconProvider035(Mockito.anyInt())).thenReturn(resultWs);
 
-        List<String> result = service.getProviderFor035("CAIRN");
+        List<String> result = service.getProviderFor035(81);
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals("PROQUEST_", result.get(0));
         Assertions.assertEquals("eeboln", result.get(1));
@@ -55,10 +55,10 @@ public class ProviderServiceTest {
 
     @Test
     void getProviderFor035TestWithNoResult() throws SQLRecoverableException, IOException {
-        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"CAIRN\",\"results\":null}}}";
-        Mockito.when(caller.baconProvider035(Mockito.anyString())).thenReturn(resultWs);
+        String resultWs = "{\"bacon\":{\"query\":{\"idt_provider\":\"81\",\"results\":null}}}";
+        Mockito.when(caller.baconProvider035(Mockito.anyInt())).thenReturn(resultWs);
 
-        List<String> result = service.getProviderFor035("CAIRN");
+        List<String> result = service.getProviderFor035(81);
         Assertions.assertEquals(0, result.size());
     }
 }

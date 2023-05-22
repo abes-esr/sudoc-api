@@ -3,6 +3,7 @@ package fr.abes.convergence.kbartws.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.dto.PpnWithTypeWebDto;
 import fr.abes.convergence.kbartws.dto.ResultWsDto;
+import fr.abes.convergence.kbartws.dto.provider.ElementDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.service.IIdentifiantService;
@@ -40,7 +41,7 @@ public class KbartController {
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
-        Optional<String> providerDisplayName = getProviderDisplayName(provider, resultat);
+        Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
@@ -49,7 +50,7 @@ public class KbartController {
                         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                         if (!notice.isDeleted()) {
                             if (notice.isNoticeElectronique()) {
-                                checkProviderDansNoticeGeneral(provider, resultat, providerDisplayName, notice);
+                                checkProviderDansNoticeGeneral(resultat, providerDto, notice);
                             } else {
                                 resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                             }
@@ -73,7 +74,7 @@ public class KbartController {
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
-        Optional<String> providerDisplayName = getProviderDisplayName(provider, resultat);
+        Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
@@ -88,10 +89,10 @@ public class KbartController {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
                                 resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.IMPRIME));
                             } else {
-                                Optional<String> finalProviderDisplayName = providerDisplayName;
+                                Optional<ElementDto> finalProviderDisplayName = providerDto;
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    checkProviderDansNoticeGeneral(provider, resultat, finalProviderDisplayName, noticeLiee);
+                                    checkProviderDansNoticeGeneral(resultat, finalProviderDisplayName, noticeLiee);
                                 }
                             }
                         } else {
@@ -112,9 +113,9 @@ public class KbartController {
     }
 
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi", required = true) String doi_identifier, @RequestParam(name = "provider", required = true) Optional<String> provider) throws IOException {
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
-        Optional<String> providerDisplayName = getProviderDisplayName(provider, resultat);
+        Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             IIdentifiantService service = factory.getDoiService();
             if (service.checkFormat(doi_identifier)) {
@@ -123,7 +124,7 @@ public class KbartController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
-                            checkProviderDansNoticeGeneral(provider, resultat, providerDisplayName, notice);
+                            checkProviderDansNoticeGeneral(resultat, providerDto, notice);
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -141,8 +142,8 @@ public class KbartController {
         return resultat;
     }
 
-    private Optional<String> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
-        Optional<String> providerDisplayName = Optional.empty();
+    private Optional<ElementDto> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
+        Optional<ElementDto> providerDisplayName = Optional.empty();
         try {
             providerDisplayName = (provider.isPresent()) ? providerService.getProviderDisplayName(provider.get()) : Optional.empty();
         } catch (IOException | RestClientResponseException ex) {
@@ -152,12 +153,12 @@ public class KbartController {
         return providerDisplayName;
     }
 
-    private void checkProviderDansNoticeGeneral(Optional<String> provider, ResultWsDto resultat, Optional<String> providerDisplayName, NoticeXml notice) throws IOException {
-        if (providerDisplayName.isPresent() && provider.isPresent()) {
-            if (checkProviderDansNotice(providerDisplayName.get(), notice) || checkProviderDansNotice(provider.get(), notice))
+    private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
+        if (providerDisplayName.isPresent()) {
+            if (checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || checkProviderIn035(providerDisplayName.get().getIdProvider(), notice))
                 resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
             else
-                resultat.addErreur("PPN : " + notice.getPpn() + " ne contient pas le provider " + provider.get() + " en 035$a, 210$c ou 214$c");
+                resultat.addErreur("PPN : " + notice.getPpn() + " ne contient pas le provider " + providerDisplayName.get().getProvider() + " en 035$a, 210$c ou 214$c");
         }
         else {
             resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
@@ -166,13 +167,16 @@ public class KbartController {
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) throws IOException {
         String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-        List<String> providers035 = providerService.getProviderFor035(providerWithoutDiacritics);
+        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
+    }
+
+    private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) throws IOException {
+        List<String> providers035 = providerService.getProviderFor035(providerIdt);
         for (String provider035 : providers035) {
             if (notice.checkProviderIn035a(provider035)) {
                 return true;
             }
         }
-        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
-
+        return false;
     }
 }
