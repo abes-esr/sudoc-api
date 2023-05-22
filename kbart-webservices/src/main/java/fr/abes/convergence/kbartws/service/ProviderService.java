@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
+import fr.abes.convergence.kbartws.dto.provider.ElementDto;
+import fr.abes.convergence.kbartws.dto.provider.ResultDto;
 import fr.abes.convergence.kbartws.dto.provider.ResultProviderDto;
 import fr.abes.convergence.kbartws.dto.provider035.BaconDto;
 import fr.abes.convergence.kbartws.dto.provider035.ResultProvider035Dto;
@@ -29,12 +31,12 @@ public class ProviderService {
 
     private final ObjectMapper objectMapper;
 
-    public Optional<String> getProviderDisplayName(String shortName) throws IOException {
+    public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
         ResultProviderDto result = wsService.callProviderList();
-        return Arrays.stream(result.getBacon().getQuery().getResults()).toList().stream().filter(el -> el.getElements().getProvider().equalsIgnoreCase(shortName)).map(res -> res.getElements().getDisplayName()).findFirst();
+        return Arrays.stream(result.getBacon().getQuery().getResults()).toList().stream().filter(el -> el.getElements().getProvider().equalsIgnoreCase(shortName)).map(ResultDto::getElements).findFirst();
     }
 
-    public List<String> getProviderFor035(String provider) throws IOException {
+    public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
         try {
             ResultProvider035Dto result = objectMapper.readValue(caller.baconProvider035(provider), ResultProvider035Dto.class);
