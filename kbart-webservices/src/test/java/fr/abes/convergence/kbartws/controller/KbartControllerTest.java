@@ -1,5 +1,6 @@
 package fr.abes.convergence.kbartws.controller;
 
+import fr.abes.convergence.kbartws.dto.provider.ElementDto;
 import fr.abes.convergence.kbartws.entity.notice.Controlfield;
 import fr.abes.convergence.kbartws.entity.notice.Datafield;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
@@ -54,6 +55,9 @@ class KbartControllerTest {
 
     @MockBean
     IssnService issnService;
+
+    @MockBean
+    DoiService doiService;
 
     MockMvc mockMvc;
 
@@ -200,8 +204,10 @@ class KbartControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         notice.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAIRN"));
-        Mockito.when(providerService.getProviderFor035("CAIRN")).thenReturn(Lists.newArrayList("FRCAIRN"));
+        ElementDto providerDto = new ElementDto("CAIRN", "CAIRN", 81);
+
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
+        Mockito.when(providerService.getProviderFor035(81)).thenReturn(Lists.newArrayList("FRCAIRN"));
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
@@ -238,7 +244,9 @@ class KbartControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         notice.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAIRN"));
+        ElementDto providerDto = new ElementDto("CAIRN", "CAIRN", 81);
+
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
@@ -267,7 +275,9 @@ class KbartControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
-        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAIRN"));
+        ElementDto providerDto = new ElementDto("CAIRN", "CAIRN", 81);
+
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
@@ -304,7 +314,9 @@ class KbartControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         notice.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of("CAèRN"));
+        ElementDto providerDto = new ElementDto("CAIRN", "CAèRN", 81);
+
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
