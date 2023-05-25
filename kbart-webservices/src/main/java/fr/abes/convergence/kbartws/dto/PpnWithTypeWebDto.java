@@ -9,4 +9,5 @@ import lombok.Data;
 public class PpnWithTypeWebDto {
     String ppn;
     TYPE_SUPPORT type;
+    Boolean providerInNoticeIsPresent;
 }
