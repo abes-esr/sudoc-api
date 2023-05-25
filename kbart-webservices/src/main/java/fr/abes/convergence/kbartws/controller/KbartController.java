@@ -160,8 +160,6 @@ public class KbartController {
             }
             else {
                 resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), false));
-                // TODO vérifier s'il est pertinent de laisser l'inscription de l'absence du provider dans resultat.addErreur
-                resultat.addErreur("PPN : " + notice.getPpn() + " ne contient pas le provider " + providerDisplayName.get().getProvider() + " en 035$a, 210$c ou 214$c");
             }
         }
         else {
