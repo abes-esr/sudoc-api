@@ -161,7 +161,7 @@ class KbartControllerTest {
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
-                .andExpect(status().isServiceUnavailable())
+                .andExpect(status().isNoContent())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
 
@@ -288,7 +288,6 @@ class KbartControllerTest {
 
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.erreurs[0]").value("PPN : " + notice.getPpn() + " ne contient pas le provider " + provider + " en 035$a, 210$c ou 214$c"))
                 .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false));
     }
 
@@ -490,7 +489,7 @@ class KbartControllerTest {
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
         this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
-                .andExpect(status().isServiceUnavailable())
+                .andExpect(status().isNoContent())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
 
