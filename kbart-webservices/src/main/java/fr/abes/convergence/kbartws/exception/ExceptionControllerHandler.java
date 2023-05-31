@@ -57,7 +57,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<Object> handleIOException(IOException ex) {
         String error = "Erreur dans l'accès aux données";
-        return buildResponseEntity(new ApiReturnError(HttpStatus.SERVICE_UNAVAILABLE, error, ex));
+        return buildResponseEntity(new ApiReturnError(HttpStatus.NO_CONTENT, error, ex));
     }
 
 }

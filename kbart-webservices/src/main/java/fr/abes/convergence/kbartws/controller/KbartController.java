@@ -67,6 +67,7 @@ public class KbartController {
             throw new IOException(ex);
         } catch (IllegalPpnException ex) {
             log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+            throw new IOException(ex);
         }
         return resultat;
     }
