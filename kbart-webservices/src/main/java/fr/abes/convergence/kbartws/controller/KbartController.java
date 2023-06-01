@@ -67,6 +67,7 @@ public class KbartController {
             throw new IOException(ex);
         } catch (IllegalPpnException ex) {
             log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+            throw new IOException(ex);
         }
         return resultat;
     }
@@ -87,7 +88,7 @@ public class KbartController {
                             List<String> ppnElect = noticeService.getEquivalentElectronique(notice);
                             if (ppnElect.size() == 0) {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
-                                resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.IMPRIME));
+                                resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.IMPRIME, false));
                             } else {
                                 Optional<ElementDto> finalProviderDisplayName = providerDto;
                                 for (String ppnLie : ppnElect) {
@@ -155,17 +156,19 @@ public class KbartController {
 
     private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
         if (providerDisplayName.isPresent()) {
-            if (checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || checkProviderIn035(providerDisplayName.get().getIdProvider(), notice))
-                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
-            else
-                resultat.addErreur("PPN : " + notice.getPpn() + " ne contient pas le provider " + providerDisplayName.get().getProvider() + " en 035$a, 210$c ou 214$c");
+            if (checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
+                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), true));
+            }
+            else {
+                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), false));
+            }
         }
         else {
-            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport()));
+            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), false));
         }
     }
 
-    private boolean checkProviderDansNotice(String provider, NoticeXml notice) throws IOException {
+    private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
         String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
         return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
     }
