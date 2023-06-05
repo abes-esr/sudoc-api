@@ -101,6 +101,9 @@ public class KbartController {
                         }
                     }
                 }
+                if(resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()){
+                    resultat.addErreur("Aucun PPN ne correspond au " + printIdentifier);
+                }
                 return resultat;
             } else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + printIdentifier + " est incorrect");

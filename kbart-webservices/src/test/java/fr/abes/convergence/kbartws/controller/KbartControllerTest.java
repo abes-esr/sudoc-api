@@ -399,6 +399,19 @@ class KbartControllerTest {
     }
 
     @Test
+    @DisplayName("test WS print_identifier_2_ppn : serial + ISSN KO 0 ppn ne correspond")
+    void printIdentifier2PpnCas0Ppn() throws Exception, IllegalPpnException {
+        String type = "serial";
+        String printIdentifier = "1234-1234";
+
+        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList());
+
+        this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.erreurs[0]").value("Aucun PPN ne correspond au " + printIdentifier));
+    }
+    @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN supprimé de doc imprimé")
     void printIdentifier2PpnCas1Supprime() throws Exception, IllegalPpnException {
         String type = "serial";
