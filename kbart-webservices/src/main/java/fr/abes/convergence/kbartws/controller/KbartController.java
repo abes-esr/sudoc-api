@@ -1,6 +1,5 @@
 package fr.abes.convergence.kbartws.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.dto.PpnWithTypeWebDto;
 import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.dto.provider.ElementDto;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.io.IOException;
-import java.sql.SQLRecoverableException;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,16 +88,18 @@ public class KbartController {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
                                 resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.IMPRIME, false));
                             } else {
-                                Optional<ElementDto> finalProviderDisplayName = providerDto;
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    checkProviderDansNoticeGeneral(resultat, finalProviderDisplayName, noticeLiee);
+                                    checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee);
                                 }
                             }
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource imprimée");
                         }
                     }
+                }
+                if(resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()){
+                    resultat.addErreur("Aucun PPN ne correspond au " + printIdentifier);
                 }
                 return resultat;
             } else {

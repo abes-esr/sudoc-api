@@ -94,7 +94,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
     @Test
@@ -135,7 +135,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false))
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
                 .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + ctrlPpn2.getValue() + " n'est pas une ressource électronique"));
     }
 
@@ -217,7 +217,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(true));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(true));
     }
 
     @Test
@@ -257,7 +257,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(true));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(true));
     }
 
     @Test
@@ -288,7 +288,7 @@ class KbartControllerTest {
 
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
     @Test
@@ -328,7 +328,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(true));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(true));
     }
 
     @Test
@@ -366,7 +366,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false))
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
                 .andExpect(jsonPath("$.erreurs[0]").value("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement"));
     }
 
@@ -395,9 +395,22 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false));
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
+    @Test
+    @DisplayName("test WS print_identifier_2_ppn : serial + ISSN KO 0 ppn ne correspond")
+    void printIdentifier2PpnCas0Ppn() throws Exception, IllegalPpnException {
+        String type = "serial";
+        String printIdentifier = "1234-1234";
+
+        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList());
+
+        this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.erreurs[0]").value("Aucun PPN ne correspond au " + printIdentifier));
+    }
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN supprimé de doc imprimé")
     void printIdentifier2PpnCas1Supprime() throws Exception, IllegalPpnException {
@@ -462,7 +475,7 @@ class KbartControllerTest {
         this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456000"))
-                .andExpect(jsonPath("$.ppns[0].providerInNoticeIsPresent").value(false))
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
                 .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + ctrlPpn.getValue() + " n'est pas une ressource imprimée"));
 
     }
