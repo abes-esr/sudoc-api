@@ -122,7 +122,11 @@
     </Appenders>
 
     <Loggers>
-        <Root level="all">
+        <Logger name="fr.abes.convergence" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="DebugFile" />
             <AppenderRef ref="LogFile" />
             <AppenderRef ref="ErrorFile" />
