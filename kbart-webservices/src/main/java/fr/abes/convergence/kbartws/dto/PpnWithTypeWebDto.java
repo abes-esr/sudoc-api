@@ -1,5 +1,6 @@
 package fr.abes.convergence.kbartws.dto;
 
+import fr.abes.convergence.kbartws.utils.TYPE_DOCUMENT;
 import fr.abes.convergence.kbartws.utils.TYPE_SUPPORT;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class PpnWithTypeWebDto {
     String ppn;
-    TYPE_SUPPORT type;
+    TYPE_SUPPORT typeSupport;
+    TYPE_DOCUMENT typeDocument;
     Boolean providerPresent;
 }
