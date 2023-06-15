@@ -2,6 +2,7 @@ package fr.abes.convergence.kbartws.entity.notice;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import fr.abes.convergence.kbartws.utils.TYPE_DOCUMENT;
 import fr.abes.convergence.kbartws.utils.TYPE_SUPPORT;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,11 +48,11 @@ public class NoticeXml {
     }
 
     public boolean isNoticeElectronique() {
-        return getTypeDocument().startsWith("O");
+        return get008().startsWith("O");
     }
 
     public boolean isNoticeImprimee() {
-        return getTypeDocument().startsWith("A");
+        return get008().startsWith("A");
     }
 
     /**
@@ -59,18 +60,29 @@ public class NoticeXml {
      *
      * @return les x caractères du code correspondant au type de document
      */
-    public String getTypeDocument() {
+    public String get008() {
         Optional<Controlfield> typeDocument = controlfields.stream().filter(cf -> cf.getTag().equals("008")).findFirst();
         return typeDocument.map(Controlfield::getValue).orElse(null);
     }
 
+    public TYPE_DOCUMENT getTypeDocument() {
+        return switch(get008().substring(1,2)) {
+            case "a" -> TYPE_DOCUMENT.MONOGRAPHIE;
+            case "b" -> TYPE_DOCUMENT.PERIODIQUE;
+            case "d" -> TYPE_DOCUMENT.COLLECTION;
+            case "r" -> TYPE_DOCUMENT.RECUEIL;
+            case "s" -> TYPE_DOCUMENT.EXTRAIT;
+            case "e" -> TYPE_DOCUMENT.SERIE;
+            default -> TYPE_DOCUMENT.AUTRE;
+        };
+    }
     /**
      * Retourne le type de support de la notice en se basant sur le premier caractère de la 008
      *
      * @return le type de support sous forme d'enum
      */
     public TYPE_SUPPORT getTypeSupport() {
-        return switch (getTypeDocument().substring(0, 1)) {
+        return switch (get008().substring(0, 1)) {
             case "A" -> TYPE_SUPPORT.IMPRIME;
             case "O" -> TYPE_SUPPORT.ELECTRONIQUE;
             default -> TYPE_SUPPORT.AUTRE;

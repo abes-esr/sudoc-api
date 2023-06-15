@@ -3,7 +3,6 @@ package fr.abes.convergence.kbartws.entity.notice;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,9 +23,9 @@ class NoticesBibioTest {
         controlfield.setValue("Oax3");
         notice.setControlfields(Lists.newArrayList(controlfield));
 
-        Assertions.assertEquals("Oax3", notice.getTypeDocument());
+        Assertions.assertEquals("Oax3", notice.get008());
         notice.setControlfields(Lists.newArrayList());
-        assertNull(notice.getTypeDocument());
+        assertNull(notice.get008());
     }
 
     @Test
