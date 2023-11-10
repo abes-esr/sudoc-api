@@ -1,6 +1,7 @@
 package fr.abes.convergence.kbartws.repository;
 
 import fr.abes.convergence.kbartws.entity.NoticesBibio;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface NoticesBibioRepository extends JpaRepository<NoticesBibio, Integer> {
+    @ExecutionTime
     Optional<NoticesBibio> findByPpn(String ppn);
 }
