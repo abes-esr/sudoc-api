@@ -81,7 +81,7 @@ class SudocServiceTest {
 
         List<String> result = service.getPpnFromDat(annee, auteur, titre);
         Assertions.assertEquals(0, result.size());
-        Assertions.assertEquals("tno t ; tdo b ; apu " + annee + " ; che aut " + auteur + " et mti " + titre, service.getQuery());
+        Assertions.assertEquals("tno t ; apu " + annee + " ; che aut " + auteur + " et mti " + titre, service.getQuery());
     }
 
     @Test
@@ -95,7 +95,7 @@ class SudocServiceTest {
         Mockito.when(cbs.search(Mockito.anyString())).thenReturn("123456789");
 
         service.getPpnFromDat(annee, auteur, titre);
-        Assertions.assertEquals("tno t ; tdo b ; che mti " + titre, service.getQuery());
+        Assertions.assertEquals("tno t ; che mti " + titre, service.getQuery());
     }
 
     @Test
@@ -109,7 +109,7 @@ class SudocServiceTest {
         Mockito.when(cbs.search(Mockito.anyString())).thenReturn("123456789");
 
         service.getPpnFromDat(annee, auteur, titre);
-        Assertions.assertEquals("tno t ; tdo b ; che aut " + auteur + " et mti " + titre, service.getQuery());
+        Assertions.assertEquals("tno t ; che aut " + auteur + " et mti " + titre, service.getQuery());
     }
 
     @Test
@@ -123,7 +123,7 @@ class SudocServiceTest {
         Mockito.when(cbs.search(Mockito.anyString())).thenReturn("123456789");
 
         service.getPpnFromDat(annee, auteur, titre);
-        Assertions.assertEquals("tno t ; tdo b ; apu " + annee + " ; che mti " + titre, service.getQuery());
+        Assertions.assertEquals("tno t ; apu " + annee + " ; che mti " + titre, service.getQuery());
     }
 
     @Test
