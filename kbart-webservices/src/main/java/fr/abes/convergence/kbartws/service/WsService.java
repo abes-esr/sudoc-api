@@ -53,7 +53,6 @@ public class WsService {
         return restTemplate.getForObject(formedUrl.toString(), String.class);
     }
 
-    @ExecutionTime
     public ResultProviderDto callProviderList() throws RestClientResponseException, JsonProcessingException {
         String result = getCall(providerList);
         return mapper.readValue(result, ResultProviderDto.class);

@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface NoticesBibioRepository extends JpaRepository<NoticesBibio, Integer> {
-    @ExecutionTime
     Optional<NoticesBibio> findByPpn(String ppn);
 }

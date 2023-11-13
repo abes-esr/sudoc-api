@@ -15,7 +15,6 @@ public class BaseXmlFunctionsCaller {
     @Autowired
     private JdbcTemplate baseXmlJdbcTemplate;
 
-    @ExecutionTime
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String issnToPpn(String issn) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISSN2PPNJSON('");
@@ -24,7 +23,6 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
-    @ExecutionTime
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String isbnToPpn(String isbn) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.ISBN2PPNJSON('");
@@ -33,7 +31,6 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
-    @ExecutionTime
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String baconProvider035(Integer provider) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.BACON_PROVIDER_035_JSON(");
@@ -42,7 +39,6 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
-    @ExecutionTime
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String doiToPpn(String doi) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("select XMLTRANSFORM(XMLROOT(XMLElement(\"sudoc\",AUTORITES.DOI2PNN('");
