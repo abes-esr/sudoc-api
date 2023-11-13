@@ -3,6 +3,7 @@ package fr.abes.convergence.kbartws.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import fr.abes.convergence.kbartws.utils.TYPE_ID;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
 import oracle.jdbc.OracleDatabaseException;
@@ -27,6 +28,7 @@ public class IsbnService implements IIdentifiantService {
         return isbn != null && isbn.matches("^[0-9]((?:-?[0-9]){9}|(?:-?[0-9]){12})$");
     }
 
+    @ExecutionTime
     @Override
     public List<String> getPpnFromIdentifiant(String isbn) throws IllegalPpnException, IOException {
         try{

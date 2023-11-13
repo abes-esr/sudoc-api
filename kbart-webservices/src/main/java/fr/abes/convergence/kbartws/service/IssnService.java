@@ -3,6 +3,7 @@ package fr.abes.convergence.kbartws.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class IssnService implements IIdentifiantService {
         return issn != null && issn.matches("^[0-9]{4}-?[0-9]{3}[0-9xX]$");
     }
 
+    @ExecutionTime
     @Override
     public List<String> getPpnFromIdentifiant(String issn) throws IllegalPpnException, IOException {
         try{
