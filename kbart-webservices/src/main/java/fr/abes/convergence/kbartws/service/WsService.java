@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.convergence.kbartws.dto.provider.ResultDto;
 import fr.abes.convergence.kbartws.dto.provider.ResultProviderDto;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -34,7 +35,6 @@ public class WsService {
         this.mapper = mapper;
     }
 
-
     public String postCall(String url, String requestJson) {
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
 
@@ -53,6 +53,7 @@ public class WsService {
         return restTemplate.getForObject(formedUrl.toString(), String.class);
     }
 
+    @ExecutionTime
     public ResultProviderDto callProviderList() throws RestClientResponseException, JsonProcessingException {
         String result = getCall(providerList);
         return mapper.readValue(result, ResultProviderDto.class);
