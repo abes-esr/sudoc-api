@@ -1,15 +1,16 @@
 package fr.abes.convergence.kbartws.component;
 
-import fr.abes.convergence.kbartws.utils.ExecutionTime;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLRecoverableException;
+import java.text.DecimalFormat;
 
+@Slf4j
 @Component
 public class BaseXmlFunctionsCaller {
     @Autowired
@@ -25,7 +26,8 @@ public class BaseXmlFunctionsCaller {
             long endTime = System.nanoTime();
             // Temps d'exécution en secondes
             double duration = (endTime - startTime) / 1_000_000_000.0;
-            System.out.println("Temps d'exécution : ISSN2PPNJSON(" + issn + ")" + duration + " secondes");
+            DecimalFormat df = new DecimalFormat("#.##");
+            log.trace("Temps d'exécution : ISSN2PPNJSON(" + issn + ")" + Double.valueOf(df.format(duration)) + " secondes");
         return result;
     }
 
@@ -39,7 +41,8 @@ public class BaseXmlFunctionsCaller {
             long endTime = System.nanoTime();
             // Temps d'exécution en secondes
             double duration = (endTime - startTime) / 1_000_000_000.0;
-            System.out.println("Temps d'exécution : ISSN2PPNJSON(" + isbn + ")" + duration + " secondes");
+            DecimalFormat df = new DecimalFormat("#.##");
+            log.trace("Temps d'exécution : ISSN2PPNJSON(" + isbn + ")" + Double.valueOf(df.format(duration)) + " secondes");
         return result;
     }
 
@@ -53,7 +56,8 @@ public class BaseXmlFunctionsCaller {
             long endTime = System.nanoTime();
             // Temps d'exécution en secondes
             double duration = (endTime - startTime) / 1_000_000_000.0;
-            System.out.println("Temps d'exécution : BACON_PROVIDER_035_JSON(" + provider + ")" + duration + " secondes");
+            DecimalFormat df = new DecimalFormat("#.##");
+            log.trace("Temps d'exécution : BACON_PROVIDER_035_JSON(" + provider + ")" + Double.valueOf(df.format(duration)) + " secondes");
         return result;
     }
 
@@ -67,8 +71,8 @@ public class BaseXmlFunctionsCaller {
             long endTime = System.nanoTime();
             // Temps d'exécution en secondes
             double duration = (endTime - startTime) / 1_000_000_000.0;
-            System.out.println("Temps d'exécution : DOI2PNN(" + doi + ")" + duration + " secondes");
+            DecimalFormat df = new DecimalFormat("#.##");
+            log.trace("Temps d'exécution : DOI2PNN(" + doi + ")" + Double.valueOf(df.format(duration)) + " secondes");
         return result;
     }
 }
-

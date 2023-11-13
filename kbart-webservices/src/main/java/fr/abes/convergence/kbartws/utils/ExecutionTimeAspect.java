@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+//TODO actuellement ne fonctionne pas sur sudoc-api, supprimer cette classe et la classe ExecutionTime le cas échéant
 @Aspect
 @Slf4j
 public class ExecutionTimeAspect {
