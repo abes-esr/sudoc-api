@@ -11,6 +11,7 @@ import java.util.TimeZone;
 public class KbartWebservicesApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
+        System.out.println("kbart-webservices");
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));   // It will set UTC timezone
         SpringApplication.run(KbartWebservicesApplication.class, args);
     }
