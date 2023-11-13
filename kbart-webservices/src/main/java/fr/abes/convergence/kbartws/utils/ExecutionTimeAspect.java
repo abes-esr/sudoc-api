@@ -18,6 +18,8 @@ public class ExecutionTimeAspect {
         long endTime = System.currentTimeMillis();
         double executionTime = (endTime - startTime) / 1000;
 
+        log.debug("Thread: ", Thread.currentThread().getName());
+        log.debug("Methode: ", Thread.currentThread().getStackTrace()[1].getMethodName());
         log.debug("Temps d'exécution : " + executionTime + " secondes");
         return result;
     }
