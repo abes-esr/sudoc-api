@@ -32,7 +32,6 @@ public class NoticeService {
         this.xmlMapper = xmlMapper;
     }
 
-    @ExecutionTime
     public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
@@ -47,7 +46,6 @@ public class NoticeService {
         return null;
     }
 
-    @ExecutionTime
     public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException {
         log.debug("entrée dans getEquivalentElectronique");
         List<String> ppnlies;

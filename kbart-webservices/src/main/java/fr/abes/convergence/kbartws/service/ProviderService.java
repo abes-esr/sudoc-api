@@ -32,13 +32,12 @@ public class ProviderService {
 
     private final ObjectMapper objectMapper;
 
-    @ExecutionTime
     public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
         ResultProviderDto result = wsService.callProviderList();
         return Arrays.stream(result.getBacon().getQuery().getResults()).toList().stream().filter(el -> el.getElements().getProvider().equalsIgnoreCase(shortName)).map(ResultDto::getElements).findFirst();
     }
 
-    @ExecutionTime
+
     public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
         try {

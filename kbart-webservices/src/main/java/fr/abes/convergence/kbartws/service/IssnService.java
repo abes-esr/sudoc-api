@@ -25,7 +25,6 @@ public class IssnService implements IIdentifiantService {
         return issn != null && issn.matches("^[0-9]{4}-?[0-9]{3}[0-9xX]$");
     }
 
-    @ExecutionTime
     @Override
     public List<String> getPpnFromIdentifiant(String issn) throws IllegalPpnException, IOException {
         try{

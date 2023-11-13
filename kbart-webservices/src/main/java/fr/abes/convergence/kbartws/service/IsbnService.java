@@ -28,7 +28,6 @@ public class IsbnService implements IIdentifiantService {
         return isbn != null && isbn.matches("^[0-9]((?:-?[0-9]){9}|(?:-?[0-9]){12})$");
     }
 
-    @ExecutionTime
     @Override
     public List<String> getPpnFromIdentifiant(String isbn) throws IllegalPpnException, IOException {
         try{

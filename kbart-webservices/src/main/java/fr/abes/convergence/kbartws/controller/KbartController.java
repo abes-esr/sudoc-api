@@ -9,6 +9,7 @@ import fr.abes.convergence.kbartws.service.IIdentifiantService;
 import fr.abes.convergence.kbartws.service.IdentifiantFactory;
 import fr.abes.convergence.kbartws.service.NoticeService;
 import fr.abes.convergence.kbartws.service.ProviderService;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import fr.abes.convergence.kbartws.utils.TYPE_ID;
 import fr.abes.convergence.kbartws.utils.TYPE_SUPPORT;
 import fr.abes.convergence.kbartws.utils.Utilitaire;
@@ -36,6 +37,7 @@ public class KbartController {
     @Autowired
     private NoticeService noticeService;
 
+    @ExecutionTime
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
@@ -70,6 +72,7 @@ public class KbartController {
         return resultat;
     }
 
+    @ExecutionTime
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
@@ -113,6 +116,7 @@ public class KbartController {
         }
     }
 
+    @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
         ResultWsDto resultat = new ResultWsDto();
@@ -143,6 +147,7 @@ public class KbartController {
         return resultat;
     }
 
+    @ExecutionTime
     private Optional<ElementDto> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         try {
