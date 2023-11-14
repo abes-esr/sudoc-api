@@ -147,7 +147,7 @@ public class KbartController {
         return resultat;
     }
 
-    @ExecutionTime
+
     private Optional<ElementDto> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         try {

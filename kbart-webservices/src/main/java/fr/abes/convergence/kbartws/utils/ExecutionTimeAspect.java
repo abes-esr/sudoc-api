@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
-//TODO actuellement ne fonctionne pas sur sudoc-api, supprimer cette classe et la classe ExecutionTime le cas échéant
 @Aspect
+@Component
 @Slf4j
 public class ExecutionTimeAspect {
 
@@ -17,10 +18,9 @@ public class ExecutionTimeAspect {
         Object result = joinPoint.proceed();
 
         long endTime = System.currentTimeMillis();
-        double executionTime = (endTime - startTime) / 1000;
-
-        log.debug("Thread: " + Thread.currentThread().getName());
-        log.debug("Methode: " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        double executionTime = (double) (endTime - startTime) / 1000;
+        log.debug("Classe : " + joinPoint.getSignature().getDeclaringTypeName());
+        log.debug("Méthode : " + joinPoint.getSignature().getName());
         log.debug("Temps d'exécution : " + executionTime + " secondes");
         return result;
     }
