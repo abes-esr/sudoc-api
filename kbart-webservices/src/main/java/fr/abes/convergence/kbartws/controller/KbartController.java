@@ -40,13 +40,16 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException {
+        log.debug("+++++++++++++++++++++++++++onlineIdentifier2Ppn");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
+                    log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° " + onlineIdentifier + " avec le service " + enumType);
                     for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
+                        log.debug("onlineIdentifier n° " + onlineIdentifier + " <-> ppn n° " + ppn);
                         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                         if (!notice.isDeleted()) {
                             if (notice.isNoticeElectronique()) {
@@ -75,14 +78,16 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
+        log.debug("+++++++++++++++++++++++++++print_identifier_2_ppn");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(printIdentifier)) {
+                log.debug("Recherche des ppn pour l'identifiant printIdentifier n° " + printIdentifier + " avec le service " + enumType);
                 for (String ppn : service.getPpnFromIdentifiant(printIdentifier)) {
-                    log.debug("PPN : " + ppn);
+                    log.debug("printIdentifier n° " + printIdentifier + " <-> ppn n° " + ppn);
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeImprimee()) {
@@ -119,13 +124,15 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
+        log.debug("+++++++++++++++++++++++++++doi_identifier_2_ppn");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
             IIdentifiantService service = factory.getDoiService();
             if (service.checkFormat(doi_identifier)) {
+                log.debug("Recherche des ppn pour l'identifiant doi_identifier n° " + doi_identifier + " avec le service DOI");
                 for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
-                    log.debug("PPN : " + ppn);
+                    log.debug("doi_identifier n° " + doi_identifier + " <-> ppn n° " + ppn);
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
