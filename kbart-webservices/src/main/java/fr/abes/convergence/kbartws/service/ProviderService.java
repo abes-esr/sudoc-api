@@ -36,7 +36,7 @@ public class ProviderService {
 
     private final ProviderRepository providerRepository;
 
-   @ExecutionTime
+/*   @ExecutionTime
     public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
         Optional<Provider> provider = this.providerRepository.findByProvider(shortName);
         Optional<ElementDto> elementDto = Optional.of(new ElementDto());
@@ -46,13 +46,13 @@ public class ProviderService {
             elementDto.get().setIdProvider(provider.get().getIdtProvider());
         }
         return elementDto;
-    }
+    }*/
 
-/*    @ExecutionTime
+    @ExecutionTime
     public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
         ResultProviderDto result = wsService.callProviderList();
         return Arrays.stream(result.getBacon().getQuery().getResults()).toList().stream().filter(el -> el.getElements().getProvider().equalsIgnoreCase(shortName)).map(ResultDto::getElements).findFirst();
-    }*/
+    }
 
     @ExecutionTime
     public List<String> getProviderFor035(Integer provider) throws IOException {
