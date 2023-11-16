@@ -30,9 +30,9 @@ public class BaseXmlFunctionsCaller {
     @ExecutionTime
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     public String isbnToPpn(String isbn) throws SQLRecoverableException, UncategorizedSQLException {
-        StringBuilder request = new StringBuilder("SELECT AUTORITES.ISBN2PPNJSON('");
-        request.append(isbn);
-        request.append("') as data_xml from DUAL");
+            StringBuilder request = new StringBuilder("SELECT AUTORITES.ISBN2PPNJSON('");
+            request.append(isbn);
+            request.append("') as data_xml from DUAL");
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
