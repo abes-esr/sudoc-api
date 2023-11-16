@@ -40,7 +40,9 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException {
-        log.debug("+++++++++++++++++++++++++++onlineIdentifier2Ppn");
+        log.debug("-----------------------------------------------------------");
+        log.debug("-----------------------------------------------------------");
+        log.debug("ONLINE IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
@@ -78,7 +80,9 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
-        log.debug("+++++++++++++++++++++++++++print_identifier_2_ppn");
+        log.debug("-----------------------------------------------------------");
+        log.debug("-----------------------------------------------------------");
+        log.debug("PRINT IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
@@ -124,7 +128,9 @@ public class KbartController {
     @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
-        log.debug("+++++++++++++++++++++++++++doi_identifier_2_ppn");
+        log.debug("-----------------------------------------------------------");
+        log.debug("-----------------------------------------------------------");
+        log.debug("DOI IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = getProviderDisplayName(provider, resultat);
         try {
