@@ -1,9 +1,9 @@
 package fr.abes.convergence.kbartws.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
 import fr.abes.convergence.kbartws.configuration.UtilsConfig;
+import fr.abes.convergence.kbartws.repository.ProviderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +24,10 @@ public class ProviderServiceTest {
     ProviderService service;
 
     @MockBean
-    WsService wsService;
+    BaseXmlFunctionsCaller caller;
 
     @MockBean
-    BaseXmlFunctionsCaller caller;
+    ProviderRepository providerRepository;
 
     @Autowired
     ObjectMapper objectMapper;
