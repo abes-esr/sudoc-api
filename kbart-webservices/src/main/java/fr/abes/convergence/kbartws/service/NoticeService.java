@@ -7,6 +7,7 @@ import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
 import fr.abes.convergence.kbartws.repository.BiblioTableFrbr4XXRepository;
 import fr.abes.convergence.kbartws.repository.NoticesBibioRepository;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class NoticeService {
     private final NoticesBibioRepository noticesBibioRepository;
 
@@ -30,6 +32,7 @@ public class NoticeService {
         this.xmlMapper = xmlMapper;
     }
 
+    @ExecutionTime
     public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
@@ -45,6 +48,7 @@ public class NoticeService {
     }
 
     public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException {
+        log.debug("entrée dans getEquivalentElectronique");
         List<String> ppnlies;
 
         //on cherche une 452$0 dans la notice

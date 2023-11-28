@@ -11,6 +11,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class SudocWebservicesApplication implements CommandLineRunner {
     public static void main(String[] args) {
+        System.out.println("sudoc-webservices");
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));   // It will set UTC timezone
         SpringApplication.run(SudocWebservicesApplication.class, args);
     }

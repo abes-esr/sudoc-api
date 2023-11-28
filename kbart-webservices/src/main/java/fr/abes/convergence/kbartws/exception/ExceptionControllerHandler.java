@@ -25,6 +25,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     }
 
 
+
     /**
      * Erreur dans la validité des paramètres de la requête
      *
@@ -52,6 +53,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         String error = "Method is not supported for this request";
         log.error(ex.getLocalizedMessage());
         return buildResponseEntity(new ApiReturnError(HttpStatus.METHOD_NOT_ALLOWED, error, ex));
+    }
+
+    @ExceptionHandler(ZoneNotFoundException.class)
+    protected ResponseEntity<Object> handleZoneNotFoundException(ZoneNotFoundException ex) {
+        String error = "Erreur dans la notice récupérée";
+        return buildResponseEntity(new ApiReturnError(HttpStatus.BAD_REQUEST, error, ex));
     }
 
     @ExceptionHandler(IOException.class)

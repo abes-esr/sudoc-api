@@ -2,6 +2,7 @@ package fr.abes.convergence.kbartws.entity.notice;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import fr.abes.convergence.kbartws.exception.ZoneNotFoundException;
 import fr.abes.convergence.kbartws.utils.TYPE_DOCUMENT;
 import fr.abes.convergence.kbartws.utils.TYPE_SUPPORT;
 import lombok.Getter;
@@ -81,7 +82,10 @@ public class NoticeXml {
      *
      * @return le type de support sous forme d'enum
      */
-    public TYPE_SUPPORT getTypeSupport() {
+    public TYPE_SUPPORT getTypeSupport() throws ZoneNotFoundException {
+        if (get008() == null) {
+            throw new ZoneNotFoundException("Zone 008 Absente de la notice " + this.getPpn());
+        }
         return switch (get008().substring(0, 1)) {
             case "A" -> TYPE_SUPPORT.IMPRIME;
             case "O" -> TYPE_SUPPORT.ELECTRONIQUE;

@@ -2,17 +2,13 @@ package fr.abes.convergence.kbartws.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import fr.abes.convergence.kbartws.component.BaseXmlFunctionsCaller;
 import fr.abes.convergence.kbartws.dto.provider.ElementDto;
-import fr.abes.convergence.kbartws.dto.provider.ResultDto;
-import fr.abes.convergence.kbartws.dto.provider.ResultProviderDto;
-import fr.abes.convergence.kbartws.dto.provider035.BaconDto;
 import fr.abes.convergence.kbartws.dto.provider035.ResultProvider035Dto;
-import fr.abes.convergence.kbartws.exception.IllegalPpnException;
-import fr.abes.convergence.kbartws.utils.Utilitaire;
+import fr.abes.convergence.kbartws.entity.Provider;
+import fr.abes.convergence.kbartws.repository.ProviderRepository;
+import fr.abes.convergence.kbartws.utils.ExecutionTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,17 +21,26 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProviderService {
-    private final WsService wsService;
 
     private final BaseXmlFunctionsCaller caller;
 
     private final ObjectMapper objectMapper;
 
+    private final ProviderRepository providerRepository;
+
+    @ExecutionTime
     public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
-        ResultProviderDto result = wsService.callProviderList();
-        return Arrays.stream(result.getBacon().getQuery().getResults()).toList().stream().filter(el -> el.getElements().getProvider().equalsIgnoreCase(shortName)).map(ResultDto::getElements).findFirst();
+        Optional<Provider> provider = this.providerRepository.findByProvider(shortName);
+        Optional<ElementDto> elementDto = Optional.of(new ElementDto());
+        if (provider.isPresent()) {
+            elementDto.get().setProvider(provider.get().getProvider());
+            elementDto.get().setDisplayName(provider.get().getDisplayName());
+            elementDto.get().setIdProvider(provider.get().getIdtProvider());
+        }
+        return elementDto;
     }
 
+    @ExecutionTime
     public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
         try {
