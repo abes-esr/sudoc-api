@@ -84,7 +84,7 @@ public class NoticeXml {
      */
     public TYPE_SUPPORT getTypeSupport() throws ZoneNotFoundException {
         if (get008() == null) {
-            throw new ZoneNotFoundException("Zone 008 Absente de la notice");
+            throw new ZoneNotFoundException("Zone 008 Absente de la notice " + this.getPpn());
         }
         return switch (get008().substring(0, 1)) {
             case "A" -> TYPE_SUPPORT.IMPRIME;
