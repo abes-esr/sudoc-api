@@ -5,6 +5,7 @@ import fr.abes.convergence.kbartws.dto.ResultWsDto;
 import fr.abes.convergence.kbartws.dto.provider.ElementDto;
 import fr.abes.convergence.kbartws.entity.notice.NoticeXml;
 import fr.abes.convergence.kbartws.exception.IllegalPpnException;
+import fr.abes.convergence.kbartws.exception.ZoneNotFoundException;
 import fr.abes.convergence.kbartws.service.IIdentifiantService;
 import fr.abes.convergence.kbartws.service.IdentifiantFactory;
 import fr.abes.convergence.kbartws.service.NoticeService;
@@ -39,7 +40,7 @@ public class KbartController {
 
     @ExecutionTime
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException {
+    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException, ZoneNotFoundException {
         log.debug("-----------------------------------------------------------");
         log.debug("-----------------------------------------------------------");
         log.debug("ONLINE IDENTIFIER 2 PPN");
@@ -79,7 +80,7 @@ public class KbartController {
 
     @ExecutionTime
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException {
+    public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException, ZoneNotFoundException {
         log.debug("-----------------------------------------------------------");
         log.debug("-----------------------------------------------------------");
         log.debug("PRINT IDENTIFIER 2 PPN");
@@ -96,7 +97,7 @@ public class KbartController {
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeImprimee()) {
                             List<String> ppnElect = noticeService.getEquivalentElectronique(notice);
-                            if (ppnElect.size() == 0) {
+                            if (ppnElect.isEmpty()) {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
                                 resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.IMPRIME, notice.getTypeDocument(), false));
                             } else {
@@ -127,7 +128,7 @@ public class KbartController {
 
     @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException, ZoneNotFoundException {
         log.debug("-----------------------------------------------------------");
         log.debug("-----------------------------------------------------------");
         log.debug("DOI IDENTIFIER 2 PPN");
@@ -172,7 +173,7 @@ public class KbartController {
         return providerDisplayName;
     }
 
-    private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
+    private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
         if (providerDisplayName.isPresent()) {
             if (checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
                 resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), true));
