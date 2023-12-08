@@ -40,7 +40,8 @@ public class SudocController {
             // Temps d'exécution en secondes
             double duration = (endTime - startTime) / 1_000_000_000.0;
             DecimalFormat df = new DecimalFormat("#.##");
-            log.trace("Temps d'exécution : dat2ppn(" + request.getDate() + request.getAuteur() + request.getTitre() + ")" + Double.valueOf(df.format(duration)) + " secondes");
+        //Attention Double.valueOf(df.format(duration)) provoque exception sur un système windows ? (ok sur serveur), à réparer plus tard
+        //log.trace("Temps d'exécution : dat2ppn(" + request.getDate() + request.getAuteur() + request.getTitre() + ")" + Double.valueOf(df.format(duration)) + " secondes");
 
         return result;
     }
