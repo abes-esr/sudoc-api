@@ -46,4 +46,3 @@ jobs:
             docker push ${DOCKER_TAG}-sudoc-api
           done
 
-  
