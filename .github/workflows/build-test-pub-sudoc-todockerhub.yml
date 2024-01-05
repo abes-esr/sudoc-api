@@ -45,4 +45,5 @@ jobs:
             docker build . --target sudoc-image -t ${DOCKER_TAG}-sudoc-api
             docker push ${DOCKER_TAG}-sudoc-api
           done
+
   
