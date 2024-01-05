@@ -121,7 +121,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="fr.abes.convergence.kbartws" level="debug" additivity="false">
+        <Logger name="fr.abes.sudoc.kbartws" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Root level="info">

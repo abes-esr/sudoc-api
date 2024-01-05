@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>fr.abes.convergence</groupId>
-    <artifactId>kbart-webservices</artifactId>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.0.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>fr.abes</groupId>
+    <artifactId>sudoc</artifactId>
     <version>0.0.6-SNAPSHOT</version>
-
     <packaging>jar</packaging>
+    <name>sudoc</name>
+    <description>webservices de récupération de ppns dans le sudoc</description>
     <properties>
-        <warName>kbart-webservices</warName>
-        <webBaseDir>./target/</webBaseDir>
+        <finalName>sudoc-${project.artifactId}-${project.version}</finalName>
+        <jarName>sudoc</jarName>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <webBaseDir>./target/</webBaseDir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -219,12 +226,12 @@
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
         </dependency>
-        
+
     </dependencies>
 
     <!-- Pour que maven se charge de générer les releases -->
     <build>
-        <finalName>${warName}</finalName>
+        <finalName>${jarName}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -263,7 +270,7 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
-                        <mainClass>fr.abes.convergence.kbartws.KbartWebservicesApplication</mainClass>
+                        <mainClass>fr.abes.sudoc.KbartWebservicesApplication</mainClass>
                     </configuration>
                     <executions>
                         <execution>
