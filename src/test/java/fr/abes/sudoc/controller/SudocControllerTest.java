@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.cbs.exception.CBSException;
 import fr.abes.sudoc.dto.SearchDatWebDto;
 import fr.abes.sudoc.exception.ExceptionControllerHandler;
+import fr.abes.sudoc.service.NoticeService;
+import fr.abes.sudoc.service.ProviderService;
 import fr.abes.sudoc.service.SudocService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +39,12 @@ class SudocControllerTest {
 
     @MockBean
     SudocService service;
+
+    @MockBean
+    ProviderService providerService;
+
+    @MockBean
+    NoticeService noticeService;
 
     @BeforeEach
     void init() {

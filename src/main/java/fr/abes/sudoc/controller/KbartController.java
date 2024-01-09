@@ -56,7 +56,7 @@ public class KbartController {
                         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                         if (!notice.isDeleted()) {
                             if (notice.isNoticeElectronique()) {
-                                checkProviderDansNoticeGeneral(resultat, providerDto, notice);
+                                this.checkProviderDansNoticeGeneral(resultat, providerDto, notice);
                             } else {
                                 resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                             }
@@ -103,7 +103,7 @@ public class KbartController {
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee);
+                                    this.checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee);
                                 }
                             }
                         } else {
@@ -143,7 +143,7 @@ public class KbartController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
-                            checkProviderDansNoticeGeneral(resultat, providerDto, notice);
+                            this.checkProviderDansNoticeGeneral(resultat, providerDto, notice);
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -161,7 +161,6 @@ public class KbartController {
         return resultat;
     }
 
-
     private Optional<ElementDto> getProviderDisplayName(Optional<String> provider, ResultWsDto resultat) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         try {
@@ -175,7 +174,7 @@ public class KbartController {
 
     private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
         if (providerDisplayName.isPresent()) {
-            if (checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
+            if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
                 resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), true));
             }
             else {

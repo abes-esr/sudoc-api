@@ -2,6 +2,7 @@ package fr.abes.sudoc.service;
 
 import fr.abes.cbs.exception.CBSException;
 import fr.abes.cbs.process.ProcessCBS;
+import fr.abes.sudoc.dto.SearchDatWebDto;
 import fr.abes.sudoc.exception.ExceptionControllerHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -136,5 +137,23 @@ class SudocServiceTest {
         List<String> result = service.getPpnFromDat(annee, auteur, titre);
 
         Assertions.assertEquals( 0, result.size());
+    }
+
+    @Test
+    @DisplayName("getPpnFromDatWithNotProviderChecking")
+    void getPpnFromDatWithNotProviderChecking() {
+        SearchDatWebDto searchDatWebDto = new SearchDatWebDto();
+        searchDatWebDto.setDate(2022);
+        searchDatWebDto.setAuteur("John Doe");
+        searchDatWebDto.setTitre("Sample Title");
+        searchDatWebDto.setCheckProviderInNotices(false);
+
+        //service.getPpnFromDat(searchDatWebDto.getDate(), searchDatWebDto.getAuteur(), searchDatWebDto.getTitre());
+    }
+
+    @Test
+    @DisplayName("getPpnFromDatWithProviderChecking")
+    void getPpnFromDatWithProviderChecking() {
+
     }
 }

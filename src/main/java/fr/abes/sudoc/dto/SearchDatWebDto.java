@@ -11,4 +11,8 @@ public class SearchDatWebDto {
     private String auteur;
     @JsonProperty("titre")
     private String titre;
+    @JsonProperty("isCheckProviderInNotice")
+    private boolean isCheckProviderInNotices;
+    @JsonProperty("providerName")
+    private String providerName;
 }

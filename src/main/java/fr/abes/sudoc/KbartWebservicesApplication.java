@@ -17,6 +17,7 @@ public class KbartWebservicesApplication implements CommandLineRunner {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));   // It will set UTC timezone
         SpringApplication.run(KbartWebservicesApplication.class, args);
     }
+
     @Override
     public void run(String... args) {
     }
