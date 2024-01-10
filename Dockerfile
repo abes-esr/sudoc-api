@@ -14,10 +14,10 @@ ENV LC_ALL fr_FR.UTF-8
 # On lance la compilation Java
 # On débute par une mise en cache docker des dépendances Java
 # cf https://www.baeldung.com/ops/docker-cache-maven-dependencies
-COPY pom.xml /build/kbart-webservices/pom.xml
+COPY pom.xml /build/sudoc/pom.xml
 RUN mvn verify --fail-never
 # et la compilation du code Java
-COPY kbart-webservices   /build/
+COPY ./   /build/
 
 RUN mvn --batch-mode \
         -Dmaven.test.skip=true \
