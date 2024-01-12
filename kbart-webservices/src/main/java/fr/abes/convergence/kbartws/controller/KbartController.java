@@ -106,8 +106,12 @@ public class KbartController {
                                     checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee);
                                 }
                             }
-                        } else {
-                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource imprimée");
+                        } else if (notice.isNoticeElectronique()){
+                            boolean providerPresent = false;
+                            if (providerDto.isPresent()) {
+                                providerPresent = (checkProviderDansNotice(providerDto.get().getDisplayName(), notice) || checkProviderDansNotice(providerDto.get().getProvider(), notice) || checkProviderIn035(providerDto.get().getIdProvider(), notice));
+                            }
+                            resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), providerPresent));
                         }
                     }
                 }
