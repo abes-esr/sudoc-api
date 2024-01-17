@@ -474,10 +474,12 @@ class KbartControllerTest {
 
         this.mockMvc.perform(get("/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456000"))
-                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
-                .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + ctrlPpn.getValue() + " n'est pas une ressource imprimée"));
-
+                .andExpect(jsonPath("$.ppns[1].ppn").value("123456000"))
+                .andExpect(jsonPath("$.ppns[1].providerPresent").value(false))
+                .andExpect(jsonPath("$.ppns[1].typeSupport").value("IMPRIME"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].typeSupport").value("AUTRE"))
+                .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
     @Test
