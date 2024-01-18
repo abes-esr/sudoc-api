@@ -10,12 +10,12 @@ import java.util.TimeZone;
 
 
 @SpringBootApplication
-public class KbartWebservicesApplication implements CommandLineRunner {
+public class SudocWebservicesApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         System.out.println("sudoc-webservices");
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));   // It will set UTC timezone
-        SpringApplication.run(KbartWebservicesApplication.class, args);
+        SpringApplication.run(SudocWebservicesApplication.class, args);
     }
 
     @Override
