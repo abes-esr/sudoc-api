@@ -64,6 +64,7 @@ class SudocControllerTest {
         searchDatRequest.setAuteur("");
         searchDatRequest.setTitre(null);
 
+
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
 

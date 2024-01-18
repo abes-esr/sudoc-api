@@ -47,14 +47,12 @@ public class SudocController {
             result.addErreur(ex.getMessage());
         }
 
-        if(request.isCheckProviderInNotices()){
-            Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(request.getProviderName());
+        Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(request.getProviderName());
 
-            for(String ppnInString : result.getPpns()){
-                NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppnInString);
-                if(!noticeInXmlFromPpnInString.isDeleted()){
-                    this.providerService.checkProviderDansNoticeGeneralDat2Ppn(result, providerDto, noticeInXmlFromPpnInString);
-                }
+        for (String ppnInString : result.getPpns()) {
+            NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppnInString);
+            if (!noticeInXmlFromPpnInString.isDeleted()) {
+                this.providerService.checkProviderDansNoticeGeneralDat2Ppn(result, providerDto, noticeInXmlFromPpnInString);
             }
         }
 
