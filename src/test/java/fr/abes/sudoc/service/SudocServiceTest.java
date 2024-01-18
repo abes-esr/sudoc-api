@@ -138,22 +138,4 @@ class SudocServiceTest {
 
         Assertions.assertEquals( 0, result.size());
     }
-
-    @Test
-    @DisplayName("getPpnFromDatWithNotProviderChecking")
-    void getPpnFromDatWithNotProviderChecking() {
-        SearchDatWebDto searchDatWebDto = new SearchDatWebDto();
-        searchDatWebDto.setDate(2022);
-        searchDatWebDto.setAuteur("John Doe");
-        searchDatWebDto.setTitre("Sample Title");
-        searchDatWebDto.setCheckProviderInNotices(false);
-
-        //service.getPpnFromDat(searchDatWebDto.getDate(), searchDatWebDto.getAuteur(), searchDatWebDto.getTitre());
-    }
-
-    @Test
-    @DisplayName("getPpnFromDatWithProviderChecking")
-    void getPpnFromDatWithProviderChecking() {
-
-    }
 }
