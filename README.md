@@ -16,7 +16,7 @@ identifiants doi
 
 ![img.png](documentation/identifiants02.png)
 
-## Architecture globale de l'API kbart-webservices
+## Architecture globale de l'API sudoc-api
 
 L'architecture du controleur de l'application peut être représentée par le schéma suivant :
 ![img.png](documentation/schemadoc01.png)

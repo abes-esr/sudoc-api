@@ -31,9 +31,9 @@ RUN mvn --batch-mode \
 #FROM tomcat:9-jdk17 as api-image
 #COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
 #CMD [ "catalina.sh", "run" ]
-FROM eclipse-temurin:17-jre as kbartws-image
+FROM eclipse-temurin:17-jre as sudoc-image
 WORKDIR /app/
 COPY --from=build-image /build/target/sudoc.jar /app/sudoc.jar
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ENTRYPOINT ["java","-XX:MaxRAMPercentage=95","-jar","/app/kbartws.jar"]
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=95","-jar","/app/sudoc.jar"]
