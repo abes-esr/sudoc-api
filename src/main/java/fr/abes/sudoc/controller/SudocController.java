@@ -57,7 +57,7 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
-                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice);
+                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.ELECTRONIQUE);
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -104,15 +104,16 @@ public class SudocController {
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee);
+                                    this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee, TYPE_SUPPORT.IMPRIME);
                                 }
                             }
                         } else if (notice.isNoticeElectronique()){
-                            boolean providerPresent = false;
-                            if (providerDto.isPresent()) {
-                                providerPresent = (this.providerService.checkProviderDansNotice(providerDto.get().getDisplayName(), notice) || this.providerService.checkProviderDansNotice(providerDto.get().getProvider(), notice) || this.providerService.checkProviderIn035(providerDto.get().getIdProvider(), notice));
-                            }
-                            resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), providerPresent));
+//                            boolean providerPresent = false;
+                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.AUTRE);
+//                            if (providerDto.isPresent()) {
+//                                providerPresent = (this.providerService.checkProviderDansNotice(providerDto.get().getDisplayName(), notice) || this.providerService.checkProviderDansNotice(providerDto.get().getProvider(), notice) || this.providerService.checkProviderIn035(providerDto.get().getIdProvider(), notice));
+//                            }
+//                            resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), providerPresent));
                         }
                     }
                 }
@@ -148,7 +149,7 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
-                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice);
+                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.ELECTRONIQUE);
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }

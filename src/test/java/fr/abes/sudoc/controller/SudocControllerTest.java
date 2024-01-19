@@ -11,6 +11,7 @@ import fr.abes.sudoc.entity.notice.SubField;
 import fr.abes.sudoc.exception.ExceptionControllerHandler;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.service.*;
+import fr.abes.sudoc.utils.TYPE_SUPPORT;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -415,7 +416,7 @@ class SudocControllerTest {
 
         ElementDto providerDto = new ElementDto("CAIRN", "CAèRN", 81);
 
-        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
+        Mockito.doNothing().when(providerService).checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);

@@ -13,6 +13,7 @@ import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.ProviderRepository;
 import fr.abes.sudoc.utils.ExecutionTime;
+import fr.abes.sudoc.utils.TYPE_SUPPORT;
 import fr.abes.sudoc.utils.Utilitaire;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -65,17 +66,17 @@ public class ProviderService {
         return listValeurs;
     }
 
-    public void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
+    public void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice, TYPE_SUPPORT typeSupport) throws IOException, ZoneNotFoundException {
         if (providerDisplayName.isPresent()) {
             if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), true));
+                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), true));
             }
             else {
-                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
+                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), false));
             }
         }
         else {
-            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
+            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), false));
         }
     }
 
