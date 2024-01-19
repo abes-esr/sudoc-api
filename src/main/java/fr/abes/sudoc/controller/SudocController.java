@@ -202,7 +202,7 @@ public class SudocController {
 //        return false;
 //    }
 
-    @ExecutionTime
+
     @PostMapping(value = "/dat2ppn", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) throws IOException, IllegalPpnException {
         if (request.getTitre() == null) {
@@ -221,7 +221,8 @@ public class SudocController {
         for (String ppnInString : result.getPpns()) {
             NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppnInString);
             if (!noticeInXmlFromPpnInString.isDeleted()) {
-                this.providerService.checkProviderDansNoticeGeneralDat2Ppn(result, providerDto, noticeInXmlFromPpnInString);
+                if (this.providerService.checkProviderDansNoticeGeneralDat2Ppn(providerDto, noticeInXmlFromPpnInString))
+                    result.addPpn(noticeInXmlFromPpnInString.getPpn());
             }
         }
 

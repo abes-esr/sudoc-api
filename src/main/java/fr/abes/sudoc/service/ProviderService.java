@@ -80,12 +80,13 @@ public class ProviderService {
         }
     }
 
-    public void checkProviderDansNoticeGeneralDat2Ppn(ResultWebDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
+    public boolean checkProviderDansNoticeGeneralDat2Ppn(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
         if (providerDisplayName.isPresent()) {
             if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                resultat.addPpn(notice.getPpn());
+                return true;
             }
         }
+        return false;
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
