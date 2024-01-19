@@ -22,8 +22,10 @@ import org.springframework.web.client.RestClientResponseException;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -46,7 +48,7 @@ public class SudocController {
         log.debug("-----------------------------------------------------------");
         log.debug("ONLINE IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
-        Optional<ElementDto> providerDto = getProviderDisplayName(provider);
+        Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
@@ -57,7 +59,7 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
-                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.ELECTRONIQUE);
+                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -86,7 +88,7 @@ public class SudocController {
         log.debug("-----------------------------------------------------------");
         log.debug("PRINT IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
-        Optional<ElementDto> providerDto = getProviderDisplayName(provider);
+        Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
         try {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
@@ -104,16 +106,11 @@ public class SudocController {
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, noticeLiee, TYPE_SUPPORT.IMPRIME);
+                                    resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), TYPE_SUPPORT.IMPRIME, noticeLiee.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
                                 }
                             }
                         } else if (notice.isNoticeElectronique()){
-//                            boolean providerPresent = false;
-                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.AUTRE);
-//                            if (providerDto.isPresent()) {
-//                                providerPresent = (this.providerService.checkProviderDansNotice(providerDto.get().getDisplayName(), notice) || this.providerService.checkProviderDansNotice(providerDto.get().getProvider(), notice) || this.providerService.checkProviderIn035(providerDto.get().getIdProvider(), notice));
-//                            }
-//                            resultat.addPpn(new PpnWithTypeWebDto(ppn, TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), providerPresent));
+                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
                         }
                     }
                 }
@@ -139,7 +136,7 @@ public class SudocController {
         log.debug("-----------------------------------------------------------");
         log.debug("DOI IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
-        Optional<ElementDto> providerDto = getProviderDisplayName(provider);
+        Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
         try {
             IIdentifiantService service = factory.getDoiService();
             if (service.checkFormat(doi_identifier)) {
@@ -149,7 +146,7 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
-                            this.providerService.checkProviderDansNoticeGeneral(resultat, providerDto, notice, TYPE_SUPPORT.ELECTRONIQUE);
+                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -167,63 +164,36 @@ public class SudocController {
         return resultat;
     }
 
-    private Optional<ElementDto> getProviderDisplayName(Optional<String> provider) {
-        Optional<ElementDto> providerDisplayName = Optional.empty();
-        providerDisplayName = (provider.isPresent()) ? providerService.getProviderDisplayName(provider.get()) : Optional.empty();
-        return providerDisplayName;
-    }
-//
-//    private void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
-//        if (providerDisplayName.isPresent()) {
-//            if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-//                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), true));
-//            }
-//            else {
-//                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
-//            }
-//        }
-//        else {
-//            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
-//        }
-//    }
-//
-//    private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
-//        String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-//        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
-//    }
-//
-//    private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) throws IOException {
-//        List<String> providers035 = providerService.getProviderFor035(providerIdt);
-//        for (String provider035 : providers035) {
-//            if (notice.checkProviderIn035a(provider035)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-
     @PostMapping(value = "/dat2ppn", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) throws IOException, IllegalPpnException {
+    public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) {
         if (request.getTitre() == null) {
             throw new IllegalArgumentException("Le titre ne peut pas être null");
         }
         ResultWebDto result = new ResultWebDto();
 
+        List<String> listPpns = new ArrayList<>();
+
         try {
-            result.addPpns(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
+            listPpns.addAll(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
+            if (request.getProviderName() != null && !request.getProviderName().isEmpty()) {
+                Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(Optional.of(request.getProviderName()));
+                List<String> listPpnsFiltres = listPpns.stream().filter(ppn -> {
+                    try {
+                        NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppn);
+                        if (!noticeInXmlFromPpnInString.isDeleted()) {
+                            return providerService.checkProviderDansNoticeGeneral(providerDto, noticeInXmlFromPpnInString);
+                        }
+                    } catch (IllegalPpnException | IOException | ZoneNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return false;
+                }).toList();
+                result.addPpns(listPpnsFiltres);
+            } else {
+                result.addPpns(listPpns);
+            }
         } catch (CBSException ex) {
             result.addErreur(ex.getMessage());
-        }
-
-        Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(request.getProviderName());
-
-        for (String ppnInString : result.getPpns()) {
-            NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppnInString);
-            if (!noticeInXmlFromPpnInString.isDeleted()) {
-                if (this.providerService.checkProviderDansNoticeGeneralDat2Ppn(providerDto, noticeInXmlFromPpnInString))
-                    result.addPpn(noticeInXmlFromPpnInString.getPpn());
-            }
         }
 
         return result;

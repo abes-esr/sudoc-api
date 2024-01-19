@@ -11,7 +11,6 @@ import fr.abes.sudoc.entity.notice.SubField;
 import fr.abes.sudoc.exception.ExceptionControllerHandler;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.service.*;
-import fr.abes.sudoc.utils.TYPE_SUPPORT;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,6 +128,7 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
+        Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(new ElementDto()));
         Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenReturn(ppnList);
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
 
@@ -141,13 +141,14 @@ class SudocControllerTest {
     }
 
     @Test
-    @DisplayName("datToPpn tryCatchNotWorks")
+    @DisplayName("datToPpn getPpnFromDat n'a donné aucun résultat")
     void datToPpnTryCatchNotWorks() throws Exception {
 
         SearchDatWebDto searchDatRequest = new SearchDatWebDto();
         searchDatRequest.setDate(2008);
         searchDatRequest.setAuteur("");
         searchDatRequest.setTitre("Ours");
+        searchDatRequest.setProviderName("");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
@@ -416,10 +417,10 @@ class SudocControllerTest {
 
         ElementDto providerDto = new ElementDto("CAIRN", "CAèRN", 81);
 
-        Mockito.doNothing().when(providerService).checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
+        Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
 
         this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
                 .andExpect(status().isOk())
