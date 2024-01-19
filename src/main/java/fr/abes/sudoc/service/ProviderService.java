@@ -35,7 +35,7 @@ public class ProviderService {
     private final ProviderRepository providerRepository;
 
     @ExecutionTime
-    public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
+    public Optional<ElementDto> getProviderDisplayName(String shortName) {
         Optional<Provider> provider = this.providerRepository.findByProvider(shortName);
         Optional<ElementDto> elementDto = Optional.of(new ElementDto());
         if (provider.isPresent()) {
