@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*")
 @Slf4j
 @RequestMapping("/v1")
 public class KbartController {
