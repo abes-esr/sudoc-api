@@ -7,6 +7,7 @@ import fr.abes.sudoc.entity.notice.Controlfield;
 import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.ExceptionControllerHandler;
 import fr.abes.sudoc.exception.IllegalPpnException;
+import fr.abes.sudoc.service.IdentifiantFactory;
 import fr.abes.sudoc.service.NoticeService;
 import fr.abes.sudoc.service.ProviderService;
 import fr.abes.sudoc.service.SudocService;
@@ -40,6 +41,9 @@ class SudocControllerTest {
     WebApplicationContext context;
 
     MockMvc mockMvc;
+
+    @MockBean
+    IdentifiantFactory factory;
 
     @MockBean
     SudocService service;
