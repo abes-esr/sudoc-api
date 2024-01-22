@@ -91,6 +91,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!-- permet de gérer les contraintes d'intégrité de la BDD et les champs not null -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -225,11 +226,6 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
-        </dependency>
-        <!--Actuator-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
     </dependencies>

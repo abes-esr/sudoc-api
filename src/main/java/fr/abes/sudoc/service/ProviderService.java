@@ -13,6 +13,7 @@ import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.ProviderRepository;
 import fr.abes.sudoc.utils.ExecutionTime;
+import fr.abes.sudoc.utils.TYPE_SUPPORT;
 import fr.abes.sudoc.utils.Utilitaire;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,15 +36,19 @@ public class ProviderService {
     private final ProviderRepository providerRepository;
 
     @ExecutionTime
-    public Optional<ElementDto> getProviderDisplayName(String shortName) throws IOException {
-        Optional<Provider> provider = this.providerRepository.findByProvider(shortName);
-        Optional<ElementDto> elementDto = Optional.of(new ElementDto());
-        if (provider.isPresent()) {
-            elementDto.get().setProvider(provider.get().getProvider());
-            elementDto.get().setDisplayName(provider.get().getDisplayName());
-            elementDto.get().setIdProvider(provider.get().getIdtProvider());
+    public Optional<ElementDto> getProviderDisplayName(Optional<String> shortname) {
+        Optional<ElementDto> providerDisplayName = Optional.empty();
+        if (shortname.isPresent()) {
+            Optional<Provider> provider = this.providerRepository.findByProvider(shortname.get());
+            Optional<ElementDto> elementDto = Optional.of(new ElementDto());
+            if (provider.isPresent()) {
+                elementDto.get().setProvider(provider.get().getProvider());
+                elementDto.get().setDisplayName(provider.get().getDisplayName());
+                elementDto.get().setIdProvider(provider.get().getIdtProvider());
+            }
+            providerDisplayName = elementDto;
         }
-        return elementDto;
+        return providerDisplayName;
     }
 
     @ExecutionTime
@@ -65,25 +70,17 @@ public class ProviderService {
         return listValeurs;
     }
 
-    public void checkProviderDansNoticeGeneral(ResultWsDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
+    public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
         if (providerDisplayName.isPresent()) {
             if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), true));
+                return true;
             }
             else {
-                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
+                return false;
             }
         }
         else {
-            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
-        }
-    }
-
-    public void checkProviderDansNoticeGeneralDat2Ppn(ResultWebDto resultat, Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
-        if (providerDisplayName.isPresent()) {
-            if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                resultat.addPpn(notice.getPpn());
-            }
+            return false;
         }
     }
 

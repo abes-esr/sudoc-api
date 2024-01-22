@@ -178,4 +178,11 @@ class NoticeXmlTest {
         notice.setDatafields(Lists.newArrayList(datafield));
         Assertions.assertTrue(notice.checkProviderInZone(provider, "200", "c"));
     }
+
+    @Test
+    void idDeleted() {
+        NoticeXml noticeXml = new NoticeXml();
+        noticeXml.setLeader("     dls0 22        450 ");
+        Assertions.assertTrue(noticeXml.isDeleted());
+    }
 }

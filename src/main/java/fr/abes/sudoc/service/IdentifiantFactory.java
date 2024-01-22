@@ -19,11 +19,7 @@ public class IdentifiantFactory {
         return switch (type) {
             case ISBN -> isbnService;
             case ISSN -> issnService;
+            case DOI -> doiService;
         };
     }
-
-    public IIdentifiantService getDoiService() {
-        return doiService;
-    }
-
 }
