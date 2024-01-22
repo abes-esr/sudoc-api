@@ -59,7 +59,12 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeElectronique()) {
-                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            try {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            } catch (IOException ex) {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), false));
+                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                            }
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
@@ -106,11 +111,21 @@ public class SudocController {
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), TYPE_SUPPORT.IMPRIME, noticeLiee.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
+                                    try {
+                                        resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), TYPE_SUPPORT.IMPRIME, noticeLiee.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
+                                    } catch (IOException ex) {
+                                        resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), TYPE_SUPPORT.IMPRIME, noticeLiee.getTypeDocument(), false));
+                                        resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                                    }
                                 }
                             }
                         } else if (notice.isNoticeElectronique()){
-                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            try {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.AUTRE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            } catch (IOException ex) {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.IMPRIME, notice.getTypeDocument(), false));
+                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                            }
                         }
                     }
                 }
@@ -138,7 +153,7 @@ public class SudocController {
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
         try {
-            IIdentifiantService service = factory.getDoiService();
+            IIdentifiantService service = factory.getService(TYPE_ID.DOI);
             if (service.checkFormat(doi_identifier)) {
                 log.debug("Recherche des ppn pour l'identifiant doi_identifier n° " + doi_identifier + " avec le service DOI");
                 for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
@@ -146,20 +161,25 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()){
                         if (notice.isNoticeElectronique()) {
-                            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            try {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                            } catch (IOException ex) {
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), false));
+                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                            }
                         } else {
                             resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
                         }
                     }
                 }
+            } else {
+                throw new IllegalArgumentException("Le DOI n'est pas au bon format");
             }
-        } catch (IllegalStateException ex) {
-            throw new IllegalArgumentException("Le DOI n'est pas au bon format");
         } catch (IOException ex) {
             log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
             throw new IOException(ex);
-        } catch (IllegalPpnException ex) {
-            log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+        } catch (IllegalPpnException e) {
+            throw new IOException("Aucun identifiant ne correspond à la notice");
         }
         return resultat;
     }

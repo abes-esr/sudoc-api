@@ -51,12 +51,6 @@ public class ProviderService {
         return providerDisplayName;
     }
 
-//    private Optional<ElementDto> getProviderDisplayName(Optional<String> provider) {
-//        Optional<ElementDto> providerDisplayName = Optional.empty();
-//        providerDisplayName = (provider.isPresent()) ? getProviderDisplayName(provider.get()) : Optional.empty();
-//        return providerDisplayName;
-//    }
-
     @ExecutionTime
     public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
@@ -79,17 +73,14 @@ public class ProviderService {
     public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException, ZoneNotFoundException {
         if (providerDisplayName.isPresent()) {
             if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-//                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), true));
                 return true;
             }
             else {
-//                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), false));
                 return false;
             }
         }
         else {
             return false;
-//            resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), typeSupport, notice.getTypeDocument(), false));
         }
     }
 

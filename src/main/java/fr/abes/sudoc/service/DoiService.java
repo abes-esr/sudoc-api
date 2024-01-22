@@ -21,7 +21,8 @@ public class DoiService implements IIdentifiantService{
 
     @Override
     public boolean checkFormat(String doi) {
-        return doi != null;
+        String doiPattern = "10.\\d{0,15}.\\d{0,15}.+";
+        return doi != null && doi.matches(doiPattern);
     }
 
     public List<String> getPpnFromIdentifiant(String doi) throws IllegalPpnException, IOException {
