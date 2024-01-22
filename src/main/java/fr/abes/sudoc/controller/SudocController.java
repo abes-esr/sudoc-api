@@ -18,14 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientResponseException;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -56,19 +54,7 @@ public class SudocController {
                 log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° " + onlineIdentifier + " avec le service " + enumType);
                 for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
                     log.debug("onlineIdentifier n° " + onlineIdentifier + " <-> ppn n° " + ppn);
-                    NoticeXml notice = noticeService.getNoticeByPpn(ppn);
-                    if (!notice.isDeleted()) {
-                        if (notice.isNoticeElectronique()) {
-                            try {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
-                            } catch (IOException ex) {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), false));
-                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                            }
-                        } else {
-                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
-                        }
-                    }
+                    feedResultatWithNotice(resultat, providerDto, ppn);
                 }
             }
             else {
@@ -158,19 +144,7 @@ public class SudocController {
                 log.debug("Recherche des ppn pour l'identifiant doi_identifier n° " + doi_identifier + " avec le service DOI");
                 for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
                     log.debug("doi_identifier n° " + doi_identifier + " <-> ppn n° " + ppn);
-                    NoticeXml notice = noticeService.getNoticeByPpn(ppn);
-                    if (!notice.isDeleted()){
-                        if (notice.isNoticeElectronique()) {
-                            try {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
-                            } catch (IOException ex) {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), false));
-                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                            }
-                        } else {
-                            resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
-                        }
-                    }
+                    feedResultatWithNotice(resultat, providerDto, ppn);
                 }
             } else {
                 throw new IllegalArgumentException("Le DOI n'est pas au bon format");
@@ -184,6 +158,22 @@ public class SudocController {
         return resultat;
     }
 
+    private void feedResultatWithNotice(ResultWsDto resultat, Optional<ElementDto> providerDto, String ppn) throws IllegalPpnException, IOException, ZoneNotFoundException {
+        NoticeXml notice = noticeService.getNoticeByPpn(ppn);
+        if (!notice.isDeleted()){
+            if (notice.isNoticeElectronique()) {
+                try {
+                    resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                } catch (IOException ex) {
+                    resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), TYPE_SUPPORT.ELECTRONIQUE, notice.getTypeDocument(), false));
+                    resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                }
+            } else {
+                resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
+            }
+        }
+    }
+
     @PostMapping(value = "/dat2ppn", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) {
         if (request.getTitre() == null) {
@@ -191,10 +181,8 @@ public class SudocController {
         }
         ResultWebDto result = new ResultWebDto();
 
-        List<String> listPpns = new ArrayList<>();
-
         try {
-            listPpns.addAll(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
+            List<String> listPpns = new ArrayList<>(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
             if (request.getProviderName() != null && !request.getProviderName().isEmpty()) {
                 Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(Optional.of(request.getProviderName()));
                 List<String> listPpnsFiltres = listPpns.stream().filter(ppn -> {
