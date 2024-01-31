@@ -2,7 +2,6 @@ package fr.abes.sudoc.controller;
 
 import fr.abes.cbs.exception.CBSException;
 import fr.abes.sudoc.dto.PpnWithTypeWebDto;
-import fr.abes.sudoc.dto.ResultWebDto;
 import fr.abes.sudoc.dto.ResultWsDto;
 import fr.abes.sudoc.dto.SearchDatWebDto;
 import fr.abes.sudoc.dto.provider.ElementDto;
@@ -132,7 +131,7 @@ public class SudocController {
 
     @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException, ZoneNotFoundException {
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
         log.debug("-----------------------------------------------------------");
         log.debug("-----------------------------------------------------------");
         log.debug("DOI IDENTIFIER 2 PPN");
@@ -158,7 +157,7 @@ public class SudocController {
         return resultat;
     }
 
-    private void feedResultatWithNotice(ResultWsDto resultat, Optional<ElementDto> providerDto, String ppn) throws IllegalPpnException, IOException, ZoneNotFoundException {
+    private void feedResultatWithNotice(ResultWsDto resultat, Optional<ElementDto> providerDto, String ppn) throws IllegalPpnException, IOException {
         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
         if (!notice.isDeleted()){
             if (notice.isNoticeElectronique()) {
@@ -175,35 +174,28 @@ public class SudocController {
     }
 
     @PostMapping(value = "/dat2ppn", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWebDto datToPpn(@Valid @RequestBody SearchDatWebDto request) {
+    public ResultWsDto datToPpn(@Valid @RequestBody SearchDatWebDto request) throws IOException {
         if (request.getTitre() == null) {
             throw new IllegalArgumentException("Le titre ne peut pas être null");
         }
-        ResultWebDto result = new ResultWebDto();
-
+        ResultWsDto resultat = new ResultWsDto();
+        Optional<ElementDto> providerDto = Optional.empty();
+        if (request.getProviderName() != null && !request.getProviderName().isEmpty()) {
+            providerDto = this.providerService.getProviderDisplayName(Optional.of(request.getProviderName()));
+        }
         try {
-            List<String> listPpns = new ArrayList<>(service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre()));
-            if (request.getProviderName() != null && !request.getProviderName().isEmpty()) {
-                Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(Optional.of(request.getProviderName()));
-                List<String> listPpnsFiltres = listPpns.stream().filter(ppn -> {
-                    try {
-                        NoticeXml noticeInXmlFromPpnInString = this.noticeService.getNoticeByPpn(ppn);
-                        if (!noticeInXmlFromPpnInString.isDeleted()) {
-                            return providerService.checkProviderDansNoticeGeneral(providerDto, noticeInXmlFromPpnInString);
-                        }
-                    } catch (IllegalPpnException | IOException | ZoneNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return false;
-                }).toList();
-                result.addPpns(listPpnsFiltres);
-            } else {
-                result.addPpns(listPpns);
+            for (String ppn : service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre())) {
+                log.debug("dat2ppn : date : " + request.getDate() + " / auteur : " + request.getAuteur() + " / titre : " + request.getTitre() + " <-> ppn n° " + ppn);
+                feedResultatWithNotice(resultat, providerDto, ppn);
             }
         } catch (CBSException ex) {
-            result.addErreur(ex.getMessage());
+            resultat.addErreur(ex.getMessage());
+        } catch (IOException ex) {
+            log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
+            throw new IOException(ex);
+        } catch (IllegalPpnException e) {
+            throw new IOException("Aucun identifiant ne correspond à la notice");
         }
-
-        return result;
+        return resultat;
     }
 }
