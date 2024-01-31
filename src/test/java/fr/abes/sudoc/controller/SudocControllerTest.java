@@ -138,7 +138,7 @@ class SudocControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0]").value("123456789"));
+                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"));
     }
 
     @Test
