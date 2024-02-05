@@ -45,28 +45,46 @@ public class Utilitaire {
                     JsonNode record = elements.next();
                     listePpn.add(record.path("ppn").asText());
                 }
-            }
-            else {
+            } else {
                 listePpn.add(elements.next().asText());
             }
         }
     }
 
+    public static List<String> parseJsonDoi(String json) throws JsonProcessingException {
+        //la correspondance pouvant retourner plusieurs fois un ppn, on crée une multimap pour récupérer le résultat
+        List<String> listePpn = new ArrayList<>();
+        //parse de l'input json
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode sudocnode = objectMapper.readTree(json);
+        JsonNode resultsNode = sudocnode.findValue("results");
+        if (resultsNode != null) {
+            Iterator<JsonNode> elements = resultsNode.elements();
+            while (elements.hasNext()) {
+                JsonNode record = elements.next();
+                listePpn.add(record.findValue("ppn").asText());
+            }
+        }
+        return listePpn;
+    }
+
+
     /**
      * Méthode permettant de remplacer les caractères diacritiques d'une chaine par leur équivalent non diacritique
+     *
      * @param src chaine à transformer
      * @return chaine transformée
      */
     public static String replaceDiacritics(String src) {
         StringBuffer result = new StringBuffer();
-        if(src!=null && src.length()!=0) {
+        if (src != null && src.length() != 0) {
             int index = -1;
             char c;
-            String chars= "àâäéèêëîïôöùûüç";
-            String replace= "aaaeeeeiioouuuc";
-            for(int i=0; i<src.length(); i++) {
+            String chars = "àâäéèêëîïôöùûüç";
+            String replace = "aaaeeeeiioouuuc";
+            for (int i = 0; i < src.length(); i++) {
                 c = src.charAt(i);
-                if( (index=chars.indexOf(c))!=-1 )
+                if ((index = chars.indexOf(c)) != -1)
                     result.append(replace.charAt(index));
                 else
                     result.append(c);
@@ -74,5 +92,7 @@ public class Utilitaire {
         }
         return result.toString();
     }
+
+
 }
 
