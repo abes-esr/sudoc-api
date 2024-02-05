@@ -79,6 +79,25 @@ class UtilitaireTest {
     }
 
     @Test
+    @DisplayName("parseJsonDoi : 1 seul résultat")
+    void testParseJsonDoi1() throws JsonProcessingException {
+        String json = "{\"sudoc\":{\"results\":{\"result\":{\"ppn\":\"198471483\",\"doi\":\"10.1039/9781849733458\"}}}}";
+        List<String> ppns = Utilitaire.parseJsonDoi(json);
+        Assertions.assertEquals(1, ppns.size());
+        Assertions.assertEquals("198471483", ppns.get(0));
+    }
+
+    @Test
+    @DisplayName("parseJsonDoi : 1 seul résultat")
+    void testParseJsonDoi2() throws JsonProcessingException {
+        String json = "{\"sudoc\":{\"results\":[{\"result\":{\"ppn\":\"224633333\",\"doi\":\"10.1002/9781118444726\"}},{\"result\":{\"ppn\":\"17886594X\",\"doi\":\"10.1002/9781118444726\"}}]}}";
+        List<String> ppns = Utilitaire.parseJsonDoi(json);
+        Assertions.assertEquals(2, ppns.size());
+        Assertions.assertEquals("224633333", ppns.get(0));
+        Assertions.assertEquals("17886594X", ppns.get(1));
+    }
+
+    @Test
     @DisplayName("test replaceDiacritics")
     void testReplaceDiacritics() {
         String chaine = "àâäéèêëîïôöùûüç";
