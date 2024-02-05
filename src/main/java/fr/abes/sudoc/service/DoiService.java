@@ -27,7 +27,7 @@ public class DoiService implements IIdentifiantService{
 
     public List<String> getPpnFromIdentifiant(String doi) throws IllegalPpnException, IOException {
         try{
-            return Utilitaire.parseJson(caller.doiToPpn(doi));
+            return Utilitaire.parseJsonDoi(caller.doiToPpn(doi));
         } catch (UncategorizedSQLException ex){
             throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
         } catch (JsonProcessingException ex) {
