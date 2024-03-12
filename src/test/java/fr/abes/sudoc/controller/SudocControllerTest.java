@@ -488,11 +488,11 @@ class SudocControllerTest {
 
         this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[1].ppn").value("123456000"))
+                .andExpect(jsonPath("$.ppns[1].ppn").value(notice2.getPpn()))
                 .andExpect(jsonPath("$.ppns[1].providerPresent").value(false))
-                .andExpect(jsonPath("$.ppns[1].typeSupport").value("IMPRIME"))
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
-                .andExpect(jsonPath("$.ppns[0].typeSupport").value("AUTRE"))
+                .andExpect(jsonPath("$.ppns[1].typeSupport").value(notice2.getTypeSupport().toString()))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(notice.getPpn()))
+                .andExpect(jsonPath("$.ppns[0].typeSupport").value(notice.getTypeSupport().toString()))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
