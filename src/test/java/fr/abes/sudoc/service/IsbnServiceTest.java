@@ -58,6 +58,9 @@ class IsbnServiceTest {
 
         String isbn6 = "-22225-555---3--1";
         Assertions.assertFalse(isbnService.checkFormat(isbn6));
+
+        String isbn7 = "274758450X";
+        Assertions.assertTrue(isbnService.checkFormat(isbn7));
     }
 
     @Test
