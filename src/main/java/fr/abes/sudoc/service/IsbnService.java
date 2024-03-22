@@ -21,7 +21,7 @@ public class IsbnService implements IIdentifiantService {
 
     @Override
     public boolean checkFormat(String isbn) {
-        return isbn != null && isbn.matches("^[0-9]((?:-?[0-9]){9}|(?:-?[0-9]){12})$");
+        return isbn != null && isbn.matches("^[0-9]((?:-?[0-9]){9}|(?:-?[0-9]){8}X|(?:-?[0-9]){12})$");
     }
 
     @Override
