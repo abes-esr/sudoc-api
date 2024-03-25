@@ -64,7 +64,7 @@ public class SudocController {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
         } catch (IllegalPpnException ex) {
-            log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+            log.error("Impossible de retrouver une notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
         }
         return resultat;
