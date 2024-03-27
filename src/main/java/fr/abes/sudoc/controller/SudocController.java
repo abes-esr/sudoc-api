@@ -64,7 +64,7 @@ public class SudocController {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
         } catch (IllegalPpnException ex) {
-            log.debug("Impossible de retrouver une notice correspondant à cet identifiant");
+            log.error("Impossible de retrouver une notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
         }
         return resultat;
@@ -94,11 +94,13 @@ public class SudocController {
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    try {
-                                        resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
-                                    } catch (IOException ex) {
-                                        resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, false));
-                                        resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                                    if(!noticeLiee.isDeleted()) {
+                                        try {
+                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
+                                        } catch (IOException ex) {
+                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, false));
+                                            resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+                                        }
                                     }
                                 }
                             }
