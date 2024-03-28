@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 
+
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
@@ -58,13 +59,16 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ZoneNotFoundException.class)
     protected ResponseEntity<Object> handleZoneNotFoundException(ZoneNotFoundException ex) {
         String error = "Erreur dans la notice récupérée";
+        log.error(ex.getLocalizedMessage());
         return buildResponseEntity(new ApiReturnError(HttpStatus.BAD_REQUEST, error, ex));
     }
+
 
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<Object> handleIOException(IOException ex) {
         String error = "Erreur dans l'accès aux données";
-        return buildResponseEntity(new ApiReturnError(HttpStatus.NO_CONTENT, error, ex));
+        log.error(ex.getLocalizedMessage());
+        return buildResponseEntity(new ApiReturnError(HttpStatus.BAD_REQUEST, error, ex));
     }
 
     /**
