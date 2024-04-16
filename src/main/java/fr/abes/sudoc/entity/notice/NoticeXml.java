@@ -52,7 +52,10 @@ public class NoticeXml {
         return get008().startsWith("O");
     }
 
-    public boolean isNoticeImprimee() {
+    public boolean isNoticeImprimee() throws ZoneNotFoundException {
+        if(get008() == null){
+            throw new ZoneNotFoundException("La Zone 008 n'existe pas");
+        }
         return get008().startsWith("A");
     }
 
