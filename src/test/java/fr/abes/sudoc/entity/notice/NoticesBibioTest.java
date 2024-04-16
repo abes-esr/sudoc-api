@@ -1,5 +1,6 @@
 package fr.abes.sudoc.entity.notice;
 
+import fr.abes.sudoc.exception.ZoneNotFoundException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class NoticesBibioTest {
     }
 
     @Test
-    void isNoticeImprimee() {
+    void isNoticeImprimee() throws ZoneNotFoundException {
         NoticeXml notice = new NoticeXml();
         Controlfield controlfield = new Controlfield();
         controlfield.setTag("008");
