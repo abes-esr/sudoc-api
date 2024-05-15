@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -49,29 +47,22 @@ public class NoticeService {
 
     public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException {
         log.debug("entrée dans getEquivalentElectronique");
-        List<String> ppnlies;
 
         //on cherche une 452$0 dans la notice
         List<String> ppn452 = notice.get4XXDollar0("452");
-        ppnlies = getNoticeElectroniqueLiee(ppn452);
-        if (ppnlies.size() > 0) return ppnlies;
+        Set<String> ppnlies = new HashSet<>(getNoticeElectroniqueLiee(ppn452));
 
         //on cherche une 456$0 dans la notice
         List<String> ppn456 = notice.get4XXDollar0("456");
-        ppnlies = getNoticeElectroniqueLiee(ppn456);
-        if (ppnlies.size() > 0) return ppnlies;
+        ppnlies.addAll(getNoticeElectroniqueLiee(ppn456));
 
         //Si pas de résultat trouvé, on interroge la table biblio_table_frbr_4XX
         ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndDatas("452$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getPpn).toList());
-        //on renvoie les ppn trouvés via la requête
-        if (ppnlies.size() > 0) return ppnlies;
 
         ppnlies.addAll(this.biblioTableFrbr4XXRepository.findAllByTagAndDatas("455$0", notice.getPpn()).stream().map(BiblioTableFrbr4XX::getPpn).toList());
-        //on renvoie les ppn trouvés via la requête
-        if (ppnlies.size() > 0) return ppnlies;
 
         //aucune des conditions n'a été respectée, on renvoie une liste vide
-        return new ArrayList<>();
+        return ppnlies.stream().toList();
     }
 
     public List<String> getNoticeElectroniqueLiee(List<String> ppn4XX) throws IllegalPpnException, IOException {
