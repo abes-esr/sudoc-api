@@ -50,7 +50,8 @@ public class SudocController {
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
                 log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° " + onlineIdentifier + " avec le service " + enumType);
-                for (String ppn : service.getPpnFromIdentifiant(onlineIdentifier)) {
+                List<String> listPpn = service.getPpnFromIdentifiant(onlineIdentifier);
+                for (String ppn : listPpn) {
                     log.debug("onlineIdentifier n° " + onlineIdentifier + " <-> ppn n° " + ppn);
                     feedResultatWithNotice(resultat, providerDto, ppn);
                 }
@@ -64,8 +65,8 @@ public class SudocController {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
         } catch (IllegalPpnException ex) {
-            log.error("Impossible de retrouver une notice correspondant à l'identifiant " + onlineIdentifier);
-            throw new IOException(ex);
+            log.warn("Impossible de retrouver une notice correspondant à l'identifiant " + onlineIdentifier);
+//            throw new IOException(ex); // Pas besoin de throw, il y a juste pas de ppn assosier à cet onlineId
         }
         return resultat;
     }
@@ -123,10 +124,13 @@ public class SudocController {
             }
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
-        } catch (IOException | IllegalPpnException ex) {
+        } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + printIdentifier);
             throw new IOException(ex);
+        } catch (IllegalPpnException ex){
+            log.warn("Impossible de retrouver une notice correspondant à l'identifiant " + printIdentifier);
         }
+        return resultat;
     }
 
     @ExecutionTime
