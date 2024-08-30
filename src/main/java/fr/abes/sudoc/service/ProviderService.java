@@ -11,6 +11,7 @@ import fr.abes.sudoc.repository.ProviderRepository;
 import fr.abes.sudoc.utils.ExecutionTime;
 import fr.abes.sudoc.utils.Utilitaire;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class ProviderService {
     private final ProviderRepository providerRepository;
 
     @ExecutionTime
+    @Cacheable("providerCache")
     public Optional<ElementDto> getProviderDisplayName(Optional<String> shortname) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         if (shortname.isPresent()) {

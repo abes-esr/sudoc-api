@@ -108,6 +108,11 @@
             </exclusions>
         </dependency>
 
+        <!-- Cache Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
         <!--BDD-->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
