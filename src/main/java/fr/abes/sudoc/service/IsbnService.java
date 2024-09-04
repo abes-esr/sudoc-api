@@ -27,12 +27,8 @@ public class IsbnService implements IIdentifiantService {
     @Override
     public List<String> getPpnFromIdentifiant(String isbn) throws IllegalPpnException, IOException {
         try{
-            return Utilitaire.parseJson(caller.isbnToPpn(isbn));
-        } catch (UncategorizedSQLException ex){
-            throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
-        } catch (JsonProcessingException ex) {
-            throw new IOException("Impossible de récupérer les ppns correspondant à cet identifiant");
-        } catch (SQLRecoverableException ex) {
+            return caller.isbnToPpn(isbn.replace("-", ""));
+        }  catch (SQLRecoverableException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
         }
     }

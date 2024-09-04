@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLRecoverableException;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,11 +28,7 @@ public class IssnService implements IIdentifiantService {
     @Override
     public List<String> getPpnFromIdentifiant(String issn) throws IllegalPpnException, IOException {
         try{
-            return Utilitaire.parseJson(caller.issnToPpn(issn));
-        } catch (UncategorizedSQLException ex){
-            throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
-        } catch (JsonProcessingException ex) {
-            throw new IOException("Impossible de récupérer les ppns correspondant à cet identifiant");
+            return caller.issnToPpn(issn.replace("-", ""));
         } catch (SQLRecoverableException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
         }
