@@ -31,7 +31,7 @@ public class ProviderService {
 
     private final ProviderRepository providerRepository;
 
-    @ExecutionTime
+
     @Cacheable("providerCache")
     public Optional<ElementDto> getProviderDisplayName(Optional<String> shortname) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
@@ -48,7 +48,7 @@ public class ProviderService {
         return providerDisplayName;
     }
 
-    @ExecutionTime
+
     public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
         try {

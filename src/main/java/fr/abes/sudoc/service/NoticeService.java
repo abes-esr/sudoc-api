@@ -30,7 +30,7 @@ public class NoticeService {
         this.xmlMapper = xmlMapper;
     }
 
-    @ExecutionTime
+
     public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
@@ -46,8 +46,6 @@ public class NoticeService {
     }
 
     public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException {
-        log.debug("entrée dans getEquivalentElectronique");
-
         //on cherche une 452$0 dans la notice
         List<String> ppn452 = notice.get4XXDollar0("452");
         Set<String> ppnlies = new HashSet<>(getNoticeElectroniqueLiee(ppn452));
