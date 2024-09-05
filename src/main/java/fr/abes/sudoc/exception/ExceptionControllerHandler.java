@@ -63,6 +63,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(new ApiReturnError(HttpStatus.BAD_REQUEST, error, ex));
     }
 
+    @ExceptionHandler(IllegalPpnException.class)
+    protected ResponseEntity<Object> handleIllegalPpnException(IllegalPpnException ex) {
+        String warn = ex.getMessage();
+        log.warn(warn);
+        return buildResponseEntity(new ApiReturnError(HttpStatus.NO_CONTENT, warn, ex));
+    }
 
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<Object> handleIOException(IOException ex) {

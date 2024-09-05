@@ -40,7 +40,7 @@ public class SudocController {
 
     @ExecutionTime
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException, ZoneNotFoundException {
+    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
         log.debug("-----------------------------------------------------------");
         log.debug("ONLINE IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
@@ -64,16 +64,13 @@ public class SudocController {
         } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
             throw new IOException(ex);
-        } catch (IllegalPpnException ex) {
-            log.warn("Impossible de retrouver une notice correspondant à l'identifiant " + onlineIdentifier);
-//            throw new IOException(ex); // Pas besoin de throw, il y a juste pas de ppn assosier à cet onlineId
         }
         return resultat;
     }
 
     @ExecutionTime
     @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException, ZoneNotFoundException {
+    public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
         log.debug("-----------------------------------------------------------");
         log.debug("PRINT IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
@@ -127,16 +124,12 @@ public class SudocController {
         } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + printIdentifier);
             throw new IOException(ex);
-        } catch (IllegalPpnException ex){
-            log.warn("Impossible de retrouver une notice correspondant à l'identifiant " + printIdentifier);
         }
-        return resultat;
     }
 
     @ExecutionTime
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
-        log.debug("-----------------------------------------------------------");
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException, IllegalPpnException {
         log.debug("DOI IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
@@ -154,8 +147,6 @@ public class SudocController {
         } catch (IOException ex) {
             log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
             throw new IOException(ex);
-        } catch (IllegalPpnException e) {
-            throw new IOException("Aucun identifiant ne correspond à la notice");
         } catch (ZoneNotFoundException e) {
             throw new IOException(e.getMessage());
         }
