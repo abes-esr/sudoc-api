@@ -36,4 +36,4 @@ WORKDIR /app/
 COPY --from=build-image /build/target/sudoc.jar /app/sudoc.jar
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ENTRYPOINT ["java","-XX:MaxRAMPercentage=95","-jar","/app/sudoc.jar"]
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=75","-jar","/app/sudoc.jar"]
