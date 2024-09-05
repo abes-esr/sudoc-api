@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +105,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("datToPpn tryCatchWorks")
-    void datToPpnTryCatchWorks() throws Exception, IllegalPpnException {
+    void datToPpnTryCatchWorks() throws Exception {
 
         SearchDatWebDto searchDatRequest = new SearchDatWebDto();
         searchDatRequest.setDate(2008);
@@ -169,7 +168,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + 1 PPN non supprimé de doc élec")
-    void onlineIdentifier2PpnCas1() throws Exception, IllegalPpnException {
+    void onlineIdentifier2PpnCas1() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
 
@@ -197,7 +196,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + 2 PPN non supprimés dont un ppn qui n'est pas une notice electronique")
-    void onlineIdentifier2PpnCas2() throws Exception, IllegalPpnException {
+    void onlineIdentifier2PpnCas2() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
 
@@ -239,7 +238,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + exception erreur SQL")
-    void onlineIdentifier2PpnCas3() throws Exception, IllegalPpnException {
+    void onlineIdentifier2PpnCas3() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
 
@@ -278,7 +277,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : check provider non ok")
-    void onlineIdentifierCheckProviderNonOk() throws Exception, IllegalPpnException {
+    void onlineIdentifierCheckProviderNonOk() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
         String provider = "CAIRN";
@@ -309,7 +308,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : check provider diacritics")
-    void onlineIdentifierCheckProviderDiacritics() throws Exception, IllegalPpnException {
+    void onlineIdentifierCheckProviderDiacritics() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
         String provider = "CAèRN";
@@ -347,7 +346,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : erreur appel ws provider")
-    void onlineIdentifer2PpnErreurAppelWs() throws Exception, IllegalPpnException {
+    void onlineIdentifer2PpnErreurAppelWs() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
         String provider = "CAIRN";
@@ -386,7 +385,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN non supprimé de doc imprimé")
-    void printIdentifier2PpnCas1() throws Exception, IllegalPpnException {
+    void printIdentifier2PpnCas1() throws Exception {
         String type = "serial";
         String printIdentifier = "1234-1234";
 
@@ -427,7 +426,7 @@ class SudocControllerTest {
     }
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN supprimé de doc imprimé")
-    void printIdentifier2PpnCas1Supprime() throws Exception, IllegalPpnException {
+    void printIdentifier2PpnCas1Supprime() throws Exception {
         String type = "serial";
         String printIdentifier = "1234-1234";
 
@@ -453,7 +452,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 2 PPN non supprimés dont un ppn qui n'est pas une notice imprimée")
-    void printIdentifier2PpnCas2() throws Exception, IllegalPpnException {
+    void printIdentifier2PpnCas2() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
 
@@ -498,7 +497,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + exception erreur SQL")
-    void printIdentifier2PpnCas3() throws Exception, IllegalPpnException {
+    void printIdentifier2PpnCas3() throws Exception {
         String type = "serial";
         String onlineIdentifier = "1234-1234";
 
@@ -548,7 +547,7 @@ class SudocControllerTest {
 
     @Test
     @DisplayName("test WS print_identifer_2_ppn : erreur récupération provider")
-    void printIdentifer2PpnErreurAppelWs() throws Exception, IllegalPpnException {
+    void printIdentifer2PpnErreurAppelWs() throws Exception {
         String provider = "CAIRN";
         String type = "serial";
         String printIdentifier = "1234-1234";
@@ -592,7 +591,7 @@ class SudocControllerTest {
     }
 
     @Test
-    void doiIdentifier2ppnCasOk() throws Exception, IllegalPpnException {
+    void doiIdentifier2ppnCasOk() throws Exception {
         String doi = "10.1006/jmbi.1998.2354";
 
         String provider = "CAIRN";
@@ -641,7 +640,7 @@ class SudocControllerTest {
     }
 
     @Test
-    void doiIdentifier2ppnNoPpnFound() throws Exception, IllegalPpnException {
+    void doiIdentifier2ppnNoPpnFound() throws Exception {
         String doi = "10.1006/jmbi.1998.2354";
 
         String provider = "CAIRN";
@@ -653,13 +652,13 @@ class SudocControllerTest {
         Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)))
-                .andExpect(result -> Assertions.assertEquals("Aucun identifiant ne correspond à la notice", Objects.requireNonNull(result.getResolvedException()).getMessage()));
+                .andExpect(status().isNoContent())
+                .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalPpnException)))
+                .andExpect(result -> Assertions.assertEquals("Aucune notice ne correspond à la recherche", Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
-    void doiIdentifier2ppnErreurProvider() throws Exception, IllegalPpnException {
+    void doiIdentifier2ppnErreurProvider() throws Exception {
         String doi = "10.1006/jmbi.1998.2354";
 
         String provider = "CAIRN";
@@ -692,7 +691,7 @@ class SudocControllerTest {
     }
 
     @Test
-    void doiIdentifier2ppnErreurTypeSupportNotice() throws Exception, IllegalPpnException {
+    void doiIdentifier2ppnErreurTypeSupportNotice() throws Exception {
         String doi = "10.1006/jmbi.1998.2354";
 
         String provider = "CAIRN";

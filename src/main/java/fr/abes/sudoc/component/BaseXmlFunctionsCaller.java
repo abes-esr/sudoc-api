@@ -3,6 +3,7 @@ package fr.abes.sudoc.component;
 import fr.abes.sudoc.utils.ExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnTransformer;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -44,7 +45,7 @@ public class BaseXmlFunctionsCaller {
     }
 
     @ExecutionTime
-    public String doiToPpn(String doi) throws SQLRecoverableException, UncategorizedSQLException {
+    public String doiToPpn(String doi) throws UncategorizedSQLException, EmptyResultDataAccessException {
         StringBuilder request = new StringBuilder("select a.ppn from autorites.biblio_table_FRBR_0xx a where  ");
         request.append("upper(SUBSTR(a.datas,1,50)) = '");
         request.append(doi.toUpperCase());
