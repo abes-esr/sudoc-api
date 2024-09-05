@@ -259,7 +259,7 @@ class SudocControllerTest {
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
         this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
 
@@ -518,7 +518,7 @@ class SudocControllerTest {
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
         this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
 
@@ -653,7 +653,7 @@ class SudocControllerTest {
         Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
-                .andExpect(status().isNoContent())
+                .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)))
                 .andExpect(result -> Assertions.assertEquals("Aucun identifiant ne correspond à la notice", Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }

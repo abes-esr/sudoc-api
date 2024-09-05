@@ -20,7 +20,7 @@ public class BaseXmlFunctionsCaller {
     }
 
     @ExecutionTime
-    public List<String> issnToPpn(String issn) throws SQLRecoverableException, UncategorizedSQLException {
+    public List<String> issnToPpn(String issn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISSN' and cle2='");
         request.append(issn);
         request.append("'");
@@ -28,7 +28,7 @@ public class BaseXmlFunctionsCaller {
     }
 
     @ExecutionTime
-    public List<String> isbnToPpn(String isbn) throws SQLRecoverableException, UncategorizedSQLException {
+    public List<String> isbnToPpn(String isbn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISBN' and cle2='");
         request.append(isbn);
         request.append("'");

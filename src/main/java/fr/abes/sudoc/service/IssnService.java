@@ -26,10 +26,10 @@ public class IssnService implements IIdentifiantService {
     }
 
     @Override
-    public List<String> getPpnFromIdentifiant(String issn) throws IllegalPpnException, IOException {
+    public List<String> getPpnFromIdentifiant(String issn) throws IOException {
         try{
             return caller.issnToPpn(issn.replace("-", ""));
-        } catch (SQLRecoverableException ex) {
+        } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
         }
     }

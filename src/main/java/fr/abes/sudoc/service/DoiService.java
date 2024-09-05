@@ -28,9 +28,14 @@ public class DoiService implements IIdentifiantService{
         return doi != null && doi.matches(doiPattern);
     }
 
-    public List<String> getPpnFromIdentifiant(String doi) throws IllegalPpnException, IOException {
+    public List<String> getPpnFromIdentifiant(String doi) throws IOException, IllegalPpnException {
         try {
-            return Collections.singletonList(caller.doiToPpn(doi));
+            String ppn = caller.doiToPpn(doi);
+            if (("").equals(ppn))
+                throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
+            else {
+                return Collections.singletonList(caller.doiToPpn(doi));
+            }
         } catch (SQLRecoverableException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
         }
