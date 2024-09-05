@@ -32,12 +32,17 @@ public class DoiService implements IIdentifiantService{
     @Override
     public List<String> getPpnFromIdentifiant(String doi) throws IOException, IllegalPpnException {
         try {
-            return Collections.singletonList(caller.doiToPpn(doi));
+            List<String> result = caller.doiToPpn(doi);
+            if (result.isEmpty())
+                throw new IllegalPpnException("Aucune notice ne correspond à la recherche sur le doi " + doi);
+            else
+                if (result.size() != 1) {
+                    throw new IllegalPpnException("Plusieurs résultats à la recherche sur doi " + doi);
+                } else {
+                    return Collections.singletonList(result.get(0));
+                }
         } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
-        } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
         }
     }
-
 }
