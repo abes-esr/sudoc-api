@@ -20,7 +20,7 @@ public class BaseXmlFunctionsCaller {
         this.baseXmlJdbcTemplate = baseXmlJdbcTemplate;
     }
 
-    @ExecutionTime
+
     public List<String> issnToPpn(String issn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISSN' and cle2='");
         request.append(issn);
@@ -28,7 +28,7 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForList(request.toString(), String.class);
     }
 
-    @ExecutionTime
+
     public List<String> isbnToPpn(String isbn) throws UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISBN' and cle2='");
         request.append(isbn);
@@ -36,7 +36,7 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForList(request.toString(), String.class);
     }
 
-    @ExecutionTime
+
     public String baconProvider035(Integer provider) throws SQLRecoverableException, UncategorizedSQLException {
         StringBuilder request = new StringBuilder("SELECT AUTORITES.BACON_PROVIDER_035_JSON(");
         request.append(provider);
@@ -44,7 +44,7 @@ public class BaseXmlFunctionsCaller {
         return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
-    @ExecutionTime
+
     public String doiToPpn(String doi) throws UncategorizedSQLException, EmptyResultDataAccessException {
         StringBuilder request = new StringBuilder("select a.ppn from autorites.biblio_table_FRBR_0xx a where  ");
         request.append("upper(SUBSTR(a.datas,1,50)) = '");

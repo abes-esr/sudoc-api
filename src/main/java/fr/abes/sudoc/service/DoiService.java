@@ -32,7 +32,6 @@ public class DoiService implements IIdentifiantService{
     @Override
     public List<String> getPpnFromIdentifiant(String doi) throws IOException, IllegalPpnException {
         try {
-
             return Collections.singletonList(caller.doiToPpn(doi));
         } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
