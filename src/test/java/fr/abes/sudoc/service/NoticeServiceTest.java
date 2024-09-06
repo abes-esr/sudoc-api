@@ -7,6 +7,7 @@ import fr.abes.sudoc.entity.notice.Datafield;
 import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.entity.notice.SubField;
 import fr.abes.sudoc.exception.IllegalPpnException;
+import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
 import fr.abes.sudoc.repository.NoticesBibioRepository;
 import org.apache.commons.io.IOUtils;
@@ -75,7 +76,7 @@ class NoticeServiceTest {
     }
 
     @Test
-    void getNoticeElectroniqueLiee() throws IOException, SQLException, IllegalPpnException {
+    void getNoticeElectroniqueLiee() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         List<String> ppn = new ArrayList<>();
         ppn.add("123456789");
         ppn.add("987654321");
@@ -103,7 +104,7 @@ class NoticeServiceTest {
 
     @Test
     @DisplayName("test getEquivalentElectronique : première condition")
-    void getEquivalentElectroniqueFirstCondition() throws IOException, SQLException, IllegalPpnException {
+    void getEquivalentElectroniqueFirstCondition() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
         NoticesBibio noticeWith452 = new NoticesBibio();
         noticeWith452.setId(1);
@@ -130,7 +131,7 @@ class NoticeServiceTest {
 
     @Test
     @DisplayName("test getEquivalentElectronique : seconde condition")
-    void getEquivalentElectroniqueSecondeCondition() throws IOException, SQLException, IllegalPpnException {
+    void getEquivalentElectroniqueSecondeCondition() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
         NoticesBibio noticeWith452 = new NoticesBibio();
         noticeWith452.setId(1);
@@ -157,7 +158,7 @@ class NoticeServiceTest {
 
     @Test
     @DisplayName("test getEquivalentElectronique : BiblioTableFrBr4XX first condition")
-    void getEquivalentElectroniqueBiblioTableFrBr4XXFirstCondition() throws IOException, SQLException, IllegalPpnException {
+    void getEquivalentElectroniqueBiblioTableFrBr4XXFirstCondition() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
         NoticesBibio noticeWith452 = new NoticesBibio();
         noticeWith452.setId(1);
@@ -180,7 +181,7 @@ class NoticeServiceTest {
 
     @Test
     @DisplayName("test getEquivalentElectronique : BiblioTableFrBr4XX second condition")
-    void getEquivalentElectroniqueBiblioTableFrBr4XXSecondCondition() throws IOException, SQLException, IllegalPpnException {
+    void getEquivalentElectroniqueBiblioTableFrBr4XXSecondCondition() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
         NoticesBibio noticeWith452 = new NoticesBibio();
         noticeWith452.setId(1);
@@ -203,7 +204,7 @@ class NoticeServiceTest {
 
     @Test
     @DisplayName("test getEquivalentElectronique : Nothing condition")
-    void getEquivalentElectroniqueNothingCondition() throws IOException, SQLException, IllegalPpnException {
+    void getEquivalentElectroniqueNothingCondition() throws IOException, SQLException, IllegalPpnException, ZoneNotFoundException {
         String xml = IOUtils.toString(new FileInputStream(noticeWith452.getFile()), StandardCharsets.UTF_8);
         NoticesBibio noticeWith452 = new NoticesBibio();
         noticeWith452.setId(1);

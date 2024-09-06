@@ -652,9 +652,7 @@ class SudocControllerTest {
         Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
-                .andExpect(status().isOk())
-                .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalPpnException)))
-                .andExpect(result -> Assertions.assertEquals("Aucune notice ne correspond à la recherche", Objects.requireNonNull(result.getResolvedException()).getMessage()));
+                .andExpect(status().isOk());
     }
 
     @Test

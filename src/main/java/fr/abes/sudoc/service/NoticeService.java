@@ -5,9 +5,9 @@ import fr.abes.sudoc.entity.BiblioTableFrbr4XX;
 import fr.abes.sudoc.entity.NoticesBibio;
 import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.IllegalPpnException;
+import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
 import fr.abes.sudoc.repository.NoticesBibioRepository;
-import fr.abes.sudoc.utils.ExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +45,7 @@ public class NoticeService {
         return null;
     }
 
-    public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException {
+    public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException, ZoneNotFoundException {
         //on cherche une 452$0 dans la notice
         List<String> ppn452 = notice.get4XXDollar0("452");
         Set<String> ppnlies = new HashSet<>(getNoticeElectroniqueLiee(ppn452));
@@ -63,7 +63,7 @@ public class NoticeService {
         return ppnlies.stream().toList();
     }
 
-    public List<String> getNoticeElectroniqueLiee(List<String> ppn4XX) throws IllegalPpnException, IOException {
+    public List<String> getNoticeElectroniqueLiee(List<String> ppn4XX) throws IllegalPpnException, IOException, ZoneNotFoundException {
         List<String> ppns = new ArrayList<>();
         for (String ppn : ppn4XX) {
             NoticeXml noticeLiee = getNoticeByPpn(ppn);
