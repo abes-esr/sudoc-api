@@ -69,21 +69,17 @@ public class ProviderService {
 
     public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
         if (providerDisplayName.isPresent()) {
-            if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice)
+                    || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice)
+                    || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice);
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
         String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
+        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c")
+                || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
     }
 
     private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) throws IOException {
