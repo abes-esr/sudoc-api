@@ -48,7 +48,10 @@ public class NoticeXml {
         return leader.charAt(5) == 'd';
     }
 
-    public boolean isNoticeElectronique() {
+    public boolean isNoticeElectronique() throws ZoneNotFoundException {
+        if (get008() == null){
+            throw new ZoneNotFoundException("La Zone 008 n'existe pas");
+        }
         return get008().startsWith("O");
     }
 

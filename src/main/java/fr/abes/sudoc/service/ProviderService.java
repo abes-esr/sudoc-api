@@ -11,6 +11,7 @@ import fr.abes.sudoc.repository.ProviderRepository;
 import fr.abes.sudoc.utils.ExecutionTime;
 import fr.abes.sudoc.utils.Utilitaire;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,7 +31,8 @@ public class ProviderService {
 
     private final ProviderRepository providerRepository;
 
-    @ExecutionTime
+
+    @Cacheable("providerCache")
     public Optional<ElementDto> getProviderDisplayName(Optional<String> shortname) {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         if (shortname.isPresent()) {
@@ -46,7 +48,7 @@ public class ProviderService {
         return providerDisplayName;
     }
 
-    @ExecutionTime
+
     public List<String> getProviderFor035(Integer provider) throws IOException {
         List<String> listValeurs = new ArrayList<>();
         try {
@@ -67,21 +69,17 @@ public class ProviderService {
 
     public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
         if (providerDisplayName.isPresent()) {
-            if (this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice) || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice) || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice)) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return this.checkProviderDansNotice(providerDisplayName.get().getDisplayName(), notice)
+                    || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice)
+                    || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice);
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
         String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c") || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
+        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c")
+                || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
     }
 
     private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) throws IOException {

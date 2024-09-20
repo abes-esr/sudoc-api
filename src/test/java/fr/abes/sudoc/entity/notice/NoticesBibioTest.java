@@ -30,7 +30,7 @@ class NoticesBibioTest {
     }
 
     @Test
-    void isNoticeElectronique() {
+    void isNoticeElectronique() throws ZoneNotFoundException {
         NoticeXml notice = new NoticeXml();
         Controlfield controlfield = new Controlfield();
         controlfield.setTag("008");

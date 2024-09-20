@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
 import java.sql.SQLRecoverableException;
 
 @ExtendWith(SpringExtension.class)
@@ -99,9 +100,9 @@ class IsbnServiceTest {
 
     @Test
     @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
-    void testgetPpnUncategorizedException() throws SQLRecoverableException {
+    void testgetPpnUncategorizedException() {
         Mockito.doThrow(UncategorizedSQLException.class).when(caller).isbnToPpn(Mockito.anyString());
-        Assertions.assertThrows(IllegalPpnException.class, () -> isbnService.getPpnFromIdentifiant("1111111111"));
+        Assertions.assertThrows(IOException.class, () -> isbnService.getPpnFromIdentifiant("1111111111"));
     }
 
 }

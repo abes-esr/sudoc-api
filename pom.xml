@@ -9,7 +9,7 @@
     </parent>
     <groupId>fr.abes</groupId>
     <artifactId>sudoc</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.12-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>sudoc</name>
     <description>webservices de récupération de ppns dans le sudoc</description>
@@ -108,6 +108,11 @@
             </exclusions>
         </dependency>
 
+        <!-- Cache Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
         <!--BDD-->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
