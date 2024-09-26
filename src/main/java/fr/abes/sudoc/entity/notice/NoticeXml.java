@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.utils.TYPE_DOCUMENT;
 import fr.abes.sudoc.utils.TYPE_SUPPORT;
+import fr.abes.sudoc.utils.Utilitaire;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -142,11 +143,12 @@ public class NoticeXml {
      * @return true si le provider est contenu dans la zone / sous zone passée en paramètre
      */
     public boolean checkProviderInZone(String provider, String zone, String sousZone) {
-        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals(zone)).collect(Collectors.toList());
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals(zone)).toList();
         if (!listeZone.isEmpty()) {
             for (Datafield datafield : listeZone) {
-                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals(sousZone)).collect(Collectors.toList());
-                if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().contains(provider.toLowerCase(Locale.ROOT)))) return true;
+                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals(sousZone)).toList();
+                if (subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue()).toLowerCase().contains(provider.toLowerCase(Locale.ROOT))))
+                    return true;
             }
         }
         return false;
