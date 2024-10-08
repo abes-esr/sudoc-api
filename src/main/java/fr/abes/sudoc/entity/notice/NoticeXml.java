@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Représente une notice au format d'export UnimarcXML
@@ -107,10 +106,10 @@ public class NoticeXml {
 
     public List<String> get4XXDollar0(String zone) {
         List<String> ppns = new ArrayList<>();
-        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals(zone)).collect(Collectors.toList());
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals(zone)).toList();
         if (!listeZone.isEmpty()) {
             for (Datafield datafield : listeZone) {
-                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("0")).collect(Collectors.toList());
+                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("0")).toList();
                 subFields.forEach(subField -> {
                     ppns.add(subField.getValue());
                 });
@@ -125,10 +124,10 @@ public class NoticeXml {
      * @return true si le provider est présent en début d'une 035$a, false sinon
      */
     public boolean checkProviderIn035a(String provider) {
-        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals("035")).collect(Collectors.toList());
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals("035")).toList();
         if (!listeZone.isEmpty()) {
             for (Datafield datafield : listeZone) {
-                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("a")).collect(Collectors.toList());
+                List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("a")).toList();
                 if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().startsWith(provider.toLowerCase()))) return true;
             }
         }
@@ -147,7 +146,7 @@ public class NoticeXml {
         if (!listeZone.isEmpty()) {
             for (Datafield datafield : listeZone) {
                 List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals(sousZone)).toList();
-                if (subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue()).toLowerCase().contains(provider.toLowerCase(Locale.ROOT))))
+                if (subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue().toLowerCase()).contains(Utilitaire.replaceDiacritics(provider.toLowerCase(Locale.ROOT)))))
                     return true;
             }
         }

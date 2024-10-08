@@ -77,9 +77,8 @@ public class ProviderService {
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
-        String providerWithoutDiacritics = Utilitaire.replaceDiacritics(provider);
-        return notice.checkProviderInZone(providerWithoutDiacritics, "210", "c")
-                || notice.checkProviderInZone(providerWithoutDiacritics, "214", "c");
+        return notice.checkProviderInZone(provider, "210", "c")
+                || notice.checkProviderInZone(provider, "214", "c");
     }
 
     private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) throws IOException {

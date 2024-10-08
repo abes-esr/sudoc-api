@@ -21,7 +21,11 @@ public class IsbnService implements IIdentifiantService {
 
     @Override
     public boolean checkFormat(String isbn) {
-        return isbn != null && isbn.matches("^[0-9]((?:-?[0-9]){9}|(?:-?[0-9]){8}X|(?:-?[0-9]){12})$");
+        //regexp permettant de vérifier
+        //ISBN 10 et 13
+        //avec ou sans tiret
+        //avec prise en compte du caractère de controle X en fin
+        return isbn != null && isbn.matches("^(?:ISBN(?:-1[03])?:?\\\\s*)?(?=[-0-9X\\\\s]{10,17}$)(?:97[89][- ]?)?([0-9]{1,5})[- ]?([0-9]+)[- ]?([0-9]+)[- ]?([0-9X])$");
     }
 
     @Override
