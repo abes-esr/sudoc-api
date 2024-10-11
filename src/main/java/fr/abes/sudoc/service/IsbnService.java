@@ -1,14 +1,10 @@
 package fr.abes.sudoc.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
-import fr.abes.sudoc.exception.IllegalPpnException;
-import fr.abes.sudoc.utils.Utilitaire;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.sql.SQLRecoverableException;
 import java.util.List;
 
 @Service

@@ -1,9 +1,6 @@
 package fr.abes.sudoc.component;
 
-import fr.abes.sudoc.utils.ExecutionTime;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.ColumnTransformer;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
