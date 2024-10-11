@@ -37,13 +37,14 @@ public class ProviderService {
         Optional<ElementDto> providerDisplayName = Optional.empty();
         if (shortname.isPresent()) {
             Optional<Provider> provider = this.providerRepository.findByProvider(shortname.get());
-            Optional<ElementDto> elementDto = Optional.of(new ElementDto());
             if (provider.isPresent()) {
-                elementDto.get().setProvider(provider.get().getProvider());
-                elementDto.get().setDisplayName(provider.get().getDisplayName());
-                elementDto.get().setIdProvider(provider.get().getIdtProvider());
+                ElementDto elementDto = new ElementDto();
+                elementDto.setProvider(provider.get().getProvider());
+                elementDto.setDisplayName(provider.get().getDisplayName());
+                elementDto.setIdProvider(provider.get().getIdtProvider());
+                providerDisplayName = Optional.of(elementDto);
             }
-            providerDisplayName = elementDto;
+
         }
         return providerDisplayName;
     }
@@ -73,7 +74,7 @@ public class ProviderService {
                     || this.checkProviderDansNotice(providerDisplayName.get().getProvider(), notice)
                     || this.checkProviderIn035(providerDisplayName.get().getIdProvider(), notice);
         }
-        return false;
+        return true;
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {

@@ -29,14 +29,21 @@ import java.util.Optional;
 @RequestMapping("/api/v1")
 public class SudocController {
 
-    @Autowired
-    private IdentifiantFactory factory;
-    @Autowired
-    private SudocService service;
-    @Autowired
-    private NoticeService noticeService;
-    @Autowired
-    private ProviderService providerService;
+
+    private final IdentifiantFactory factory;
+
+    private final SudocService service;
+
+    private final NoticeService noticeService;
+
+    private  final ProviderService providerService;
+
+    public SudocController(IdentifiantFactory factory, SudocService service, NoticeService noticeService, ProviderService providerService) {
+        this.factory = factory;
+        this.service = service;
+        this.noticeService = noticeService;
+        this.providerService = providerService;
+    }
 
 
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
