@@ -25,33 +25,35 @@ public class SudocService {
     @Value("${sudoc.passwd}")
     private String passCbs;
 
-    @Autowired
-    private ProcessCBS cbs;
-
     @Getter
     private String query;
 
     public List<String> getPpnFromDat(Integer annee, String auteur, String titre) throws CBSException {
-        log.debug("serveur : " + this.serveurCbs + " / port : " + this.port);
-        this.cbs.authenticate(this.serveurCbs, this.port, this.loginCbs, this.passCbs);
-        if (annee != null && auteur != null) {
-            this.query = "tno t ; apu " + annee + " ; che aut " + auteur + " et mti " + titre;
-        } else if (annee != null) {
-            this.query = "tno t ; apu " + annee + " ; che mti " + titre;
-        } else {
-            if (auteur != null) {
-                this.query = "tno t ; che aut " + auteur + " et mti " + titre;
+        ProcessCBS cbs = new ProcessCBS();
+        try {
+            log.debug("serveur : " + this.serveurCbs + " / port : " + this.port);
+            cbs.authenticate(this.serveurCbs, this.port, this.loginCbs, this.passCbs);
+            if (annee != null && auteur != null) {
+                this.query = "tno t ; apu " + annee + " ; che aut " + auteur + " et mti " + titre;
+            } else if (annee != null) {
+                this.query = "tno t ; apu " + annee + " ; che mti " + titre;
             } else {
-                this.query = "tno t ; che mti " + titre;
+                if (auteur != null) {
+                    this.query = "tno t ; che aut " + auteur + " et mti " + titre;
+                } else {
+                    this.query = "tno t ; che mti " + titre;
+                }
             }
-        }
 
-        log.debug("requête : " + this.query);
-        this.cbs.search(this.query);
-        return switch (this.cbs.getNbNotices()) {
-            case 0 -> new ArrayList<>();
-            case 1 -> Collections.singletonList(this.cbs.getPpnEncours());
-            default -> Arrays.asList(this.cbs.getListePpn().toString().split(";"));
-        };
+            log.debug("requête : " + this.query);
+            cbs.search(this.query);
+            return switch (cbs.getNbNotices()) {
+                case 0 -> new ArrayList<>();
+                case 1 -> Collections.singletonList(cbs.getPpnEncours());
+                default -> Arrays.asList(cbs.getListePpn().toString().split(";"));
+            };
+        } finally {
+            cbs.disconnect();
+        }
     }
 }
