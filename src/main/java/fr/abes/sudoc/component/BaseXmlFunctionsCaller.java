@@ -43,13 +43,9 @@ public class BaseXmlFunctionsCaller {
 
 
     public List<String> doiToPpn(String doi) throws UncategorizedSQLException {
-        StringBuilder request = new StringBuilder("select a.ppn from autorites.biblio_table_FRBR_0xx a where  ");
-        request.append("upper(SUBSTR(a.datas,1,50)) = '");
-        request.append(doi.toUpperCase());
-        request.append("' and a.tag='017$a' ");
-        request.append("and a.id in (select /*+ no_index(b BIBLIO_TABLE_FRBR_0XX_IDX_DATA) */ id from autorites.biblio_table_FRBR_0xx b where ");
-        request.append("a.id=b.id and ");
-        request.append("b.tag='017$2' and upper(SUBSTR(b.datas,1,50))='DOI' and a.POSFIELD=b.POSFIELD  and b.POSSUBFIELD='2')");
+        StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='DOI' and cle2='");
+        request.append(doi.toLowerCase());
+        request.append("'");
         return baseXmlJdbcTemplate.queryForList(request.toString(), String.class);
     }
 }
