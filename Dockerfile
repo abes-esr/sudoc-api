@@ -36,4 +36,4 @@ WORKDIR /app/
 COPY --from=build-image /build/target/sudoc.jar /app/sudoc.jar
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ENTRYPOINT ["java","-XX:MaxRAMPercentage=75","-XX:+UseG1GC","-XX:ConcGCThreads=5","-XX:+ExitOnOutOfMemoryError","-XX:MaxGCPauseMillis=100","-Dcom.sun.management.jmxremote=true", "-Dcom.sun.management.jmxremote.port=9090","-Dcom.sun.management.jmxremote.rmi.port=9091", "-Dcom.sun.management.jmxremote.ssl=false", "-Dcom.sun.management.jmxremote.authenticate=false", "-jar","/app/sudoc.jar"]
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=75","-XX:+UseG1GC","-XX:ConcGCThreads=5","-XX:+ExitOnOutOfMemoryError","-XX:MaxGCPauseMillis=100","-Dcom.sun.management.jmxremote=true", "-Dcom.sun.management.jmxremote.port=9090","-Dcom.sun.management.jmxremote.rmi.port=9091", "-Dcom.sun.management.jmxremote.ssl=false", "-Dcom.sun.management.jmxremote.authenticate=false", "-Dcom.sun.management.jmxremote.local.only=false", "-jar","/app/sudoc.jar"]
