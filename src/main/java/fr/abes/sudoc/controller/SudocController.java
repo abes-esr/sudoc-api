@@ -156,7 +156,7 @@ public class SudocController {
             throw new IOException(e.getMessage());
         } catch (IllegalPpnException e) {
             log.info("Aucune notice ne correspond à l'identifiant " + doi_identifier);
-            return null;
+            //res.addErreur("Aucune notice ne correspond à l'identifiant " + doi_identifier);
         }
         return resultat;
     }
