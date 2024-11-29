@@ -5,4 +5,5 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 grant {
     permission java.util.PropertyPermission "java.rmi.server.ignoreSubClasses", "write";
     permission java.util.PropertyPermission "sun.jvmstat.monitor.local", "read";
+    permission java.util.PropertyPermission "sun.jvmstat.monitor.remote", "read";
 };
