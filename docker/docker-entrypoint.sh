@@ -3,7 +3,7 @@
 export HOSTNAME=${HOSTNAME}
 
 echo "Démarrage de jstatd..."
-jstatd -J-Djava.security.policy=/app/jstatd.all.policy -p 1099 &
+jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=${HOSTNAME} &
 JSTATD_PID=$!
 
 echo "Démarrage de l'application Java..."
