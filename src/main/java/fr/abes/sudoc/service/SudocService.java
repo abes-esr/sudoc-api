@@ -4,7 +4,6 @@ import fr.abes.cbs.exception.CBSException;
 import fr.abes.cbs.process.ProcessCBS;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +40,14 @@ public class SudocService {
                 if (auteur != null) {
                     this.query = "tno t ; che aut " + auteur + " et mti " + titre;
                 } else {
-                    this.query = "tno t ; che mti " + titre;
+                    if (titre != null)
+                        this.query = "tno t ; che mti " + titre;
+                    else return new ArrayList<>();
+
                 }
             }
 
-            log.debug("requête : " + this.query);
+            log.debug("requête : {}", this.query);
             cbs.search(this.query);
             return switch (cbs.getNbNotices()) {
                 case 0 -> new ArrayList<>();
