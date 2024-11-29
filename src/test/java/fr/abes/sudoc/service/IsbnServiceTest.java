@@ -89,7 +89,7 @@ class IsbnServiceTest {
         Assertions.assertTrue(isbnService.checkFormat(isbn2));
 
         String isbn3 = "123-45-67-891-010";
-        Assertions.assertTrue(isbnService.checkFormat(isbn3));
+        Assertions.assertFalse(isbnService.checkFormat(isbn3));
 
         String isbn4 = "123--45-67-891-010";
         Assertions.assertFalse(isbnService.checkFormat(isbn4));
