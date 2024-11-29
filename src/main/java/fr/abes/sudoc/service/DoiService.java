@@ -39,7 +39,9 @@ public class DoiService implements IIdentifiantService{
                 if (result.size() != 1) {
                     throw new IllegalPpnException("Plusieurs résultats à la recherche sur doi " + doi);
                 } else {
-                    return Collections.singletonList(result.get(0));
+                    List<String> retour = new ArrayList<>();
+                    retour.add(result.get(0));
+                    return retour;
                 }
         } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");

@@ -9,18 +9,14 @@ import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.service.*;
-import fr.abes.sudoc.utils.ExecutionTime;
 import fr.abes.sudoc.utils.TYPE_ID;
-import fr.abes.sudoc.utils.TYPE_SUPPORT;
 import fr.abes.sudoc.utils.Utilitaire;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +24,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1")
 public class SudocController {
-
-
     private final IdentifiantFactory factory;
 
     private final SudocService service;
@@ -55,10 +49,10 @@ public class SudocController {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
-                log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° " + onlineIdentifier + " avec le service " + enumType);
+                log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° {} avec le service {}", onlineIdentifier, enumType);
                 List<String> listPpn = service.getPpnFromIdentifiant(onlineIdentifier);
                 for (String ppn : listPpn) {
-                    log.debug("onlineIdentifier n° " + onlineIdentifier + " <-> ppn n° " + ppn);
+                    log.debug("onlineIdentifier n° {} <-> ppn n° {}", onlineIdentifier, ppn);
                     feedResultatWithNotice(resultat, providerDto, ppn);
                 }
             }
@@ -68,7 +62,7 @@ public class SudocController {
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
         } catch (IOException ex) {
-            log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + onlineIdentifier);
+            log.error("erreur dans la récupération de la notice correspondant à l'online identifier {}", onlineIdentifier);
             throw new IOException(ex);
         }
         return resultat;
@@ -84,9 +78,9 @@ public class SudocController {
             TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(printIdentifier)) {
-                log.debug("Recherche des ppn pour l'identifiant printIdentifier n° " + printIdentifier + " avec le service " + enumType);
+                log.debug("Recherche des ppn pour l'identifiant printIdentifier n° {} avec le service {}", printIdentifier, enumType);
                 for (String ppn : service.getPpnFromIdentifiant(printIdentifier)) {
-                    log.debug("printIdentifier n° " + printIdentifier + " <-> ppn n° " + ppn);
+                    log.debug("printIdentifier n° {} <-> ppn n° {}", printIdentifier, ppn);
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeImprimee()) {
@@ -127,7 +121,7 @@ public class SudocController {
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
         } catch (IOException ex) {
-            log.error("erreur dans la récupération de la notice correspondant à l'identifiant " + printIdentifier);
+            log.error("erreur dans la récupération de la notice correspondant à au print identifier {}", printIdentifier);
             throw new IOException(ex);
         }
     }
@@ -141,21 +135,21 @@ public class SudocController {
         try {
             IIdentifiantService service = factory.getService(TYPE_ID.DOI);
             if (service.checkFormat(doi_identifier)) {
-                log.debug("Recherche des ppn pour l'identifiant doi_identifier n° " + doi_identifier + " avec le service DOI");
+                log.debug("Recherche des ppn pour l'identifiant doi_identifier n° {} avec le service DOI", doi_identifier);
                 for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
-                    log.debug("doi_identifier n° " + doi_identifier + " <-> ppn n° " + ppn);
+                    log.debug("doi_identifier n° {} <-> ppn n° {}", doi_identifier, ppn);
                     feedResultatWithNotice(resultat, providerDto, ppn);
                 }
             } else {
                 throw new IllegalArgumentException("Le DOI n'est pas au bon format");
             }
         } catch (IOException ex) {
-            log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
+            log.error("Erreur dans la récupération de la notice correspondant au doi {}", doi_identifier);
             throw new IOException(ex);
         } catch (ZoneNotFoundException e) {
             throw new IOException(e.getMessage());
         } catch (IllegalPpnException e) {
-            log.info("Aucune notice ne correspond à l'identifiant " + doi_identifier);
+            log.info("Aucune notice ne correspond au doi {}", doi_identifier);
             //res.addErreur("Aucune notice ne correspond à l'identifiant " + doi_identifier);
         }
         return resultat;
@@ -189,7 +183,7 @@ public class SudocController {
         }
         try {
             for (String ppn : service.getPpnFromDat(request.getDate(), request.getAuteur(), request.getTitre())) {
-                log.debug("dat2ppn : date : " + request.getDate() + " / auteur : " + request.getAuteur() + " / titre : " + request.getTitre() + " <-> ppn n° " + ppn);
+                log.debug("dat2ppn : date : {} / auteur : {} / titre : {} <-> ppn n° {}", request.getDate(), request.getAuteur(), request.getTitre(), ppn);
                 feedResultatWithNotice(resultat, providerDto, ppn);
             }
         } catch (CBSException | ZoneNotFoundException ex) {
