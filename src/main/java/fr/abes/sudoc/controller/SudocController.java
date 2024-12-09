@@ -130,8 +130,10 @@ public class SudocController {
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
         log.debug("DOI IDENTIFIER 2 PPN");
+        log.debug("RequestParam doi : {}, provider : {}", doi_identifier, provider);
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
+        log.debug("providerDto : {}", providerDto);
         try {
             IIdentifiantService service = factory.getService(TYPE_ID.DOI);
             if (service.checkFormat(doi_identifier)) {
@@ -141,12 +143,14 @@ public class SudocController {
                     feedResultatWithNotice(resultat, providerDto, ppn);
                 }
             } else {
+                log.debug("DOI mauvais format {}", doi_identifier);
                 throw new IllegalArgumentException("Le DOI n'est pas au bon format");
             }
         } catch (IOException ex) {
             log.error("Erreur dans la récupération de la notice correspondant au doi {}", doi_identifier);
             throw new IOException(ex);
         } catch (ZoneNotFoundException e) {
+            log.debug("ZoneNotFoundException : {}", e.getMessage());
             throw new IOException(e.getMessage());
         } catch (IllegalPpnException e) {
             log.info("Aucune notice ne correspond au doi {}", doi_identifier);
@@ -168,6 +172,8 @@ public class SudocController {
             } else {
                 resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
             }
+        } else {
+            log.debug("La notice est supprimée : {}", notice);
         }
     }
 
