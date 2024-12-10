@@ -9,7 +9,7 @@
     </parent>
     <groupId>fr.abes</groupId>
     <artifactId>sudoc</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>sudoc</name>
     <description>webservices de récupération de ppns dans le sudoc</description>
