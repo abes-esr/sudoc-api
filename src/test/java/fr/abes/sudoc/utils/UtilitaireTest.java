@@ -106,4 +106,11 @@ class UtilitaireTest {
         chaine = "çüûùöôïîëêèéäâà";
         Assertions.assertEquals("cuuuooiieeeeaaa", Utilitaire.replaceDiacritics(chaine));
     }
+
+    @Test
+    @DisplayName("test reformatage chaine DAT")
+    void testReformatageChaineDat() {
+        Assertions.assertEquals("Assez de ces fichus TU", Utilitaire.formatString("Assez ! de _ ces ~fichus *TU"));
+        Assertions.assertEquals("Je suis content", Utilitaire.formatString("Je AND suis! WITHIN content"));
+    }
 }

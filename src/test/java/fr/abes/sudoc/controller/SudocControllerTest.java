@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {SudocController.class, SudocService.class, ExceptionControllerHandler.class})
+@SpringBootTest(classes = {SudocController.class, DatService.class, ExceptionControllerHandler.class})
 @ContextConfiguration(classes = {IdentifiantFactory.class})
 class SudocControllerTest {
 
@@ -54,7 +53,7 @@ class SudocControllerTest {
     IdentifiantFactory factory;
 
     @MockBean
-    SudocService service;
+    DatService service;
 
     @MockBean
     NoticeService noticeService;
@@ -153,9 +152,9 @@ class SudocControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
 
-        CBSException cbsException = new CBSException("404", "La rechercher n'a pas donné de résultat");
+        IllegalPpnException illegalPpnException = new IllegalPpnException("La rechercher n'a pas donné de résultat");
 
-        Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenThrow(cbsException);
+        Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenThrow(illegalPpnException);
 
         this.mockMvc.perform(post("/api/v1/dat2ppn")
                         .accept(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
