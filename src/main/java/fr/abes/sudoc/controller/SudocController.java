@@ -26,13 +26,13 @@ import java.util.Optional;
 public class SudocController {
     private final IdentifiantFactory factory;
 
-    private final SudocService service;
+    private final DatService service;
 
     private final NoticeService noticeService;
 
     private  final ProviderService providerService;
 
-    public SudocController(IdentifiantFactory factory, SudocService service, NoticeService noticeService, ProviderService providerService) {
+    public SudocController(IdentifiantFactory factory, DatService service, NoticeService noticeService, ProviderService providerService) {
         this.factory = factory;
         this.service = service;
         this.noticeService = noticeService;
@@ -128,7 +128,7 @@ public class SudocController {
 
 
     @GetMapping(value = {"/doi_identifier_2_ppn"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException {
+    public ResultWsDto doiIdentifier2Ppn(@RequestParam(name = "doi") String doi_identifier, @RequestParam(name = "provider") Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
         log.debug("DOI IDENTIFIER 2 PPN");
         log.debug("RequestParam doi : {}, provider : {}", doi_identifier, provider);
         ResultWsDto resultat = new ResultWsDto();
@@ -192,13 +192,11 @@ public class SudocController {
                 log.debug("dat2ppn : date : {} / auteur : {} / titre : {} <-> ppn n° {}", request.getDate(), request.getAuteur(), request.getTitre(), ppn);
                 feedResultatWithNotice(resultat, providerDto, ppn);
             }
-        } catch (CBSException | ZoneNotFoundException ex) {
+        } catch (IllegalPpnException | ZoneNotFoundException ex) {
             resultat.addErreur(ex.getMessage());
         } catch (IOException ex) {
             log.error("Erreur dans la récupération de la notice correspondant à l'identifiant");
             throw new IOException(ex);
-        } catch (IllegalPpnException e) {
-            throw new IOException("Aucun identifiant ne correspond à la notice");
         }
         return resultat;
     }

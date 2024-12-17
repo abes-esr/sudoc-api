@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,6 +92,32 @@ public class Utilitaire {
             }
         }
         return result.toString();
+    }
+
+    public static String formatString(String chaine) {
+        if (chaine != null && !chaine.isEmpty()) {
+            return suppReservedWords(suppCaracters(chaine));
+        }
+        return chaine;
+    }
+
+    private static String suppCaracters(String chaine) {
+        // Liste des caractères à supprimer
+        List<Character> charsToRemove = Arrays.asList('&', ',', '=', '?', '{', '}', '\\', '(', ')', '[', ']', '-', '~', '|', '$', '!', '>', '*', '_', '%');
+
+        // Construire une expression régulière avec les caractères à supprimer
+        String regex = "[" + charsToRemove.stream()
+                .map(c -> "\\" + c) // Échapper les caractères spéciaux si nécessaire
+                .reduce("", (acc, c) -> acc + c) + "]";
+        return chaine.replaceAll(regex, "");
+    }
+
+    private static String suppReservedWords(String chaine) {
+        List<String> wordsToRemove = Arrays.asList("ABOUT", "ACCUM", "AND", "BT", "BTG", "BTI", "BTP", "EQUIV", "FUZZY", "HASPATH", "INPATH", "MDATA", "MINUS", "NEAR", "NOT", "NT", "NTG", "NTI", "NTP", "OR", "PATTERN", "PT", "RT", "SQE", "SYN", "TR", "TRSYN", "TT", "WITHIN");
+        // Construire une expression régulière avec les caractères à supprimer
+        String regex = "\\b(" + String.join("|", wordsToRemove) + ")\\b";
+        return chaine.replaceAll("(?i)" + regex, "").replaceAll("\\s+", " ").trim();
+
     }
 
 
