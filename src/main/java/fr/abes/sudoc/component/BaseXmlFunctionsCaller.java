@@ -50,9 +50,9 @@ public class BaseXmlFunctionsCaller {
             request.append(" JOIN AUTORITES.bib_100$a b");
             request.append(" ON a.ppn=b.ppn");
             if (auteur != null) {
-                request.append(" WHERE  a.typerecord != 'd' and a.biblevel='l' and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")')>0 and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
+                request.append(" WHERE  a.typerecord != 'd' and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")')>0 and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
             } else {
-                request.append(" WHERE  a.typerecord != 'd' and a.biblevel='l' and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(")')>0 and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
+                request.append(" WHERE  a.typerecord != 'd' and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(")')>0 and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
             }
         } else {
             request.append(" FROM biblio_table_generale a");
