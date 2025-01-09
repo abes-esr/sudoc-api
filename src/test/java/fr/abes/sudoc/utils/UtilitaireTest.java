@@ -110,8 +110,8 @@ class UtilitaireTest {
     @Test
     @DisplayName("test reformatage chaine DAT")
     void testReformatageChaineDat() {
-        Assertions.assertEquals("Assez de ces fichus TU", Utilitaire.formatString("Assez ! de _ ces ~fichus *TU"));
-        Assertions.assertEquals("Je suis content", Utilitaire.formatString("Je AND suis! WITHIN content"));
-        Assertions.assertEquals("Je suis content", Utilitaire.formatString("Je AND suis! 'WITHIN' content"));
+        Assertions.assertEquals("Assez NEAR de NEAR ces NEAR fichus NEAR TU".toUpperCase(), Utilitaire.formatString("Assez ! de _ ces ~fichus *TU"));
+        Assertions.assertEquals("Je NEAR {AND} NEAR suis NEAR {WITHIN} NEAR content".toUpperCase(), Utilitaire.formatString("Je AND suis! within content"));
+        Assertions.assertEquals("Je NEAR {AND} NEAR suis NEAR {WITHIN} NEAR content".toUpperCase(), Utilitaire.formatString("Je AND suis! 'WITHIN' content"));
     }
 }

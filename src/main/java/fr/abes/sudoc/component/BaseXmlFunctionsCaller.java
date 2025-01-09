@@ -44,6 +44,7 @@ public class BaseXmlFunctionsCaller {
         if (titre == null || titre.isEmpty()) {
             throw new IllegalArgumentException("Le titre ne peut pas être null");
         }
+        log.debug("params : date : " + date + " auteur : " + auteur + " titre : " + titre);
         StringBuilder request = new StringBuilder("SELECT DISTINCT a.PPN");
         if (date != null) {
             request.append(" FROM AUTORITES.biblio_table_generale a");

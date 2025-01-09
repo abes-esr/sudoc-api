@@ -96,7 +96,7 @@ public class Utilitaire {
 
     public static String formatString(String chaine) {
         if (chaine != null && !chaine.isEmpty()) {
-            return suppReservedWords(suppCaracters(chaine));
+            return ajoutNearBetweenWords(banalisationReservedWords(suppCaracters(chaine)));
         }
         return chaine;
     }
@@ -112,12 +112,21 @@ public class Utilitaire {
         return chaine.replaceAll(regex, "");
     }
 
-    private static String suppReservedWords(String chaine) {
-        List<String> wordsToRemove = Arrays.asList("ABOUT", "ACCUM", "AND", "BT", "BTG", "BTI", "BTP", "EQUIV", "FUZZY", "HASPATH", "INPATH", "MDATA", "MINUS", "NEAR", "NOT", "NT", "NTG", "NTI", "NTP", "OR", "PATTERN", "PT", "RT", "SQE", "SYN", "TR", "TRSYN", "TT", "WITHIN");
-        // Construire une expression régulière avec les caractères à supprimer
-        String regex = "\\b(" + String.join("|", wordsToRemove) + ")\\b";
-        return chaine.replaceAll("(?i)" + regex, "").replaceAll("\\s+", " ").trim();
+    private static String banalisationReservedWords(String chaine) {
+        List<String> reservedWords = Arrays.asList("ABOUT", "ACCUM", "AND", "BT", "BTG", "BTI", "BTP", "EQUIV", "FUZZY", "HASPATH", "INPATH", "MDATA", "MINUS", "NEAR", "NOT", "NT", "NTG", "NTI", "NTP", "OR", "PATTERN", "PT", "RT", "SQE", "SYN", "TR", "TRSYN", "TT", "WITHIN");
+        // Transformer la liste des mots réservés en une expression régulière
+        String regex = "\\b(" + String.join("|", reservedWords) + ")\\b";
 
+        // Remplacer les mots réservés par eux-mêmes entourés d'accolades
+        return chaine.toUpperCase().replaceAll(regex, "{$1}");
+    }
+
+    private static String ajoutNearBetweenWords(String chaine) {
+        // Split la chaîne en mots en éliminant les espaces multiples
+        String[] words = chaine.trim().split("\\s+");
+
+        // Utilise String.join pour insérer "NEAR" entre les mots
+        return String.join(" NEAR ", words);
     }
 
 
