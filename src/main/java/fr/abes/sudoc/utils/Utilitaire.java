@@ -109,7 +109,7 @@ public class Utilitaire {
         String regex = "[" + charsToRemove.stream()
                 .map(c -> "\\" + c) // Échapper les caractères spéciaux si nécessaire
                 .reduce("", (acc, c) -> acc + c) + "]";
-        return chaine.replaceAll(regex, "");
+        return chaine.replaceAll(regex, " ");
     }
 
     private static String banalisationReservedWords(String chaine) {
