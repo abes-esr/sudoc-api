@@ -51,18 +51,19 @@ public class BaseXmlFunctionsCaller {
             request.append(" JOIN AUTORITES.bib_100$a b");
             request.append(" ON a.ppn=b.ppn");
             if (auteur != null) {
-                request.append(" WHERE  (a.typerecord in ('c','n') and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")')>0 and rownum < 10) and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
+                request.append(" WHERE  a.typerecord in ('c','n') and a.typecontrol = 'm' and (CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")',1)>0 and rownum < 10) and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
             } else {
-                request.append(" WHERE  (a.typerecord in ('c','n') and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(")')>0 and rownum < 10) and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
+                request.append(" WHERE  a.typerecord in ('c','n') and a.typecontrol = 'm' and (CONTAINS(a.citation1, '(").append(titre).append(")',1)>0 and rownum < 10) and (substr(b.datas,10,4) = '").append(date).append("' or substr(b.datas,14,4)='").append(date).append("')");
             }
         } else {
             request.append(" FROM biblio_table_generale a");
             if (auteur != null) {
-                request.append(" WHERE  (a.typerecord in ('c','n') and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")')>0  and rownum < 10)");
+                request.append(" WHERE  a.typerecord in ('c','n') and a.typecontrol = 'm' and (CONTAINS(a.citation1, '(").append(titre).append(") AND (").append(auteur).append(")',1)>0  and rownum < 10)");
             } else {
-                request.append(" WHERE  (a.typerecord in ('c','n') and a.typecontrol = 'm' and CONTAINS(a.citation1, '(").append(titre).append(")')>0  and rownum < 10)");
+                request.append(" WHERE  a.typerecord in ('c','n') and a.typecontrol = 'm' and (CONTAINS(a.citation1, '(").append(titre).append(")',1)>0  and rownum < 10)");
             }
         }
+        log.debug(request.toString());
         return baseXmlJdbcTemplate.queryForList(request.toString(), String.class);
     }
 }
