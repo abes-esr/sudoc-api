@@ -103,7 +103,7 @@ public class Utilitaire {
 
     private static String suppCaracters(String chaine) {
         // Liste des caractères à supprimer
-        List<Character> charsToRemove = Arrays.asList('&', ',', '=', '?', '{', '}', '\\', '(', ')', '[', ']', '-', '~', '|', '$', '!', '>', '*', '_', '%', '\'');
+        List<Character> charsToRemove = Arrays.asList('&', ',', '=', '?', '{', '}', '\\', '(', ')', '[', ']', '-', '~', '|', '$', '!', ';', '>', '*', '_', '%', '\'');
 
         // Construire une expression régulière avec les caractères à supprimer
         String regex = "[" + charsToRemove.stream()
