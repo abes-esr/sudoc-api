@@ -67,7 +67,9 @@ public class NoticeService {
         List<String> ppns = new ArrayList<>();
         for (String ppn : ppn4XX) {
             NoticeXml noticeLiee = getNoticeByPpn(ppn);
-            if (noticeLiee.isNoticeElectronique()) {
+            if(noticeLiee == null) {
+                throw new IllegalPpnException("Le ppn lié " + ppn + " ne retourne pas de notice");
+            }else if (noticeLiee.isNoticeElectronique()) {
                 ppns.add(ppn);
             }
         }
