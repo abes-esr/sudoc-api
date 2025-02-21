@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +85,12 @@ public class SudocController {
                     NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                     if (!notice.isDeleted()) {
                         if (notice.isNoticeImprimee()) {
-                            List<String> ppnElect = noticeService.getEquivalentElectronique(notice);
+                            List<String> ppnElect = new ArrayList<>();
+                            try {
+                                ppnElect = noticeService.getEquivalentElectronique(notice);
+                            } catch (IllegalPpnException ex){
+                                resultat.addErreur(ex.getMessage());
+                            }
                             if (ppnElect.isEmpty()) {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
                                 resultat.addPpn(new PpnWithTypeWebDto(notice, false));
