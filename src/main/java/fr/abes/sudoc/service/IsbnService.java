@@ -1,6 +1,9 @@
 package fr.abes.sudoc.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
+import fr.abes.sudoc.exception.IllegalPpnException;
+import fr.abes.sudoc.utils.Utilitaire;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +28,17 @@ public class IsbnService implements IIdentifiantService {
     }
 
     @Override
-    public List<String> getPpnFromIdentifiant(String isbn) throws IOException {
+    public List<String> getPpnFromIdentifiant(String isbn) throws IOException, IllegalPpnException {
         try{
-            return caller.isbnToPpn(isbn.replace("-", ""));
-        }  catch (UncategorizedSQLException ex) {
-            throw new IOException("Incident technique lors de l'accès à la base de données");
+            String result = caller.isbnToPpn(isbn);
+            return Utilitaire.parseJson(result);
+        } catch (UncategorizedSQLException ex) {
+            if (ex.getMessage().contains("no ppn matched")) {
+                throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
+            }
+            throw new IOException(ex);
+        } catch (JsonProcessingException ex) {
+            throw new IOException("Impossible de récupérer les ppn correspondant à cet identifiant");
         }
     }
 }
