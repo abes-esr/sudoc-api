@@ -62,7 +62,7 @@ public class SudocController {
             }
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
-        } catch (IOException ex) {
+        } catch (IOException | IllegalPpnException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'online identifier {}", onlineIdentifier);
             throw new IOException(ex);
         }

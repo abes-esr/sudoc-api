@@ -25,11 +25,11 @@ public class BaseXmlFunctionsCaller {
     }
 
 
-    public List<String> isbnToPpn(String isbn) throws UncategorizedSQLException {
-        StringBuilder request = new StringBuilder("SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISBN' and cle2='");
+    public String isbnToPpn(String isbn) throws UncategorizedSQLException {
+        StringBuilder request = new StringBuilder("select AUTORITES.ISBN2PPNJSON('");
         request.append(isbn);
-        request.append("'");
-        return baseXmlJdbcTemplate.queryForList(request.toString(), String.class);
+        request.append("') from dual");
+        return baseXmlJdbcTemplate.queryForObject(request.toString(), String.class);
     }
 
 
