@@ -14,6 +14,7 @@ import fr.abes.sudoc.utils.Utilitaire;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class SudocController {
 
     private final NoticeService noticeService;
 
-    private  final ProviderService providerService;
+    private final ProviderService providerService;
 
     public SudocController(IdentifiantFactory factory, DatService service, NoticeService noticeService, ProviderService providerService) {
         this.factory = factory;
@@ -42,7 +43,7 @@ public class SudocController {
 
 
     @GetMapping(value = {"/online_identifier_2_ppn/{type}/{onlineIdentifier}", "/online_identifier_2_ppn/{type}/{onlineIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResultWsDto onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
+    public Mono<ResultWsDto> onlineIdentifier2Ppn(@PathVariable String type, @PathVariable String onlineIdentifier, @PathVariable(required = false) Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
         log.debug("ONLINE IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
@@ -51,26 +52,26 @@ public class SudocController {
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
                 log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° {} avec le service {}", onlineIdentifier, enumType);
-                List<String> listPpn = service.getPpnFromIdentifiant(onlineIdentifier);
-                for (String ppn : listPpn) {
-                    log.debug("onlineIdentifier n° {} <-> ppn n° {}", onlineIdentifier, ppn);
-                    feedResultatWithNotice(resultat, providerDto, ppn);
-                }
-            }
-            else {
+                Mono<List<PpnWithTypeWebDto>> listPpn = Mono.fromCallable(() -> {
+                            try {
+                                return service.getPpnFromIdentifiant(onlineIdentifier, providerDto)
+                            } catch (IOException | IllegalPpnException ex) {
+                                resultat.addErreur(ex.getMessage());
+                            }
+                        }
+                );
+
+            } else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
             }
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
-        } catch (IOException | IllegalPpnException ex) {
-            log.error("erreur dans la récupération de la notice correspondant à l'online identifier {}", onlineIdentifier);
-            throw new IOException(ex);
         }
         return resultat;
     }
 
 
-    @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}","/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"/print_identifier_2_ppn/{type}/{printIdentifier}", "/print_identifier_2_ppn/{type}/{printIdentifier}/{provider}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto printIdentifier2Ppn(@PathVariable String type, @PathVariable String printIdentifier, @PathVariable Optional<String> provider) throws IOException, ZoneNotFoundException, IllegalPpnException {
         log.debug("PRINT IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
@@ -88,36 +89,32 @@ public class SudocController {
                             List<String> ppnElect = new ArrayList<>();
                             try {
                                 ppnElect = noticeService.getEquivalentElectronique(notice);
-                            } catch (IllegalPpnException ex){
+                            } catch (IllegalPpnException ex) {
                                 resultat.addErreur(ex.getMessage());
                             }
                             if (ppnElect.isEmpty()) {
                                 //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
-                                resultat.addPpn(new PpnWithTypeWebDto(notice, false));
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
                             } else {
                                 for (String ppnLie : ppnElect) {
                                     NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    if(!noticeLiee.isDeleted()) {
-                                        try {
-                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
-                                        } catch (IOException ex) {
-                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, false));
-                                            resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                                        }
+                                    if (!noticeLiee.isDeleted()) {
+                                        if (providerDto.isPresent())
+                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), noticeLiee.getTypeSupport(), noticeLiee.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto.get(), noticeLiee)));
+                                        else
+                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee.getPpn(), notice.getTypeSupport(), noticeLiee.getTypeDocument(), false));
                                     }
                                 }
                             }
-                        } else if (notice.isNoticeElectronique()){
-                            try {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
-                            } catch (IOException ex) {
-                                resultat.addPpn(new PpnWithTypeWebDto(notice, false));
-                                resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                            }
+                        } else if (notice.isNoticeElectronique()) {
+                            if (providerDto.isPresent())
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), this.providerService.checkProviderDansNoticeGeneral(providerDto.get(), notice)));
+                            else
+                                resultat.addPpn(new PpnWithTypeWebDto(notice.getPpn(), notice.getTypeSupport(), notice.getTypeDocument(), false));
                         }
                     }
                 }
-                if(resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()){
+                if (resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()) {
                     resultat.addErreur("Aucun PPN ne correspond au " + printIdentifier);
                 }
                 return resultat;
@@ -144,7 +141,7 @@ public class SudocController {
             IIdentifiantService service = factory.getService(TYPE_ID.DOI);
             if (service.checkFormat(doi_identifier)) {
                 log.debug("Recherche des ppn pour l'identifiant doi_identifier n° {} avec le service DOI", doi_identifier);
-                for(String ppn : service.getPpnFromIdentifiant(doi_identifier) ) {
+                for (String ppn : service.getPpnFromIdentifiant(doi_identifier)) {
                     log.debug("doi_identifier n° {} <-> ppn n° {}", doi_identifier, ppn);
                     feedResultatWithNotice(resultat, providerDto, ppn);
                 }
@@ -165,23 +162,6 @@ public class SudocController {
         return resultat;
     }
 
-    private void feedResultatWithNotice(ResultWsDto resultat, Optional<ElementDto> providerDto, String ppn) throws IllegalPpnException, IOException, ZoneNotFoundException {
-        NoticeXml notice = noticeService.getNoticeByPpn(ppn);
-        if (!notice.isDeleted()){
-            if (notice.isNoticeElectronique()) {
-                try {
-                    resultat.addPpn(new PpnWithTypeWebDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
-                } catch (IOException ex) {
-                    resultat.addPpn(new PpnWithTypeWebDto(notice, false));
-                    resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                }
-            } else {
-                resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
-            }
-        } else {
-            log.debug("La notice est supprimée : {}", notice);
-        }
-    }
 
     @PostMapping(value = "/dat2ppn", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultWsDto datToPpn(@Valid @RequestBody SearchDatWebDto request) throws IOException {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -32,18 +33,18 @@ public class ProviderServiceTest {
         Provider035 provider = new Provider035();
         provider.setId(81);
         provider.setValeur("FRCAIRN");
-        Mockito.when(provider035Repository.findById(81)).thenReturn(Optional.of(provider));
+        Mockito.when(provider035Repository.findById(81)).thenReturn(Mono.just(provider));
 
-        String result = service.getProviderFor035(81);
-        Assertions.assertEquals("FRCAIRN", result);
+        Mono<String> result = service.getProviderFor035(81);
+        Assertions.assertEquals("FRCAIRN", result.block());
     }
 
 
     @Test
     void getProviderFor035TestWithNoResult() {
-        Mockito.when(provider035Repository.findById(81)).thenReturn(Optional.empty());
+        Mockito.when(provider035Repository.findById(81)).thenReturn(Mono.empty());
 
-        String result = service.getProviderFor035(81);
-        Assertions.assertNull(result);
+        Mono<String> result = service.getProviderFor035(81);
+        Assertions.assertNull(result.block());
     }
 }

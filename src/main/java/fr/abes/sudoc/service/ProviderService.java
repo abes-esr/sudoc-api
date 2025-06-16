@@ -9,8 +9,8 @@ import fr.abes.sudoc.repository.ProviderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -38,15 +38,15 @@ public class ProviderService {
         return providerDisplayName;
     }
 
-    public String getProviderFor035(Integer provider) {
-        Optional<Provider035> valeur035Opt = provider035Repository.findById(provider);
-        return valeur035Opt.map(Provider035::getValeur).orElse(null);
+    public Mono<String> getProviderFor035(Integer provider) {
+        Mono<Provider035> valeur035Opt = provider035Repository.findById(provider);
+        return valeur035Opt.cache().map(Provider035::getValeur);
     }
 
-    public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
-        return providerDisplayName.map(elementDto -> this.checkProviderDansNotice(elementDto.getDisplayName(), notice)
-                || this.checkProviderDansNotice(elementDto.getProvider(), notice)
-                || this.checkProviderIn035(elementDto.getIdProvider(), notice)).orElse(true);
+    public boolean checkProviderDansNoticeGeneral(ElementDto provider, NoticeXml notice) {
+        return this.checkProviderDansNotice(provider.getDisplayName(), notice)
+                || this.checkProviderDansNotice(provider.getProvider(), notice)
+                || this.checkProviderIn035(provider.getIdProvider(), notice);
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
@@ -55,7 +55,7 @@ public class ProviderService {
     }
 
     private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) {
-        String provider035 = this.getProviderFor035(providerIdt);
+        String provider035 = this.getProviderFor035(providerIdt).block();
         return provider035 != null && notice.checkProviderIn035a(provider035);
 
     }

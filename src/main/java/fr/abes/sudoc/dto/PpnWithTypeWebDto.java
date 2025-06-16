@@ -8,17 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class PpnWithTypeWebDto {
     String ppn;
     TYPE_SUPPORT typeSupport;
     TYPE_DOCUMENT typeDocument;
     Boolean providerPresent;
 
-    public PpnWithTypeWebDto(NoticeXml noticeXml, Boolean providerPresent) throws ZoneNotFoundException {
-        this.ppn = noticeXml.getPpn();
-        this.typeSupport = noticeXml.getTypeSupport();
-        this.typeDocument = noticeXml.getTypeDocument();
+    public PpnWithTypeWebDto(String ppn, TYPE_SUPPORT typeSupport, TYPE_DOCUMENT typeDocument, Boolean providerPresent) {
+        this.ppn = ppn;
+        this.typeSupport = typeSupport;
+        this.typeDocument = typeDocument;
         this.providerPresent = providerPresent;
     }
 }

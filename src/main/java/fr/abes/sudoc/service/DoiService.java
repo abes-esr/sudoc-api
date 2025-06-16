@@ -1,6 +1,7 @@
 package fr.abes.sudoc.service;
 
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
+import fr.abes.sudoc.dto.PpnWithTypeWebDto;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DoiService implements IIdentifiantService{
+public class DoiService extends AbstractService implements IIdentifiantService{
     private final BaseXmlFunctionsCaller caller;
 
-    public DoiService(BaseXmlFunctionsCaller caller) {
+    public DoiService(BaseXmlFunctionsCaller caller, NoticeService noticeService, ProviderService providerService) {
+        super(noticeService, providerService);
         this.caller = caller;
     }
 
@@ -24,8 +26,9 @@ public class DoiService implements IIdentifiantService{
     }
 
     @Override
-    public List<String> getPpnFromIdentifiant(String doi) throws IOException, IllegalPpnException {
+    public List<PpnWithTypeWebDto> getPpnFromIdentifiant(String doi) throws IOException, IllegalPpnException {
         try {
+            List<PpnWithTypeWebDto> resultat = new ArrayList<>();
             List<String> result = caller.doiToPpn(doi);
             if (result.isEmpty())
                 throw new IllegalPpnException("Aucune notice ne correspond à la recherche sur le doi " + doi);
