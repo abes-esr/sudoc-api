@@ -23,8 +23,8 @@ public class IsbnService implements IIdentifiantService {
         //regexp permettant de vérifier
         //ISBN 10 et 13
         //avec ou sans tiret
-        //avec prise en compte du caractère de controle X en fin
-        return isbn != null && isbn.matches("^(?:ISBN(?:-1[03])?:?\\s*)?(?=[-0-9X\\s]{10,17}$)(?:97[89][- ]?)?([0-9]{1,5})[- ]?([0-9]+)[- ]?([0-9]+)[- ]?([0-9X])$");
+        //avec prise en compte du caractère de controle Xx en fin
+        return isbn != null && isbn.matches("^(?:ISBN(?:-1[03])?:?\\s*)?(?=[-0-9xX\\s]{10,17}$)(?:97[89][- ]?)?([0-9]{1,5})[- ]?([0-9]+)[- ]?([0-9]+)[- ]?([0-9xX])$");
     }
 
     @Override
