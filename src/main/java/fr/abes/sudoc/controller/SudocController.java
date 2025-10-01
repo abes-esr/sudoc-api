@@ -166,7 +166,7 @@ public class SudocController {
 
     private void feedResultatWithNotice(ResultWsDto resultat, Optional<ElementDto> providerDto, String ppn) throws IllegalPpnException, IOException, ZoneNotFoundException {
         NoticeXml notice = noticeService.getNoticeByPpn(ppn);
-        if (!notice.isDeleted()){
+        if (notice != null && !notice.isDeleted()){
             if (notice.isNoticeElectronique()) {
                 try {
                     resultat.addPpn(new PpnWithTypeWebDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
@@ -178,7 +178,7 @@ public class SudocController {
                 resultat.addErreur("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique");
             }
         } else {
-            log.debug("La notice est supprimée : {}", notice);
+            log.debug("La notice est supprimée ou inexistante : {}", notice);
         }
     }
 

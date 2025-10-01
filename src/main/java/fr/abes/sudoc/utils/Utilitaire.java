@@ -5,11 +5,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Utilitaire {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Pattern REMOVE_PATTERN = Pattern.compile("[&,=\\?\\{\\}\\\\\\(\\)\\[\\]\\-\\~\\|\\$!;>\\*_%']");
+    private static final Pattern patternReservecWords = Pattern.compile("\\b(ABOUT|ACCUM|AND|BT|BTG|BTI|BTP|EQUIV|FUZZY|HASPATH|INPATH|MDATA|MINUS|NEAR|NOT|NT|NTG|NTI|NTP|OR|PATTERN|PT|RT|SQE|SYN|TR|TRSYN|TT|WITHIN)\\b");
+    private static final Pattern patternStopWords = Pattern.compile("\\b(a|all|almost|also|although|an|and|any|are|as|at|be|because|been|both|but|by|can|could|d|did|do|does|either|for|from|had|has|have|having|he|her|here|hers|him|his|how|however|i|if|in|into|is|it|its|just|ll|me|might|Mr|Mrs|Ms|my|no|non|nor|not|of|on|one|only|onto|or|our|ours|s|shall|she|should|since|so|some|still|such|t|than|that|the|their|them|then|there|therefore|these|they|this|those|though|through|thus|to|too|until|ve|very|was|we|were|what|when|where|whether|which|while|who|whose|why|will|with|would|yet|you|your|yours)\\b");
+    private static final Map<Character, Character> ACCENT_MAP = Map.ofEntries(
+            Map.entry('à', 'a'),
+            Map.entry('â', 'a'),
+            Map.entry('ä', 'a'),
+            Map.entry('é', 'e'),
+            Map.entry('è', 'e'),
+            Map.entry('ê', 'e'),
+            Map.entry('ë', 'e'),
+            Map.entry('î', 'i'),
+            Map.entry('ï', 'i'),
+            Map.entry('ô', 'o'),
+            Map.entry('ö', 'o'),
+            Map.entry('ù', 'u'),
+            Map.entry('û', 'u'),
+            Map.entry('ü', 'u'),
+            Map.entry('ç', 'c')
+    );
     public static TYPE_ID getEnumFromString(String type) throws IllegalStateException {
         return switch (type.toLowerCase()) {
             case "monograph" -> TYPE_ID.ISBN;
@@ -29,7 +51,6 @@ public class Utilitaire {
         //la correspondance pouvant retourner plusieurs fois un ppn, on crée une multimap pour récupérer le résultat
         List<String> listePpn = new ArrayList<>();
         //parse de l'input json
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode sudocnode = objectMapper.readTree(json);
 
         extractPpnFromNode(listePpn, sudocnode, "result");
@@ -56,7 +77,6 @@ public class Utilitaire {
         //la correspondance pouvant retourner plusieurs fois un ppn, on crée une multimap pour récupérer le résultat
         List<String> listePpn = new ArrayList<>();
         //parse de l'input json
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode sudocnode = objectMapper.readTree(json);
         JsonNode resultsNode = sudocnode.findValue("results");
         if (resultsNode != null) {
@@ -78,17 +98,11 @@ public class Utilitaire {
      */
     public static String replaceDiacritics(String src) {
         StringBuffer result = new StringBuffer();
-        if (src != null && src.length() != 0) {
-            int index = -1;
+        if (src != null && !src.isEmpty()) {
             char c;
-            String chars = "àâäéèêëîïôöùûüç";
-            String replace = "aaaeeeeiioouuuc";
             for (int i = 0; i < src.length(); i++) {
                 c = src.charAt(i);
-                if ((index = chars.indexOf(c)) != -1)
-                    result.append(replace.charAt(index));
-                else
-                    result.append(c);
+                result.append(ACCENT_MAP.getOrDefault(c, c));
             }
         }
         return result.toString();
@@ -102,23 +116,13 @@ public class Utilitaire {
     }
 
     private static String suppCaracters(String chaine) {
-        // Liste des caractères à supprimer
-        List<Character> charsToRemove = Arrays.asList('&', ',', '=', '?', '{', '}', '\\', '(', ')', '[', ']', '-', '~', '|', '$', '!', ';', '>', '*', '_', '%', '\'');
-
         // Construire une expression régulière avec les caractères à supprimer
-        String regex = "[" + charsToRemove.stream()
-                .map(c -> "\\" + c) // Échapper les caractères spéciaux si nécessaire
-                .reduce("", (acc, c) -> acc + c) + "]";
-        return chaine.replaceAll(regex, " ");
+        return REMOVE_PATTERN.matcher(chaine).replaceAll(" ");
     }
 
     private static String banalisationReservedWords(String chaine) {
-        List<String> reservedWords = Arrays.asList("ABOUT", "ACCUM", "AND", "BT", "BTG", "BTI", "BTP", "EQUIV", "FUZZY", "HASPATH", "INPATH", "MDATA", "MINUS", "NEAR", "NOT", "NT", "NTG", "NTI", "NTP", "OR", "PATTERN", "PT", "RT", "SQE", "SYN", "TR", "TRSYN", "TT", "WITHIN");
-        // Transformer la liste des mots réservés en une expression régulière
-        String regex = "\\b(" + String.join("|", reservedWords) + ")\\b";
-
         // Remplacer les mots réservés par eux-mêmes entourés d'accolades
-        return chaine.toUpperCase().replaceAll(regex, "{$1}");
+        return patternReservecWords.matcher(chaine.toUpperCase()).replaceAll("{$1}");
     }
 
     private static String ajoutNearBetweenWords(String chaine) {
@@ -130,11 +134,7 @@ public class Utilitaire {
     }
 
     private static String suppStopWords(String chaine) {
-        List<String> stopWords = Arrays.asList("a","all","almost","also","although","an","and","any","are","as","at","be","because","been","both","but","by","can","could","d","did","do","does","either","for","from","had","has","have","having","he","her","here","hers","him","his","how","however","i","if","in","into","is","it","its","just","ll","me","might","Mr","Mrs","Ms","my","no","non","nor","not","of","on","one","only","onto","or","our","ours","s","shall","she","should","since","so","some","still","such","t","than","that","the","their","them","then","there","therefore","these","they","this","those","though","through","thus","to","too","until","ve","very","was","we","were","what","when","where","whether","which","while","who","whose","why","will","with","would","yet","you","your","yours");
-
-        String regex = "\\b(" + String.join("|", stopWords) + ")\\b";
-
-        return chaine.toLowerCase().replaceAll(regex, "");
+        return patternStopWords.matcher(chaine.toLowerCase()).replaceAll("");
     }
 
 }

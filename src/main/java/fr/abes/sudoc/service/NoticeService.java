@@ -1,46 +1,42 @@
 package fr.abes.sudoc.service;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
 import fr.abes.sudoc.entity.BiblioTableFrbr4XX;
 import fr.abes.sudoc.entity.NoticesBibio;
 import fr.abes.sudoc.entity.notice.NoticeXml;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
-import fr.abes.sudoc.repository.NoticesBibioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 
 @Service
 @Slf4j
 public class NoticeService {
-    private final NoticesBibioRepository noticesBibioRepository;
 
     private final BiblioTableFrbr4XXRepository biblioTableFrbr4XXRepository;
 
     private final XmlMapper xmlMapper;
+    private final BaseXmlFunctionsCaller baseXmlFunctionsCaller;
 
-    public NoticeService(NoticesBibioRepository noticesBibioRepository, BiblioTableFrbr4XXRepository biblioTableFrbr4XXRepository, XmlMapper xmlMapper) {
-        this.noticesBibioRepository = noticesBibioRepository;
+    public NoticeService(BiblioTableFrbr4XXRepository biblioTableFrbr4XXRepository, XmlMapper xmlMapper, BaseXmlFunctionsCaller baseXmlFunctionsCaller) {
         this.biblioTableFrbr4XXRepository = biblioTableFrbr4XXRepository;
         this.xmlMapper = xmlMapper;
+        this.baseXmlFunctionsCaller = baseXmlFunctionsCaller;
     }
 
 
     public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
-        Optional<NoticesBibio> noticeOpt = this.noticesBibioRepository.findByPpn(ppn);
+        //Optional<NoticesBibio> noticeOpt = this.noticesBibioRepository.findByPpn(ppn);
+        Optional<NoticesBibio> noticeOpt = baseXmlFunctionsCaller.findByPpn(ppn);
         if (noticeOpt.isPresent()) {
-            try {
-                return xmlMapper.readValue(noticeOpt.get().getDataXml().getCharacterStream(), NoticeXml.class);
-            } catch (SQLException ex) {
-                throw new IOException(ex);
-            }
+            return xmlMapper.readValue(noticeOpt.get().getDataXml(), NoticeXml.class);
         }
         return null;
     }
@@ -67,9 +63,9 @@ public class NoticeService {
         List<String> ppns = new ArrayList<>();
         for (String ppn : ppn4XX) {
             NoticeXml noticeLiee = getNoticeByPpn(ppn);
-            if(noticeLiee == null) {
+            if (noticeLiee == null) {
                 throw new IllegalPpnException("Le ppn lié " + ppn + " ne retourne pas de notice");
-            }else if (noticeLiee.isNoticeElectronique()) {
+            } else if (noticeLiee.isNoticeElectronique()) {
                 ppns.add(ppn);
             }
         }

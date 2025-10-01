@@ -1,5 +1,6 @@
 package fr.abes.sudoc.service;
 
+import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
 import fr.abes.sudoc.configuration.UtilsConfig;
 import fr.abes.sudoc.entity.BiblioTableFrbr4XX;
 import fr.abes.sudoc.entity.NoticesBibio;
@@ -9,7 +10,6 @@ import fr.abes.sudoc.entity.notice.SubField;
 import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
-import fr.abes.sudoc.repository.NoticesBibioRepository;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +40,7 @@ class NoticeServiceTest {
     private NoticeService service;
 
     @MockBean
-    private NoticesBibioRepository repositoryBiblio;
+    private BaseXmlFunctionsCaller baseXmlFunctionsCaller;
 
     @MockBean
     private BiblioTableFrbr4XXRepository biblioTableFrbr4XXRepository;
@@ -68,7 +68,7 @@ class NoticeServiceTest {
         notice.setDataXml(new SerialClob(xml.toCharArray()));
 
         //cas ou le service renvoie une notice bibliographique
-        Mockito.when(repositoryBiblio.findByPpn("143519379")).thenReturn(Optional.of(notice));
+        Mockito.when(baseXmlFunctionsCaller.findByPpn("143519379")).thenReturn(Optional.of(notice));
         Assertions.assertEquals(notice.getPpn(), service.getNoticeByPpn(ppn).getPpn());
 
         //cas ou le ppn en entrée est null
@@ -93,8 +93,8 @@ class NoticeServiceTest {
         noticeElect.setPpn("987654321");
         noticeElect.setDataXml(new SerialClob(xml.toCharArray()));
 
-        Mockito.when(repositoryBiblio.findByPpn("123456789")).thenReturn(Optional.of(noticeImprimee));
-        Mockito.when(repositoryBiblio.findByPpn("987654321")).thenReturn(Optional.of(noticeElect));
+        Mockito.when(baseXmlFunctionsCaller.findByPpn("123456789")).thenReturn(Optional.of(noticeImprimee));
+        Mockito.when(baseXmlFunctionsCaller.findByPpn("987654321")).thenReturn(Optional.of(noticeElect));
 
         List<String> result = service.getNoticeElectroniqueLiee(ppn);
         Assertions.assertFalse(result.isEmpty());
@@ -120,7 +120,7 @@ class NoticeServiceTest {
         datafield.setSubFields(Lists.newArrayList(subField));
         noticeSource.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(repositoryBiblio.findByPpn("111111111")).thenReturn(Optional.of(noticeWith452));
+        Mockito.when(baseXmlFunctionsCaller.findByPpn("111111111")).thenReturn(Optional.of(noticeWith452));
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertFalse(ppnLiees.isEmpty());
@@ -147,7 +147,7 @@ class NoticeServiceTest {
         datafield.setSubFields(Lists.newArrayList(subField));
         noticeSource.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(repositoryBiblio.findByPpn("111111111")).thenReturn(Optional.of(noticeWith452));
+        Mockito.when(baseXmlFunctionsCaller.findByPpn("111111111")).thenReturn(Optional.of(noticeWith452));
 
         List<String> ppnLiees = service.getEquivalentElectronique(noticeSource);
         Assertions.assertFalse(ppnLiees.isEmpty());

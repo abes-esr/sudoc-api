@@ -1,7 +1,6 @@
 package fr.abes.sudoc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.abes.cbs.exception.CBSException;
 import fr.abes.sudoc.dto.SearchDatWebDto;
 import fr.abes.sudoc.dto.provider.ElementDto;
 import fr.abes.sudoc.entity.notice.Controlfield;

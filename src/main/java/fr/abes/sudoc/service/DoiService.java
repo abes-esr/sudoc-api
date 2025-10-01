@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class DoiService implements IIdentifiantService{
     private final BaseXmlFunctionsCaller caller;
+    private static final Pattern patternDoi = Pattern.compile("10.\\d{0,15}.\\d{0,15}.+");
 
     public DoiService(BaseXmlFunctionsCaller caller) {
         this.caller = caller;
@@ -19,8 +21,7 @@ public class DoiService implements IIdentifiantService{
 
     @Override
     public boolean checkFormat(String doi) {
-        String doiPattern = "10.\\d{0,15}.\\d{0,15}.+";
-        return doi != null && doi.matches(doiPattern);
+        return doi != null && patternDoi.matcher(doi).find();
     }
 
     @Override

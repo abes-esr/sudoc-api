@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnTransformer;
 
 import java.io.Serializable;
-import java.sql.Clob;
 
 @Entity
 @Table(name = "NOTICESBIBIO", schema = "AUTORITES")
@@ -25,5 +24,5 @@ public class NoticesBibio implements Serializable {
     @ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
     @Lob
     //Type Clob pour pouvoir récupérer les notices de plus de 4000 caractères
-    private Clob dataXml;
+    private String dataXml;
 }
