@@ -27,5 +27,4 @@ public class DatService {
             throw new IOException("Incident technique lors de l'accès à la base de données");
         }
     }
-
 }
