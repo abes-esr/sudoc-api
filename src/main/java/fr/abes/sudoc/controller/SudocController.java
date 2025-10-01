@@ -1,6 +1,5 @@
 package fr.abes.sudoc.controller;
 
-import fr.abes.cbs.exception.CBSException;
 import fr.abes.sudoc.dto.PpnWithTypeWebDto;
 import fr.abes.sudoc.dto.ResultWsDto;
 import fr.abes.sudoc.dto.SearchDatWebDto;
