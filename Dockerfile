@@ -31,7 +31,7 @@ RUN mvn --batch-mode \
 #FROM tomcat:9-jdk17 as api-image
 #COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
 #CMD [ "catalina.sh", "run" ]
-FROM eclipse-temurin:21-jre as sudoc-image
+FROM ossyupiik/java:21.0.8 as sudoc-image
 WORKDIR /app/
 COPY --from=build-image /build/target/sudoc.jar /app/sudoc.jar
 ENV TZ=Europe/Paris

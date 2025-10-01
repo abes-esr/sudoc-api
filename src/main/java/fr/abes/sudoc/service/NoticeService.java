@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
@@ -36,7 +39,19 @@ public class NoticeService {
         //Optional<NoticesBibio> noticeOpt = this.noticesBibioRepository.findByPpn(ppn);
         Optional<NoticesBibio> noticeOpt = baseXmlFunctionsCaller.findByPpn(ppn);
         if (noticeOpt.isPresent()) {
-            return xmlMapper.readValue(noticeOpt.get().getDataXml(), NoticeXml.class);
+            Clob clob = noticeOpt.get().getDataXml();
+
+            try (Reader reader = clob.getCharacterStream()){
+                return xmlMapper.readValue(reader, NoticeXml.class);
+            } catch (SQLException e) {
+                log.error(e.getMessage());
+            } finally {
+                try {
+                    clob.free();
+                } catch (SQLException e) {
+                    log.error(e.getMessage());
+                }
+            }
         }
         return null;
     }

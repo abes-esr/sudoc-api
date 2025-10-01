@@ -269,6 +269,7 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
                         <mainClass>fr.abes.sudoc.SudocWebservicesApplication</mainClass>
+                        <layout>ZIP</layout>
                     </configuration>
                     <executions>
                         <execution>
@@ -283,7 +284,7 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/abes-esr/convergence-webservices.git</connection>
+        <connection>scm:git:https://github.com/abes-esr/sudoc-api.git</connection>
         <tag>HEAD</tag>
     </scm>
 
