@@ -23,7 +23,7 @@ RUN mvn --batch-mode \
         -Dmaven.test.skip=true \
         -Duser.timezone=Europe/Paris \
         -Duser.language=fr \
-        package spring-boot:repackage
+        package -Passembly
 
 
 ###
@@ -31,9 +31,13 @@ RUN mvn --batch-mode \
 #FROM tomcat:9-jdk17 as api-image
 #COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
 #CMD [ "catalina.sh", "run" ]
-FROM ossyupiik/java:21.0.8 as sudoc-image
-WORKDIR /app/
-COPY --from=build-image /build/target/sudoc.jar /app/sudoc.jar
+FROM ossyupiik/java:21.0.8
+WORKDIR /
+COPY target/sudoc-distribution.tar.gz /
+RUN tar xvfz /sudoc-distribution.tar.gz
+RUN rm -f /sudoc-distribution.tar.gz
+
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ENTRYPOINT ["java", "-jar", "/app/sudoc.jar"]
+
+CMD ["java", "-jar", "/sudoc/lib/sudoc.jar"]
