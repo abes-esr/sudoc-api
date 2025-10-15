@@ -1,7 +1,6 @@
 package fr.abes.sudoc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.abes.cbs.exception.CBSException;
 import fr.abes.sudoc.dto.SearchDatWebDto;
 import fr.abes.sudoc.dto.provider.ElementDto;
 import fr.abes.sudoc.entity.notice.Controlfield;
@@ -615,7 +614,7 @@ class SudocControllerTest {
         Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
                 .andExpect(jsonPath("$.ppns[0].typeSupport").value("ELECTRONIQUE"))
@@ -633,7 +632,7 @@ class SudocControllerTest {
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(false);
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
@@ -650,7 +649,7 @@ class SudocControllerTest {
         Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
         Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isOk());
     }
 
@@ -680,7 +679,7 @@ class SudocControllerTest {
         Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
                 .andExpect(jsonPath("$.ppns[0].typeSupport").value("ELECTRONIQUE"))
@@ -712,7 +711,7 @@ class SudocControllerTest {
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
         Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn/?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique"));
     }

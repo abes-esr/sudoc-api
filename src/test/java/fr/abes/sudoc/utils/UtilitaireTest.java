@@ -100,8 +100,8 @@ class UtilitaireTest {
     @Test
     @DisplayName("test replaceDiacritics")
     void testReplaceDiacritics() {
-        String chaine = "àâäéèêëîïôöùûüç";
-        Assertions.assertEquals("aaaeeeeiioouuuc", Utilitaire.replaceDiacritics(chaine));
+        String chaine = "àâäéèêëîïôöùûüçaeiouz";
+        Assertions.assertEquals("aaaeeeeiioouuucaeiouz", Utilitaire.replaceDiacritics(chaine));
 
         chaine = "çüûùöôïîëêèéäâà";
         Assertions.assertEquals("cuuuooiieeeeaaa", Utilitaire.replaceDiacritics(chaine));
