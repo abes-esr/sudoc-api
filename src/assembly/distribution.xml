@@ -23,7 +23,7 @@
     <dependencySet>
       <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
       <outputDirectory>/${project.artifactId}/lib</outputDirectory>
-      <scope>compile</scope>
+      <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
 </assembly>
