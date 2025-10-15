@@ -10,11 +10,12 @@ import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.service.*;
 import fr.abes.sudoc.utils.TYPE_ID;
 import fr.abes.sudoc.utils.Utilitaire;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
