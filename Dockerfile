@@ -15,10 +15,7 @@ RUN mvn --batch-mode \
 
 ###
 # Image pour le module API
-#FROM tomcat:9-jdk17 as api-image
-#COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
-#CMD [ "catalina.sh", "run" ]
-FROM ossyupiik/java:21.0.8
+FROM ossyupiik/java:21.0.8 as api-image
 WORKDIR /
 COPY --from=build-image /build/target/sudoc-distribution.tar.gz /
 RUN tar xvfz sudoc-distribution.tar.gz
