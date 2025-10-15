@@ -36,7 +36,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         String error = "Erreur dans les paramètres de la requête";
-        log.debug(ex.getLocalizedMessage());
+        //log.debug(ex.getLocalizedMessage());
         return buildResponseEntity(new ApiReturnError(HttpStatus.BAD_REQUEST, error, ex));
     }
 

@@ -1,20 +1,17 @@
 package fr.abes.sudoc.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
-import fr.abes.sudoc.exception.IllegalPpnException;
-import fr.abes.sudoc.utils.Utilitaire;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.sql.SQLRecoverableException;
-import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class IssnService implements IIdentifiantService {
     private final BaseXmlFunctionsCaller caller;
+    private static final Pattern patternIssn = Pattern.compile("^[0-9]{4}-?[0-9]{3}[0-9xX]$");
 
     public IssnService(BaseXmlFunctionsCaller caller) {
         this.caller = caller;
@@ -22,7 +19,7 @@ public class IssnService implements IIdentifiantService {
 
     @Override
     public boolean checkFormat(String issn) {
-        return issn != null && issn.matches("^[0-9]{4}-?[0-9]{3}[0-9xX]$");
+        return issn != null && patternIssn.matcher(issn).matches();
     }
 
     @Override
