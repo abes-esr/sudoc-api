@@ -1,22 +1,10 @@
 ###
 # Image pour la compilation
-FROM maven:3-eclipse-temurin-17 as build-image
+FROM maven:3-eclipse-temurin-21 as build-image
 WORKDIR /build/
 # Installation et configuration de la locale FR
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
-RUN sed -i '/fr_FR.UTF-8/s/^# //g' /etc/locale.gen && \
-    locale-gen
-ENV LANG fr_FR.UTF-8
-ENV LANGUAGE fr_FR:fr
-ENV LC_ALL fr_FR.UTF-8
 
-
-# On lance la compilation Java
-# On débute par une mise en cache docker des dépendances Java
-# cf https://www.baeldung.com/ops/docker-cache-maven-dependencies
-COPY pom.xml /build/sudoc/pom.xml
-RUN mvn verify --fail-never
-# et la compilation du code Java
 COPY ./   /build/
 
 RUN mvn --batch-mode \
@@ -25,7 +13,6 @@ RUN mvn --batch-mode \
         -Duser.language=fr \
         package -Passembly
 
-
 ###
 # Image pour le module API
 #FROM tomcat:9-jdk17 as api-image
@@ -33,8 +20,8 @@ RUN mvn --batch-mode \
 #CMD [ "catalina.sh", "run" ]
 FROM ossyupiik/java:21.0.8
 WORKDIR /
-COPY target/sudoc-distribution.tar.gz /
-RUN tar xvfz /sudoc-distribution.tar.gz
+COPY --from=build-image /build/target/sudoc-distribution.tar.gz /
+RUN tar xvfz sudoc-distribution.tar.gz
 RUN rm -f /sudoc-distribution.tar.gz
 
 ENV TZ=Europe/Paris
