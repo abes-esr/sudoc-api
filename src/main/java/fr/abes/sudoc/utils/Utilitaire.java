@@ -51,10 +51,11 @@ public class Utilitaire {
         //la correspondance pouvant retourner plusieurs fois un ppn, on crée une multimap pour récupérer le résultat
         List<String> listePpn = new ArrayList<>();
         //parse de l'input json
-        JsonNode sudocnode = objectMapper.readTree(json);
-
-        extractPpnFromNode(listePpn, sudocnode, "result");
-        extractPpnFromNode(listePpn, sudocnode, "resultNoHolding");
+        if (json != null) {
+            JsonNode sudocnode = objectMapper.readTree(json);
+            extractPpnFromNode(listePpn, sudocnode, "result");
+            extractPpnFromNode(listePpn, sudocnode, "resultNoHolding");
+        }
         return listePpn;
     }
 

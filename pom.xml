@@ -32,6 +32,13 @@
             <properties>
                 <spring.profiles.active>localhost</spring.profiles.active>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
+                    <version>21.3.0.0</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>dev</id>
@@ -124,6 +131,14 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
         <!-- permet de gérer les contraintes d'intégrité de la BDD et les champs not null -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -146,11 +161,6 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         <!--BDD-->
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>21.3.0.0</version>
-        </dependency>
         <dependency>
             <groupId>com.oracle.database.xml</groupId>
             <artifactId>xdb</artifactId>
