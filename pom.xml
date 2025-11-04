@@ -102,6 +102,19 @@
         </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>artifactory-public</id>
+            <name>artifactory-public</name>
+            <url>https://artifactory.abes.fr/artifactory/maven-public/</url>
+        </repository>
+        <repository>
+            <id>artifactory-public-libs</id>
+            <name>artifactory-public-libs</name>
+            <url>https://artifactory.abes.fr/artifactory/libs-release-local/</url>
+        </repository>
+    </repositories>
+
     <!-- =========================================================== -->
     <!--     Gestion des dependances                                 -->
     <!-- =========================================================== -->
