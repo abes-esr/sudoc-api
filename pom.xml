@@ -73,7 +73,7 @@
                                     <MainClass>fr.abes.sudoc.SudocWebservicesApplication</MainClass>
                                     <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                     <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                    <addClasspath>true</addClasspath>
+                                    <addClasspath>false</addClasspath>
                                 </manifest>
                             </archive>
                         </configuration>
