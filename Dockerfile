@@ -24,4 +24,4 @@ RUN rm -f /sudoc-distribution.tar.gz
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-CMD ["java", "-jar", "/sudoc/lib/sudoc.jar"]
+CMD ["java", "-cp", "/sudoc/lib/*", "fr.abes.sudoc.SudocWebservicesApplication"]
