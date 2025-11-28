@@ -20,67 +20,58 @@ public class BaseXmlFunctionsCaller {
 
     private final DataSource dataSource;
 
-    private static final String requestIssn = "SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISSN' and cle2=?";
-    private static final String requestIsbn = "select AUTORITES.ISBN2PPNJSON(?) from dual";
-    private static final String requestDoi = "SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='DOI' and cle2=?";
+    private static final String requestIssn = "SELECT DISTINCT ppn FROM AUTORITES.biblio_table_fouretout WHERE cle1='ISSN' AND cle2=?";
+    private static final String requestIsbn = "SELECT AUTORITES.ISBN2PPNJSON(?) AS ppn FROM dual";
+    private static final String requestDoi = "SELECT DISTINCT ppn FROM AUTORITES.biblio_table_fouretout WHERE cle1='DOI' AND cle2=?";
 
     public BaseXmlFunctionsCaller(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
 
-    public List<String> issnToPpn(String issn) {
+    public List<String> issnToPpn(String issn) throws UncategorizedSQLException, SQLException {
         List<String> resultList = new ArrayList<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(requestIssn)
-             ) {
+
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestIssn)) {
+
             ps.setString(1, issn);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 resultList.add(rs.getString("ppn"));
             }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
         return resultList;
     }
 
 
-    public String isbnToPpn(String isbn) throws UncategorizedSQLException {
+    public String isbnToPpn(String isbn) throws UncategorizedSQLException, SQLException {
         String result = null;
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(requestIsbn)
-        ) {
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestIsbn)) {
+
             ps.setString(1, isbn);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 result = rs.getString("ppn");
             }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
         return result;
     }
 
 
-    public List<String> doiToPpn(String doi) throws UncategorizedSQLException {
+    public List<String> doiToPpn(String doi) throws UncategorizedSQLException, SQLException {
         List<String> resultList = new ArrayList<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(requestDoi)
-        ) {
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestDoi)) {
             ps.setString(1, doi.toLowerCase());
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 resultList.add(rs.getString("ppn"));
             }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
         return resultList;
     }
@@ -123,22 +114,22 @@ public class BaseXmlFunctionsCaller {
         return resultList;
     }
 
-    public Optional<NoticesBibio> findByPpn(String ppn){
+    public Optional<NoticesBibio> findByPpn(String ppn) {
         //@ColumnTransformer(read = "XMLSERIALIZE (CONTENT data_xml as CLOB)", write = "NULLSAFE_XMLTYPE(?)")
 
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement("SELECT id, XMLSERIALIZE (CONTENT data_xml as CLOB) as xmlclob FROM NoticesBibio WHERE ppn=?")
         ) {
-           ps.setString(1, ppn);
-           ResultSet rs = ps.executeQuery();
-           if (rs.next()) {
-               NoticesBibio noticesBibio = new NoticesBibio();
-               noticesBibio.setId(rs.getInt("id"));
-               noticesBibio.setPpn(ppn);
-               noticesBibio.setDataXml(rs.getClob("xmlclob"));
-               return Optional.of(noticesBibio);
-           }
+            ps.setString(1, ppn);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                NoticesBibio noticesBibio = new NoticesBibio();
+                noticesBibio.setId(rs.getInt("id"));
+                noticesBibio.setPpn(ppn);
+                noticesBibio.setDataXml(rs.getClob("xmlclob"));
+                return Optional.of(noticesBibio);
+            }
         } catch (SQLException e) {
             log.error(e.getMessage());
         }

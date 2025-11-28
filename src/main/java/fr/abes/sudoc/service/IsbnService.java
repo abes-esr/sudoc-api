@@ -8,6 +8,7 @@ import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -35,13 +36,15 @@ public class IsbnService implements IIdentifiantService {
         try{
             String result = caller.isbnToPpn(isbn);
             return Utilitaire.parseJson(result);
-        } catch (UncategorizedSQLException ex) {
+        } catch (SQLException ex) {
             if (ex.getMessage().contains("no ppn matched")) {
                 throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
             }
             throw new IOException(ex);
         } catch (JsonProcessingException ex) {
             throw new IOException("Impossible de récupérer les ppn correspondant à cet identifiant");
+        } catch (UncategorizedSQLException e) {
+            throw new IOException("Incident technique lors de l'accès à la base de données");
         }
     }
 }

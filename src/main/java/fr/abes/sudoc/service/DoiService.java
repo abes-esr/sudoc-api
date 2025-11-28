@@ -6,6 +6,7 @@ import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -40,6 +41,11 @@ public class DoiService implements IIdentifiantService{
                 }
         } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("no ppn matched")) {
+                throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
+            }
+            throw new IOException(ex);
         }
     }
 }
