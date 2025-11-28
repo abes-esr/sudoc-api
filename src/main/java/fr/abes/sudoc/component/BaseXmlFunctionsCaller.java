@@ -20,9 +20,9 @@ public class BaseXmlFunctionsCaller {
 
     private final DataSource dataSource;
 
-    private static final String requestIssn = "SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='ISSN' and cle2=?";
-    private static final String requestIsbn = "select AUTORITES.ISBN2PPNJSON(?) from dual";
-    private static final String requestDoi = "SELECT distinct ppn from AUTORITES.biblio_table_fouretout where cle1='DOI' and cle2=?";
+    private static final String requestIssn = "SELECT DISTINCT ppn FROM AUTORITES.biblio_table_fouretout WHERE cle1='ISSN' AND cle2=?";
+    private static final String requestIsbn = "SELECT AUTORITES.ISBN2PPNJSON(?) AS ppn FROM dual";
+    private static final String requestDoi = "SELECT DISTINCT ppn FROM AUTORITES.biblio_table_fouretout WHERE cle1='DOI' AND cle2=?";
 
     public BaseXmlFunctionsCaller(DataSource dataSource) {
         this.dataSource = dataSource;
