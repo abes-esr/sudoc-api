@@ -32,47 +32,47 @@ public class BaseXmlFunctionsCaller {
     public List<String> issnToPpn(String issn) throws UncategorizedSQLException, SQLException {
         List<String> resultList = new ArrayList<>();
 
-        Connection connection = dataSource.getConnection();
-        PreparedStatement ps = connection.prepareStatement(requestIssn);
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestIssn)) {
 
-        ps.setString(1, issn);
+            ps.setString(1, issn);
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            resultList.add(rs.getString("ppn"));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                resultList.add(rs.getString("ppn"));
+            }
         }
-        connection.close();
         return resultList;
     }
 
 
     public String isbnToPpn(String isbn) throws UncategorizedSQLException, SQLException {
         String result = null;
-        Connection connection = dataSource.getConnection();
-        PreparedStatement ps = connection.prepareStatement(requestIsbn);
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestIsbn)) {
 
-        ps.setString(1, isbn);
+            ps.setString(1, isbn);
 
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            result = rs.getString("ppn");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                result = rs.getString("ppn");
+            }
         }
-        connection.close();
         return result;
     }
 
 
     public List<String> doiToPpn(String doi) throws UncategorizedSQLException, SQLException {
         List<String> resultList = new ArrayList<>();
-        Connection connection = dataSource.getConnection();
-        PreparedStatement ps = connection.prepareStatement(requestDoi);
-        ps.setString(1, doi.toLowerCase());
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement ps = connection.prepareStatement(requestDoi)) {
+            ps.setString(1, doi.toLowerCase());
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            resultList.add(rs.getString("ppn"));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                resultList.add(rs.getString("ppn"));
+            }
         }
-        connection.close();
         return resultList;
     }
 
