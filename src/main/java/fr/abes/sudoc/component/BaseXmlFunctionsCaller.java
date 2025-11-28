@@ -41,7 +41,7 @@ public class BaseXmlFunctionsCaller {
         while (rs.next()) {
             resultList.add(rs.getString("ppn"));
         }
-
+        connection.close();
         return resultList;
     }
 
@@ -57,7 +57,7 @@ public class BaseXmlFunctionsCaller {
         if (rs.next()) {
             result = rs.getString("ppn");
         }
-
+        connection.close();
         return result;
     }
 
@@ -72,7 +72,7 @@ public class BaseXmlFunctionsCaller {
         while (rs.next()) {
             resultList.add(rs.getString("ppn"));
         }
-
+        connection.close();
         return resultList;
     }
 
