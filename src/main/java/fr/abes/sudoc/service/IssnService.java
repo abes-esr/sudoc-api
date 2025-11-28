@@ -1,10 +1,12 @@
 package fr.abes.sudoc.service;
 
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
+import fr.abes.sudoc.exception.IllegalPpnException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -23,11 +25,16 @@ public class IssnService implements IIdentifiantService {
     }
 
     @Override
-    public List<String> getPpnFromIdentifiant(String issn) throws IOException {
+    public List<String> getPpnFromIdentifiant(String issn) throws IOException, IllegalPpnException {
         try{
             return caller.issnToPpn(issn.replace("-", ""));
         } catch (UncategorizedSQLException ex) {
             throw new IOException("Incident technique lors de l'accès à la base de données");
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("no ppn matched")) {
+                throw new IllegalPpnException("Aucune notice ne correspond à la recherche");
+            }
+            throw new IOException(ex);
         }
     }
 

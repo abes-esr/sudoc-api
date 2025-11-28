@@ -53,6 +53,14 @@ public class NoticeService {
                 }
             }
         }
+
+        /*if (noticeOpt.isPresent()) {
+            try {
+                return xmlMapper.readValue(noticeOpt.get().getDataXml().getCharacterStream(), NoticeXml.class);
+            } catch (SQLException e) {
+                log.error(e.getMessage());
+            }
+        }*/
         return null;
     }
 

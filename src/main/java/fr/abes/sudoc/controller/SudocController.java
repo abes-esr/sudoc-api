@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +61,11 @@ public class SudocController {
             }
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
-        } catch (IOException | IllegalPpnException ex) {
+        } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'online identifier {}", onlineIdentifier);
             throw new IOException(ex);
+        } catch (IllegalPpnException ex) {
+            resultat.addErreur("Aucun PPN ne correspond à l'issn " + onlineIdentifier);
         }
         return resultat;
     }
@@ -120,16 +121,18 @@ public class SudocController {
                 if(resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()){
                     resultat.addErreur("Aucun PPN ne correspond au " + printIdentifier);
                 }
-                return resultat;
             } else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + printIdentifier + " est incorrect");
             }
         } catch (IllegalStateException ex) {
             throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
-        } catch (IOException | IllegalPpnException ex) {
+        } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à au print identifier {}", printIdentifier);
             throw new IOException(ex);
+        } catch (IllegalPpnException ex) {
+            resultat.addErreur("Aucun PPN ne correspond à l'isbn " + printIdentifier);
         }
+        return resultat;
     }
 
 
@@ -159,8 +162,7 @@ public class SudocController {
             log.debug("ZoneNotFoundException : {}", e.getMessage());
             throw new IOException(e.getMessage());
         } catch (IllegalPpnException e) {
-            log.info("Aucune notice ne correspond au doi {}", doi_identifier);
-            //res.addErreur("Aucune notice ne correspond à l'identifiant " + doi_identifier);
+            resultat.addErreur("Aucune notice ne correspond au doi " + doi_identifier);
         }
         return resultat;
     }

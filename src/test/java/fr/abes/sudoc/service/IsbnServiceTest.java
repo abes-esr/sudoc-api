@@ -10,12 +10,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.SQLRecoverableException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {IsbnService.class, BaseXmlFunctionsCaller.class})
@@ -101,12 +99,12 @@ class IsbnServiceTest {
 
     @Test
     @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
-    void testgetPpnUncategorizedException() {
-        UncategorizedSQLException ex = new UncategorizedSQLException("no ppn matched", "select test", new SQLException());
+    void testgetPpnUncategorizedException() throws SQLException {
+        SQLException ex = new SQLException("no ppn matched", "select test", new SQLException());
         Mockito.doThrow(ex).when(caller).isbnToPpn(Mockito.anyString());
         Assertions.assertThrows(IllegalPpnException.class, () -> isbnService.getPpnFromIdentifiant("1111111111"));
 
-        ex = new UncategorizedSQLException("trululu", "select test", new SQLException());
+        ex = new SQLException("trululu", "select test", new SQLException());
         Mockito.doThrow(ex).when(caller).isbnToPpn(Mockito.anyString());
         Assertions.assertThrows(IOException.class, () -> isbnService.getPpnFromIdentifiant("1111111111"));
     }

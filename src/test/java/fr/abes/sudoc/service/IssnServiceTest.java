@@ -1,7 +1,6 @@
 package fr.abes.sudoc.service;
 
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
-import fr.abes.sudoc.exception.IllegalPpnException;
 import fr.abes.sudoc.utils.Utilitaire;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,7 @@ import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.sql.SQLRecoverableException;
+import java.sql.SQLException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {IssnService.class, BaseXmlFunctionsCaller.class})
@@ -95,7 +94,7 @@ class IssnServiceTest {
 
     @Test
     @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
-    void testgetPpnUncategorizedException() {
+    void testgetPpnUncategorizedException() throws SQLException {
         Mockito.doThrow(UncategorizedSQLException.class).when(caller).issnToPpn(Mockito.anyString());
         Assertions.assertThrows(IOException.class, () -> issnService.getPpnFromIdentifiant("11111111"));
     }
