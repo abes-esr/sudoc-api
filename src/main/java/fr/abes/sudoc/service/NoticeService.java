@@ -11,11 +11,13 @@ import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,30 +40,27 @@ public class NoticeService {
             throw new IllegalPpnException("Le PPN ne peut pas être null");
         //Optional<NoticesBibio> noticeOpt = this.noticesBibioRepository.findByPpn(ppn);
         Optional<NoticesBibio> noticeOpt = baseXmlFunctionsCaller.findByPpn(ppn);
-        if (noticeOpt.isPresent()) {
-            Clob clob = noticeOpt.get().getDataXml();
-
-            try (Reader reader = clob.getCharacterStream()){
-                return xmlMapper.readValue(reader, NoticeXml.class);
+        if (noticeOpt.isEmpty()) {
+            return null;
+        }
+        Clob clob = noticeOpt.get().getDataXml();
+        String xmlString = null;
+        
+        try (Reader reader = clob.getCharacterStream()){
+            xmlString = new BufferedReader(reader)
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        } finally {
+            try {
+                clob.free();
             } catch (SQLException e) {
                 log.error(e.getMessage());
-            } finally {
-                try {
-                    clob.free();
-                } catch (SQLException e) {
-                    log.error(e.getMessage());
-                }
             }
         }
-
-        /*if (noticeOpt.isPresent()) {
-            try {
-                return xmlMapper.readValue(noticeOpt.get().getDataXml().getCharacterStream(), NoticeXml.class);
-            } catch (SQLException e) {
-                log.error(e.getMessage());
-            }
-        }*/
-        return null;
+        
+        return (xmlString != null) ? xmlMapper.readValue(xmlString, NoticeXml.class) : null;
     }
 
     public List<String> getEquivalentElectronique(NoticeXml notice) throws IOException, IllegalPpnException, ZoneNotFoundException {
