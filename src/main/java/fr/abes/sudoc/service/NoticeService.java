@@ -45,9 +45,9 @@ public class NoticeService {
         }
         Clob clob = noticeOpt.get().getDataXml();
         String xmlString = null;
-        
-        try (Reader reader = clob.getCharacterStream()){
-            xmlString = new BufferedReader(reader)
+
+        try (BufferedReader reader = new BufferedReader(clob.getCharacterStream())){
+            xmlString = reader
                     .lines()
                     .collect(Collectors.joining("\n"));
         } catch (SQLException e) {
@@ -59,7 +59,7 @@ public class NoticeService {
                 log.error(e.getMessage());
             }
         }
-        
+
         return (xmlString != null) ? xmlMapper.readValue(xmlString, NoticeXml.class) : null;
     }
 
