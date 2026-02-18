@@ -10,6 +10,7 @@ import fr.abes.sudoc.exception.ZoneNotFoundException;
 import fr.abes.sudoc.repository.BiblioTableFrbr4XXRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class NoticeService {
     }
 
 
+    @Transactional(readOnly = true)
     public NoticeXml getNoticeByPpn(String ppn) throws IllegalPpnException, IOException {
         if (ppn == null)
             throw new IllegalPpnException("Le PPN ne peut pas être null");
@@ -51,12 +53,12 @@ public class NoticeService {
                     .lines()
                     .collect(Collectors.joining("\n"));
         } catch (SQLException e) {
-            log.error(e.getMessage());
+            log.error("Erreur lors de la lecture du CLOB pour ppn={}", ppn, e);
         } finally {
             try {
                 clob.free();
             } catch (SQLException e) {
-                log.error(e.getMessage());
+                log.error(String.valueOf(e));
             }
         }
 
