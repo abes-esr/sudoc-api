@@ -45,8 +45,8 @@ public class SudocController {
         log.debug("ONLINE IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
+        TYPE_ID enumType = resolveType(type);
         try {
-            TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(onlineIdentifier)) {
                 log.debug("Recherche des ppn pour l'identifiant onlineIdentifier n° {} avec le service {}", onlineIdentifier, enumType);
@@ -59,8 +59,6 @@ public class SudocController {
             else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + onlineIdentifier + " est incorrect");
             }
-        } catch (IllegalStateException ex) {
-            throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
         } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à l'online identifier {}", onlineIdentifier);
             throw new IOException(ex);
@@ -76,8 +74,8 @@ public class SudocController {
         log.debug("PRINT IDENTIFIER 2 PPN");
         ResultWsDto resultat = new ResultWsDto();
         Optional<ElementDto> providerDto = this.providerService.getProviderDisplayName(provider);
+        TYPE_ID enumType = resolveType(type);
         try {
-            TYPE_ID enumType = Utilitaire.getEnumFromString(type);
             IIdentifiantService service = factory.getService(enumType);
             if (service.checkFormat(printIdentifier)) {
                 log.debug("Recherche des ppn pour l'identifiant printIdentifier n° {} avec le service {}", printIdentifier, enumType);
@@ -97,19 +95,12 @@ public class SudocController {
                                 resultat.addPpn(new PpnWithTypeWebDto(notice, false));
                             } else {
                                 for (String ppnLie : ppnElect) {
-                                    NoticeXml noticeLiee = noticeService.getNoticeByPpn(ppnLie);
-                                    if(!noticeLiee.isDeleted()) {
-                                        try {
-                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, this.providerService.checkProviderDansNoticeGeneral(providerDto, noticeLiee)));
-                                        } catch (IOException ex) {
-                                            resultat.addPpn(new PpnWithTypeWebDto(noticeLiee, false));
-                                            resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                                        }
-                                    }
+                                    feedResultatWithNotice(resultat, providerDto, ppnLie);
                                 }
                             }
                         } else if (notice.isNoticeElectronique()){
                             try {
+                                //todo : differencier ce ppn des autres; il est sensé avoir 6 de score dans best-ppn-api
                                 resultat.addPpn(new PpnWithTypeWebDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
                             } catch (IOException ex) {
                                 resultat.addPpn(new PpnWithTypeWebDto(notice, false));
@@ -124,8 +115,6 @@ public class SudocController {
             } else {
                 throw new IllegalArgumentException("Le format de l'" + enumType.name() + " " + printIdentifier + " est incorrect");
             }
-        } catch (IllegalStateException ex) {
-            throw new IllegalArgumentException("Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial");
         } catch (IOException ex) {
             log.error("erreur dans la récupération de la notice correspondant à au print identifier {}", printIdentifier);
             throw new IOException(ex);
@@ -207,5 +196,16 @@ public class SudocController {
             throw new IOException(ex);
         }
         return resultat;
+    }
+
+
+    private TYPE_ID resolveType(String type) {
+        try {
+            return Utilitaire.getEnumFromString(type);
+        } catch (IllegalStateException e) {
+            throw new IllegalArgumentException(
+                    "Le type " + type + " est incorrect. Les types acceptés sont : monograph, serial"
+            );
+        }
     }
 }
