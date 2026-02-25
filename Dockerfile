@@ -2,8 +2,6 @@
 # Image pour la compilation
 FROM maven:3-eclipse-temurin-21 AS build-image
 WORKDIR /build/
-# Installation et configuration de la locale FR
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
 
 COPY ./   /build/
 
