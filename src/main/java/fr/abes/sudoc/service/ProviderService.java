@@ -44,14 +44,17 @@ public class ProviderService {
     }
 
     public boolean checkProviderDansNoticeGeneral(Optional<ElementDto> providerDisplayName, NoticeXml notice) throws IOException {
-        return providerDisplayName.map(elementDto -> this.checkProviderDansNotice(elementDto.getDisplayName(), notice)
-                || this.checkProviderDansNotice(elementDto.getProvider(), notice)
-                || this.checkProviderIn035(elementDto.getIdProvider(), notice)).orElse(true);
+        return providerDisplayName.map(
+                elementDto ->
+                        this.checkProviderDansNotice(elementDto.getDisplayName(), notice) ||
+                        this.checkProviderDansNotice(elementDto.getProvider(), notice) ||
+                        this.checkProviderIn035(elementDto.getIdProvider(), notice)
+        ).orElse(true);
     }
 
     private boolean checkProviderDansNotice(String provider, NoticeXml notice) {
         return notice.checkProviderInZone(provider, "210", "c")
-                || notice.checkProviderInZone(provider, "214", "c");
+                || notice.checkProviderInZone214(provider);
     }
 
     private boolean checkProviderIn035(Integer providerIdt, NoticeXml notice) {

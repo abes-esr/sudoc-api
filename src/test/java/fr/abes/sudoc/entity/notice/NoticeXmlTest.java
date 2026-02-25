@@ -137,6 +137,51 @@ class NoticeXmlTest {
         datafield.setTag("215");
         Assertions.assertFalse(notice.checkProviderInZone(provider, "200", "c"));
     }
+    @Test
+    void checkProviderInZone214() {
+        String provider = "CAIRN";
+        NoticeXml notice = new NoticeXml();
+
+        // Cas 1 : Aucune zone 214
+        Assertions.assertFalse(notice.checkProviderInZone214(provider));
+
+        // Cas 5 : Une seule occurrence, pas de match
+        Datafield datafield1 = new Datafield();
+        datafield1.setTag("214");
+        datafield1.setInd1("#");
+        datafield1.setInd2("0"); // Publication
+        SubField subField1 = new SubField();
+        subField1.setCode("c");
+        subField1.setValue("autre");
+        datafield1.setSubFields(Lists.newArrayList(subField1));
+        notice.setDatafields(Lists.newArrayList(datafield1));
+        Assertions.assertFalse(notice.checkProviderInZone214(provider));
+
+        // Cas 6 : Une seule occurrence, match
+        subField1.setValue("CAIRN123");
+        Assertions.assertTrue(notice.checkProviderInZone214(provider));
+
+        // Cas 2 : Plusieurs occurrences, mais aucune avec ind2 == 2
+        Datafield datafield2 = new Datafield();
+        datafield2.setTag("214");
+        datafield2.setInd1("#");
+        datafield2.setInd2("0"); // Publication
+        SubField subField2 = new SubField();
+        subField2.setCode("c");
+        subField2.setValue("CAIRN");
+        datafield2.setSubFields(Lists.newArrayList(subField2));
+        notice.setDatafields(Lists.newArrayList(datafield1, datafield2));
+        // Ici datafield1 a "CAIRN123" mais on a 2 zones et aucune n'a ind2=2
+        Assertions.assertFalse(notice.checkProviderInZone214(provider));
+
+        // Cas 4 : Plusieurs occurrences, match sur la zone avec ind2 == 2
+        datafield2.setInd2("2"); // On change en Diffusion
+        Assertions.assertTrue(notice.checkProviderInZone214(provider));
+
+        // Cas 3 : Plusieurs occurrences, la zone avec ind2 == 2 ne matche pas
+        subField2.setValue("autre");
+        Assertions.assertFalse(notice.checkProviderInZone214(provider));
+    }
 
     @Test
     void checkProviderInZoneMultipleZone() {
