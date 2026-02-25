@@ -49,14 +49,14 @@ public class NoticeXml {
     }
 
     public boolean isNoticeElectronique() throws ZoneNotFoundException {
-        if (get008() == null){
+        if (get008() == null) {
             throw new ZoneNotFoundException("La Zone 008 n'existe pas");
         }
         return get008().startsWith("O");
     }
 
     public boolean isNoticeImprimee() throws ZoneNotFoundException {
-        if(get008() == null){
+        if (get008() == null) {
             throw new ZoneNotFoundException("La Zone 008 n'existe pas");
         }
         return get008().startsWith("A");
@@ -73,7 +73,7 @@ public class NoticeXml {
     }
 
     public TYPE_DOCUMENT getTypeDocument() {
-        return switch(get008().substring(1,2)) {
+        return switch (get008().substring(1, 2)) {
             case "a" -> TYPE_DOCUMENT.MONOGRAPHIE;
             case "b" -> TYPE_DOCUMENT.PERIODIQUE;
             case "d" -> TYPE_DOCUMENT.COLLECTION;
@@ -83,6 +83,7 @@ public class NoticeXml {
             default -> TYPE_DOCUMENT.AUTRE;
         };
     }
+
     /**
      * Retourne le type de support de la notice en se basant sur le premier caractère de la 008
      *
@@ -120,6 +121,7 @@ public class NoticeXml {
 
     /**
      * Méthode vérifiant si un provider est présent en début d'une 035 $a
+     *
      * @param provider provider à vérifier
      * @return true si le provider est présent en début d'une 035$a, false sinon
      */
@@ -128,7 +130,8 @@ public class NoticeXml {
         if (!listeZone.isEmpty()) {
             for (Datafield datafield : listeZone) {
                 List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("a")).toList();
-                if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().startsWith(provider.toLowerCase()))) return true;
+                if (subFields.stream().anyMatch(sf -> sf.getValue().toLowerCase().startsWith(provider.toLowerCase())))
+                    return true;
             }
         }
         return false;
@@ -136,8 +139,9 @@ public class NoticeXml {
 
     /**
      * Méthode permettant de vérifier si un provider est contenu dans une zone
+     *
      * @param provider : le provider à vérifier
-     * @param zone : la zone à chercher dans la notice
+     * @param zone     : la zone à chercher dans la notice
      * @param sousZone : la sous zone à chercher dans la zone
      * @return true si le provider est contenu dans la zone / sous zone passée en paramètre
      */
@@ -152,4 +156,25 @@ public class NoticeXml {
         }
         return false;
     }
+
+    public boolean checkProviderInZone214(String provider) {
+        List<Datafield> listeZone = this.datafields.stream().filter(datafield -> datafield.getTag().equals("214")).toList();
+        if (listeZone.isEmpty())
+            return false;
+
+        if (listeZone.size() > 1) {
+            Optional<Datafield> zone214diffuser = listeZone.stream().filter(datafield -> datafield.getInd1().equals("#") && datafield.getInd2().equals("2")).findFirst();
+            if (zone214diffuser.isEmpty())
+                return false;
+            List<SubField> subFields = zone214diffuser.get().getSubFields().stream().filter(subField -> subField.getCode().equals("c")).toList();
+            return subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue().toLowerCase()).contains(Utilitaire.replaceDiacritics(provider.toLowerCase(Locale.ROOT))));
+        }
+        for (Datafield datafield : listeZone) {
+            List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("c")).toList();
+            if (subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue().toLowerCase()).contains(Utilitaire.replaceDiacritics(provider.toLowerCase(Locale.ROOT)))))
+                return true;
+        }
+        return false;
+    }
 }
+
