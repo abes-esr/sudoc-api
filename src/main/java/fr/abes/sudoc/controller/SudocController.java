@@ -95,7 +95,6 @@ public class SudocController {
                     }
                 } else if (!notice.isDeleted() && notice.isNoticeElectronique()) {
                     try {
-                        //todo : differencier ce ppn des autres; il est sensé avoir 6 de score dans best-ppn-api
                         NoticeSummaryDto ppnElecDirect = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
                         ppnElecDirect.setFoundByRebond(false);
                         resultat.addPpn(ppnElecDirect);
