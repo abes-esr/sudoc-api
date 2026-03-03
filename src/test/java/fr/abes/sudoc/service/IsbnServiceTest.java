@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -22,58 +22,58 @@ class IsbnServiceTest {
     @Autowired
     IsbnService isbnService;
 
-    @MockBean
+    @MockitoBean
     BaseXmlFunctionsCaller caller;
 
     @Test
     @DisplayName("Isbn nul")
     void checkFormatIsbnNull() {
-        Assertions.assertFalse(isbnService.checkFormat(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(null));
     }
 
     @Test
     @DisplayName("Isbn vide")
     void checkFormatIsbnEmpty() {
         String isbn = "";
-        Assertions.assertFalse(isbnService.checkFormat(isbn));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn));
     }
 
     @Test
     @DisplayName("Isbn 10 caractères avec et sans trait(s) d'union")
     void checkFormatIsbn10Characters() {
         String isbn = "Z3672EDEDU";
-        Assertions.assertFalse(isbnService.checkFormat(isbn));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn));
 
         String isbn2 = "--------6-";
-        Assertions.assertFalse(isbnService.checkFormat(isbn2));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn2));
 
         String isbn3 = "23672Y+} N5";
-        Assertions.assertFalse(isbnService.checkFormat(isbn3));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn3));
 
         String isbn4 = "2222255555";
-        Assertions.assertTrue(isbnService.checkFormat(isbn4));
+        isbnService.checkFormat(isbn4);
 
         String isbn5 = "222225-5555";
-        Assertions.assertTrue(isbnService.checkFormat(isbn5));
+        isbnService.checkFormat(isbn5);
 
         String isbn6 = "-22225-555---3--1";
-        Assertions.assertFalse(isbnService.checkFormat(isbn6));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn6));
 
         String isbn7 = "274758450X";
-        Assertions.assertTrue(isbnService.checkFormat(isbn7));
+        isbnService.checkFormat(isbn7);
     }
 
     @Test
     @DisplayName("Isbn n caractères avec et sans trait(s) d'union")
     void checkFormatIsbnNCharacters() {
         String isbn1 = "-22225-555---3--";
-        Assertions.assertFalse(isbnService.checkFormat(isbn1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn1));
 
         String isbn2 = "-22225-555---3--11";
-        Assertions.assertFalse(isbnService.checkFormat(isbn2));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn2));
 
         String isbn3 = "-1243566666-";
-        Assertions.assertFalse(isbnService.checkFormat(isbn3));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn3));
 
 
     }
@@ -82,19 +82,19 @@ class IsbnServiceTest {
     @DisplayName("Isbn 13 caractères avec et sans trait(s) d'union")
     void checkFormatIsbn13Characters() {
         String isbn1 = "979-2-492283-49-9";
-        Assertions.assertTrue(isbnService.checkFormat(isbn1));
+        isbnService.checkFormat(isbn1);
 
         String isbn2 = "1234567891011";
-        Assertions.assertTrue(isbnService.checkFormat(isbn2));
+        isbnService.checkFormat(isbn2);
 
         String isbn3 = "123-45-67-891-010";
-        Assertions.assertFalse(isbnService.checkFormat(isbn3));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn3));
 
         String isbn4 = "123--45-67-891-010";
-        Assertions.assertFalse(isbnService.checkFormat(isbn4));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn4));
 
         String isbn5 = "-123-45-67-891-010";
-        Assertions.assertFalse(isbnService.checkFormat(isbn5));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> isbnService.checkFormat(isbn5));
     }
 
     @Test

@@ -20,10 +20,8 @@ public class IssnService implements IIdentifiantService {
     }
 
     @Override
-    public boolean checkFormat(String issn) {
-        if(issn != null && patternIssn.matcher(issn).matches()) {
-            return true;
-        } else {
+    public void checkFormat(String issn) {
+        if (issn == null || !patternIssn.matcher(issn).matches()) {
             throw new IllegalArgumentException("Le format de l'ISSN " + issn + " est incorrect");
         }
     }

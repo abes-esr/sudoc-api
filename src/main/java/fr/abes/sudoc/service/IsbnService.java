@@ -26,10 +26,8 @@ public class IsbnService implements IIdentifiantService {
     }
 
     @Override
-    public boolean checkFormat(String isbn) throws IllegalArgumentException {
-        if(isbn != null && patternIsbn.matcher(isbn).matches()) {
-            return true;
-        } else {
+    public void checkFormat(String isbn) throws IllegalArgumentException {
+        if(isbn == null || !patternIsbn.matcher(isbn).matches()) {
             throw new IllegalArgumentException("Le format de l'ISBN " + isbn + " est incorrect");
         }
     }

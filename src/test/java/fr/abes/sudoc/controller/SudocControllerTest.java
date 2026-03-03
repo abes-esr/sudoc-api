@@ -20,9 +20,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,22 +51,22 @@ class SudocControllerTest {
     @Autowired
     IdentifiantFactory factory;
 
-    @MockBean
+    @MockitoBean
     DatService service;
 
-    @MockBean
+    @MockitoBean
     NoticeService noticeService;
 
-    @MockBean
+    @MockitoBean
     ProviderService providerService;
 
-    @MockBean
+    @MockitoBean
     IsbnService isbnService;
 
-    @MockBean
+    @MockitoBean
     IssnService issnService;
 
-    @MockBean
+    @MockitoBean
     DoiService doiService;
 
     MockMvc mockMvc;
@@ -181,7 +181,7 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
@@ -222,7 +222,7 @@ class SudocControllerTest {
         notice2.setLeader("     gam0 22        450 ");
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789", "123456000"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
         Mockito.when(noticeService.getNoticeByPpn("123456000")).thenReturn(notice2);
@@ -251,7 +251,7 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
@@ -266,7 +266,7 @@ class SudocControllerTest {
         String type = "serial";
         String onlineIdentifier = "1234ZE234";
 
-        Mockito.when(issnService.checkFormat("1234ZE234")).thenReturn(false);
+        Mockito.doThrow(IllegalArgumentException.class).when(issnService).checkFormat("1234ZE234");
 
         this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isBadRequest())
@@ -295,7 +295,7 @@ class SudocControllerTest {
         ElementDto providerDto = new ElementDto("CAIRN", "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
@@ -331,7 +331,7 @@ class SudocControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         notice.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
@@ -370,7 +370,7 @@ class SudocControllerTest {
         notice.setDatafields(Lists.newArrayList(datafield));
 
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
@@ -399,7 +399,7 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
@@ -415,7 +415,7 @@ class SudocControllerTest {
         String type = "serial";
         String printIdentifier = "1234-1234";
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList());
 
         this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
@@ -440,7 +440,7 @@ class SudocControllerTest {
         notice.setLeader("     dam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
@@ -478,7 +478,7 @@ class SudocControllerTest {
         notice2.setLeader("     gam0 22        450 ");
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789", "123456000"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
         Mockito.when(noticeService.getNoticeByPpn("123456000")).thenReturn(notice2);
@@ -510,7 +510,7 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
@@ -525,7 +525,7 @@ class SudocControllerTest {
         String type = "serial";
         String onlineIdentifier = "1234ZE234";
 
-        Mockito.when(issnService.checkFormat("1234ZE234")).thenReturn(false);
+        Mockito.doThrow(IllegalArgumentException.class).when(issnService).checkFormat("1234ZE234");
 
         this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
                 .andExpect(status().isBadRequest())
@@ -575,7 +575,7 @@ class SudocControllerTest {
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
+        Mockito.doNothing().when(issnService).checkFormat("1234-1234");
         Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getEquivalentElectronique(Mockito.any())).thenReturn(Lists.newArrayList("987654321"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
@@ -611,7 +611,7 @@ class SudocControllerTest {
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
@@ -630,7 +630,7 @@ class SudocControllerTest {
         ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(false);
+        Mockito.doThrow(new IllegalArgumentException(DoiService.MESSAGE_ERROR_DOI_FORMAT)).when(doiService).checkFormat(Mockito.anyString());
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isBadRequest())
@@ -646,7 +646,7 @@ class SudocControllerTest {
         ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
         Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
@@ -676,7 +676,7 @@ class SudocControllerTest {
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
@@ -709,7 +709,7 @@ class SudocControllerTest {
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
         Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
         Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
 
         this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
                 .andExpect(status().isOk())
