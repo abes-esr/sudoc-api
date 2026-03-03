@@ -164,10 +164,10 @@ public class NoticeXml {
 
         if (listeZone.size() > 1) {
             Optional<Datafield> zone214diffuser = listeZone.stream().filter(datafield -> datafield.getInd1().equals("#") && datafield.getInd2().equals("2")).findFirst();
-            if (zone214diffuser.isEmpty())
-                return false;
-            List<SubField> subFields = zone214diffuser.get().getSubFields().stream().filter(subField -> subField.getCode().equals("c")).toList();
-            return subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue().toLowerCase()).contains(Utilitaire.replaceDiacritics(provider.toLowerCase(Locale.ROOT))));
+            if (zone214diffuser.isPresent()) {
+                List<SubField> subFields = zone214diffuser.get().getSubFields().stream().filter(subField -> subField.getCode().equals("c")).toList();
+                return subFields.stream().anyMatch(sf -> Utilitaire.replaceDiacritics(sf.getValue().toLowerCase()).contains(Utilitaire.replaceDiacritics(provider.toLowerCase(Locale.ROOT))));
+            }
         }
         for (Datafield datafield : listeZone) {
             List<SubField> subFields = datafield.getSubFields().stream().filter(subField -> subField.getCode().equals("c")).toList();
