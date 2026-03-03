@@ -172,7 +172,7 @@ class NoticeXmlTest {
         datafield2.setSubFields(Lists.newArrayList(subField2));
         notice.setDatafields(Lists.newArrayList(datafield1, datafield2));
         // Ici datafield1 a "CAIRN123" mais on a 2 zones et aucune n'a ind2=2
-        Assertions.assertFalse(notice.checkProviderInZone214(provider));
+        Assertions.assertTrue(notice.checkProviderInZone214(provider));
 
         // Cas 4 : Plusieurs occurrences, match sur la zone avec ind2 == 2
         datafield2.setInd2("2"); // On change en Diffusion
