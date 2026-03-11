@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IIdentifiantService {
-    boolean checkFormat(String identifiant);
+    void checkFormat(String identifiant) throws IllegalArgumentException;
 
     List<String> getPpnFromIdentifiant(String identifiant) throws IllegalPpnException, IOException;
 }

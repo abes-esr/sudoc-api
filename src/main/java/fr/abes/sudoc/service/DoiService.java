@@ -2,6 +2,7 @@ package fr.abes.sudoc.service;
 
 import fr.abes.sudoc.component.BaseXmlFunctionsCaller;
 import fr.abes.sudoc.exception.IllegalPpnException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
@@ -11,18 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class DoiService implements IIdentifiantService{
     private final BaseXmlFunctionsCaller caller;
     private static final Pattern patternDoi = Pattern.compile("10.\\d{0,15}.\\d{0,15}.+");
+
+    public static final String MESSAGE_ERROR_DOI_FORMAT = "Le DOI n'est pas au bon format";
 
     public DoiService(BaseXmlFunctionsCaller caller) {
         this.caller = caller;
     }
 
     @Override
-    public boolean checkFormat(String doi) {
-        return doi != null && patternDoi.matcher(doi).find();
+    public void checkFormat(String doi) throws IllegalArgumentException {
+        if (doi == null || !patternDoi.matcher(doi).find()){
+            log.debug("DOI mauvais format {}", doi);
+            throw new IllegalArgumentException(MESSAGE_ERROR_DOI_FORMAT);
+        }
     }
 
     @Override
