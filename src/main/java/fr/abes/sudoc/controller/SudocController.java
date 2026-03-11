@@ -79,31 +79,10 @@ public class SudocController {
                 log.debug("printIdentifier n° {} <-> ppn n° {}", printIdentifier, ppn);
                 NoticeXml notice = noticeService.getNoticeByPpn(ppn);
                 if (!notice.isDeleted() && notice.isNoticeImprimee()) {
-                    List<String> ppnElect = new ArrayList<>();
-                    try {
-                        ppnElect = noticeService.getEquivalentElectronique(notice);
-                    } catch (IllegalPpnException ex) {
-                        resultat.addErreur(ex.getMessage());
-                    }
-                    if (ppnElect.isEmpty()) {
-                        //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
-                        NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, false);
-                        ppnElecRebond.setFoundByRebound(true);
-                        resultat.addPpn(ppnElecRebond);
-                    } else {
-                        for (String ppnLie : ppnElect) {
-                            feedResultatWithNotice(resultat, providerDto, ppnLie);
-                        }
-                    }
+                    getCandidateFromLinkedNotice(notice, resultat, providerDto);
                 } else if (!notice.isDeleted() && notice.isNoticeElectronique()) {
-                    try {
-                        NoticeSummaryDto ppnElecDirect = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
-                        ppnElecDirect.setFoundByRebound(false);
-                        resultat.addPpn(ppnElecDirect);
-                    } catch (IOException ex) {
-                        resultat.addPpn(new NoticeSummaryDto(notice, false));
-                        resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
-                    }
+                    //Cas on recup une notice elec hors c'est sensé etre un imprimé
+                    getElecCandidate(notice, resultat, providerDto);
                 }
             }
             if (resultat.getResultats().isEmpty() && resultat.getErreurs().isEmpty()) {
@@ -116,6 +95,35 @@ public class SudocController {
             resultat.addErreur("Aucun PPN ne correspond à l'isbn " + printIdentifier);
         }
         return resultat;
+    }
+
+    private void getElecCandidate(NoticeXml notice, ResultWsDto resultat,Optional<ElementDto> providerDto) throws ZoneNotFoundException {
+        try {
+            NoticeSummaryDto ppnElecDirect = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
+            ppnElecDirect.setFoundByRebound(false);
+            resultat.addPpn(ppnElecDirect);
+        } catch (IOException ex) {
+            resultat.addPpn(new NoticeSummaryDto(notice, false));
+            resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
+        }
+    }
+
+    private void getCandidateFromLinkedNotice(NoticeXml notice, ResultWsDto resultat, Optional<ElementDto> providerDto) throws IOException, ZoneNotFoundException, IllegalPpnException {
+        List<String> ppnElect = new ArrayList<>();
+        try {
+            ppnElect = noticeService.getEquivalentElectronique(notice);
+        } catch (IllegalPpnException ex) {
+            resultat.addErreur(ex.getMessage());
+        }
+        if (ppnElect.isEmpty()) {
+            //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
+            NoticeSummaryDto ppnPrint = new NoticeSummaryDto(notice, false);
+            resultat.addPpn(ppnPrint);
+        } else {
+            for (String ppnLie : ppnElect) {
+                feedResultatWithNotice(resultat, providerDto, ppnLie);
+            }
+        }
     }
 
 
