@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,73 +32,46 @@ class IssnServiceTest {
     @MockitoBean
     Utilitaire utilitaire;
 
-    @Test
-    @DisplayName("Issn null")
-    void checkFormatIssnNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(null));
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("ISSN null ou vide")
+    void checkFormatIssnNullOrEmpty(String issn) {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "0000-000",
+            "000X0000",
+            "000000001",
+            "000X-0000",
+            "00000-000",
+            "0345--322",
+            "-345-032-"
+    })
+    @DisplayName("ISSN au format invalide")
+    void checkFormatIssnInvalid(String issn) {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "00000000",
+            "0000000X",
+            "0000000x",
+            "0000-0000",
+            "0000-0001",
+            "0000-000X",
+            "0000-000x"
+    })
+    @DisplayName("ISSN au format valide")
+    void checkFormatIssnValid(String issn) {
+        Assertions.assertDoesNotThrow(() -> issnService.checkFormat(issn));
     }
 
     @Test
-    @DisplayName("Issn vide")
-    void checkFormatIssnEmpty() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(""));
-    }
-
-    @Test
-    @DisplayName("Issn 8 caractères avec et sans trait d'union")
-    void checkFormatIssn8Characters() {
-        String issn1 = "0000-000";
-
-
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn1));
-
-        String issn2 = "00000000";
-        issnService.checkFormat(issn2);
-
-        String issn3 = "0000000X";
-        issnService.checkFormat(issn3);
-
-        String issn4 = "000X0000";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn4));
-
-        String issn5 = "0000000x";
-        issnService.checkFormat(issn5);
-    }
-
-    @Test
-    @DisplayName("Issn 9 caractères")
-    void checkFormatIssn9Characters() {
-        String issn1 = "0000-0000";
-        issnService.checkFormat(issn1);
-
-        String issn2 = "0000-0001";
-        issnService.checkFormat(issn2);
-
-        String issn3 = "000000001";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn3));
-
-        String issn4 = "0000-000X";
-        issnService.checkFormat(issn4);
-
-        String issn5 = "000X-0000";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn5));
-
-        String issn6 = "0000-000x";
-        issnService.checkFormat(issn6);
-
-        String issn7 = "00000-000";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn7));
-
-        String issn8 = "0345--322";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn8));
-
-        String issn9 = "-345-032-";
-        Assertions.assertThrows(IllegalArgumentException.class, () -> issnService.checkFormat(issn9));
-    }
-
-    @Test
-    @DisplayName("getPpnFromIdentifiant with UncategorizedSQLException")
-    void testgetPpnUncategorizedException() throws SQLException {
+    @DisplayName("getPpnFromIdentifiant avec UncategorizedSQLException lève IOException")
+    void testGetPpnUncategorizedException() throws SQLException {
         Mockito.doThrow(UncategorizedSQLException.class).when(caller).issnToPpn(Mockito.anyString());
         Assertions.assertThrows(IOException.class, () -> issnService.getPpnFromIdentifiant("11111111"));
     }
