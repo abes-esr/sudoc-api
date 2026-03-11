@@ -159,13 +159,13 @@ public class SudocController {
         if (notice != null && !notice.isDeleted()) {
             if (notice.isNoticeElectronique()) {
                 try {
-                    NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
-                    ppnElecRebond.setFoundByRebound(true);
-                    resultat.addPpn(ppnElecRebond);
+                    NoticeSummaryDto ppnElecRebound = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
+                    ppnElecRebound.setFoundByRebound(true);
+                    resultat.addPpn(ppnElecRebound);
                 } catch (IOException ex) {
-                    NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, false);
-                    ppnElecRebond.setFoundByRebound(true);
-                    resultat.addPpn(ppnElecRebond);
+                    NoticeSummaryDto ppnElecRebound = new NoticeSummaryDto(notice, false);
+                    ppnElecRebound.setFoundByRebound(true);
+                    resultat.addPpn(ppnElecRebound);
                     resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
                 }
             } else {
