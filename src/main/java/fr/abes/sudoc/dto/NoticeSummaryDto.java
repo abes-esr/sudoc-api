@@ -14,7 +14,7 @@ public class NoticeSummaryDto {
     TYPE_SUPPORT typeSupport;
     TYPE_DOCUMENT typeDocument;
     boolean providerPresent;
-    boolean isFoundByRebond = true;
+    boolean isFoundByRebound = false;
 
     public NoticeSummaryDto(NoticeXml noticeXml, Boolean providerPresent) throws ZoneNotFoundException {
         this.ppn = noticeXml.getPpn();

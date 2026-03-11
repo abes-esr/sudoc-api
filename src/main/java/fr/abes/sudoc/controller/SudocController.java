@@ -87,7 +87,9 @@ public class SudocController {
                     }
                     if (ppnElect.isEmpty()) {
                         //aucun ppn électronique trouvé dans une notice liée, on renvoie le ppn imprimé
-                        resultat.addPpn(new NoticeSummaryDto(notice, false));
+                        NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, false);
+                        ppnElecRebond.setFoundByRebound(true);
+                        resultat.addPpn(ppnElecRebond);
                     } else {
                         for (String ppnLie : ppnElect) {
                             feedResultatWithNotice(resultat, providerDto, ppnLie);
@@ -96,7 +98,7 @@ public class SudocController {
                 } else if (!notice.isDeleted() && notice.isNoticeElectronique()) {
                     try {
                         NoticeSummaryDto ppnElecDirect = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
-                        ppnElecDirect.setFoundByRebond(false);
+                        ppnElecDirect.setFoundByRebound(false);
                         resultat.addPpn(ppnElecDirect);
                     } catch (IOException ex) {
                         resultat.addPpn(new NoticeSummaryDto(notice, false));
@@ -149,9 +151,13 @@ public class SudocController {
         if (notice != null && !notice.isDeleted()) {
             if (notice.isNoticeElectronique()) {
                 try {
-                    resultat.addPpn(new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice)));
+                    NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, this.providerService.checkProviderDansNoticeGeneral(providerDto, notice));
+                    ppnElecRebond.setFoundByRebound(true);
+                    resultat.addPpn(ppnElecRebond);
                 } catch (IOException ex) {
-                    resultat.addPpn(new NoticeSummaryDto(notice, false));
+                    NoticeSummaryDto ppnElecRebond = new NoticeSummaryDto(notice, false);
+                    ppnElecRebond.setFoundByRebound(true);
+                    resultat.addPpn(ppnElecRebond);
                     resultat.addErreur("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement");
                 }
             } else {
