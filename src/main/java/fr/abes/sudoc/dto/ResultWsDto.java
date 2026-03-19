@@ -13,15 +13,15 @@ import java.util.List;
 @NoArgsConstructor
 public class ResultWsDto {
     @JsonProperty(value = "ppns")
-    List<PpnWithTypeWebDto> resultats = new ArrayList<>();
+    List<NoticeSummaryDto> resultats = new ArrayList<>();
     @JsonProperty(value = "erreurs")
     List<String> erreurs = new ArrayList<>();
 
-    public void addPpn(PpnWithTypeWebDto ppn) {
+    public void addPpn(NoticeSummaryDto ppn) {
         this.resultats.add(ppn);
     }
 
-    public void addPpns(List<PpnWithTypeWebDto> ppns) {
+    public void addPpns(List<NoticeSummaryDto> ppns) {
         this.resultats.addAll(ppns);
     }
 

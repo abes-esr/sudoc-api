@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,17 +15,15 @@ class DoiServiceTest {
     @Autowired
     DoiService doiService;
 
-    @MockBean
+    @MockitoBean
     BaseXmlFunctionsCaller caller;
 
     @Test
     void checkFormat() {
-        String doi = "10.1006/jmbi.1998.2354";
-        Assertions.assertTrue(doiService.checkFormat(doi));
+        doiService.checkFormat("10.1006/jmbi.1998.2354");
 
-        Assertions.assertFalse(doiService.checkFormat(null));
+        Assertions.assertThrows(IllegalArgumentException.class,() -> doiService.checkFormat(null));
 
-        doi = "tekjlfhsdlkjf";
-        Assertions.assertFalse(doiService.checkFormat(doi));
+        Assertions.assertThrows(IllegalArgumentException.class,() -> doiService.checkFormat("tekjlfhsdlkjf"));
     }
 }

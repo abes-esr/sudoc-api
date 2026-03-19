@@ -20,9 +20,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -42,6 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {IdentifiantFactory.class})
 class SudocControllerTest {
 
+    public static final String SERIAL = "serial";
+    public static final String PROVIDER_OK = "CAIRN";
     @Autowired
     WebApplicationContext context;
 
@@ -51,25 +53,32 @@ class SudocControllerTest {
     @Autowired
     IdentifiantFactory factory;
 
-    @MockBean
+    @MockitoBean
     DatService service;
 
-    @MockBean
+    @MockitoBean
     NoticeService noticeService;
 
-    @MockBean
+    @MockitoBean
     ProviderService providerService;
 
-    @MockBean
+    @MockitoBean
     IsbnService isbnService;
 
-    @MockBean
+    @MockitoBean
     IssnService issnService;
 
-    @MockBean
+    @MockitoBean
     DoiService doiService;
 
     MockMvc mockMvc;
+
+    public static final String ISSN_IDENTIFIER_OK = "1234-1234";
+    public static final String ISSN_IDENTIFIER_KO = "1234ZE234";
+
+    public static final String PPN_OK = "123456789";
+    public static final String DOI_OK = "10.1006/jmbi.1998.2354";
+
 
     @BeforeEach
     void init() {
@@ -111,14 +120,14 @@ class SudocControllerTest {
         searchDatRequest.setTitre("Ours");
 
         List<String> ppnList = new ArrayList<>();
-        ppnList.add("123456789");
+        ppnList.add(PPN_OK);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(searchDatRequest);
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
         ctrlType.setValue("Oax3");
@@ -128,14 +137,14 @@ class SudocControllerTest {
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(new ElementDto()));
         Mockito.when(service.getPpnFromDat(searchDatRequest.getDate(), searchDatRequest.getAuteur(), searchDatRequest.getTitre())).thenReturn(ppnList);
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
 
         this.mockMvc.perform(post("/api/v1/dat2ppn")
                         .accept(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON_VALUE).characterEncoding(StandardCharsets.UTF_8)
                         .content(jsonRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"));
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK));
     }
 
     @Test
@@ -167,12 +176,11 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + 1 PPN non supprimé de doc élec")
     void onlineIdentifier2PpnCas1() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
+
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -181,13 +189,13 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
@@ -195,12 +203,11 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + 2 PPN non supprimés dont un ppn qui n'est pas une notice electronique")
     void onlineIdentifier2PpnCas2() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
+
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -222,14 +229,14 @@ class SudocControllerTest {
         notice2.setLeader("     gam0 22        450 ");
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789", "123456000"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK, "123456000"));
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
         Mockito.when(noticeService.getNoticeByPpn("123456000")).thenReturn(notice2);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
                 .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + ctrlPpn2.getValue() + " n'est pas une ressource électronique"));
     }
@@ -237,12 +244,10 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : serial + ISSN ok + exception erreur SQL")
     void onlineIdentifier2PpnCas3() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -251,11 +256,11 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
@@ -263,12 +268,11 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : Serial + ISSN au mauvais format")
     void onlineIdentifier2PpnCas4() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234ZE234";
 
-        Mockito.when(issnService.checkFormat("1234ZE234")).thenReturn(false);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        Mockito.doThrow(IllegalArgumentException.class).when(issnService).checkFormat(ISSN_IDENTIFIER_KO);
+
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_KO))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
@@ -276,13 +280,11 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : check provider non ok")
     void onlineIdentifierCheckProviderNonOk() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
-        String provider = "CAIRN";
+
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -295,11 +297,11 @@ class SudocControllerTest {
         ElementDto providerDto = new ElementDto("CAIRN", "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK + "/" + PROVIDER_OK))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
@@ -307,13 +309,13 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS online_identifier_2_ppn : check provider diacritics")
     void onlineIdentifierCheckProviderDiacritics() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
-        String provider = "CAèRN";
+
+
+        String provider_ko = "CAèRN";
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -331,27 +333,25 @@ class SudocControllerTest {
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
         notice.setDatafields(Lists.newArrayList(datafield));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK + "/" + provider_ko))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(true));
     }
 
     @Test
     @DisplayName("test WS online_identifier_2_ppn : erreur appel ws provider")
     void onlineIdentifer2PpnErreurAppelWs() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
-        String provider = "CAIRN";
+
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -370,13 +370,13 @@ class SudocControllerTest {
         notice.setDatafields(Lists.newArrayList(datafield));
 
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
-        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + type + "/" + onlineIdentifier + "/" + provider))
+        this.mockMvc.perform(get("/api/v1/online_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK + "/" + PROVIDER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
                 .andExpect(jsonPath("$.erreurs[0]").value("Impossible d'analyser le provider en raison d'un problème technique, poursuite du traitement"));
     }
@@ -384,12 +384,11 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN non supprimé de doc imprimé")
     void printIdentifier2PpnCas1() throws Exception {
-        String type = "serial";
-        String printIdentifier = "1234-1234";
+
 
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -399,38 +398,33 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN KO 0 ppn ne correspond")
     void printIdentifier2PpnCas0Ppn() throws Exception, IllegalPpnException {
-        String type = "serial";
-        String printIdentifier = "1234-1234";
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList());
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList());
-
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.erreurs[0]").value("Aucun PPN ne correspond au " + printIdentifier));
+                .andExpect(jsonPath("$.erreurs[0]").value("Aucun PPN ne correspond au " + ISSN_IDENTIFIER_OK));
     }
+
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 1 PPN supprimé de doc imprimé")
     void printIdentifier2PpnCas1Supprime() throws Exception {
-        String type = "serial";
-        String printIdentifier = "1234-1234";
-
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -440,23 +434,20 @@ class SudocControllerTest {
         notice.setLeader("     dam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getNoticeByPpn(Mockito.any())).thenReturn(notice);
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + 2 PPN non supprimés dont un ppn qui n'est pas une notice imprimée")
     void printIdentifier2PpnCas2() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
-
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -478,12 +469,12 @@ class SudocControllerTest {
         notice2.setLeader("     gam0 22        450 ");
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789", "123456000"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK, "123456000"));
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
         Mockito.when(noticeService.getNoticeByPpn("123456000")).thenReturn(notice2);
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[1].ppn").value(notice2.getPpn()))
                 .andExpect(jsonPath("$.ppns[1].providerPresent").value(false))
@@ -496,12 +487,9 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS print_identifier_2_ppn : serial + ISSN ok + exception erreur SQL")
     void printIdentifier2PpnCas3() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234-1234";
-
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -510,11 +498,11 @@ class SudocControllerTest {
         NoticeXml notice = new NoticeXml();
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn, ctrlType));
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.doThrow(IOException.class).when(noticeService).getNoticeByPpn(Mockito.any());
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IOException)));
     }
@@ -522,12 +510,9 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS print_identifier_2_ppn : Serial + ISSN au mauvais format")
     void printIdentifier2PpnCas4() throws Exception {
-        String type = "serial";
-        String onlineIdentifier = "1234ZE234";
+        Mockito.doThrow(IllegalArgumentException.class).when(issnService).checkFormat(ISSN_IDENTIFIER_KO);
 
-        Mockito.when(issnService.checkFormat("1234ZE234")).thenReturn(false);
-
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + onlineIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_KO))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
@@ -535,10 +520,9 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS print_identifier_to_ppn : Serial au mauvais format")
     void printIdentifier2PpnCas5() throws Exception {
-        String type = "test";
-        String printIdentifier = "12345678";
+        String type_ko = "test";
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type_ko + "/" + ISSN_IDENTIFIER_KO))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
@@ -546,13 +530,9 @@ class SudocControllerTest {
     @Test
     @DisplayName("test WS print_identifer_2_ppn : erreur récupération provider")
     void printIdentifer2PpnErreurAppelWs() throws Exception {
-        String provider = "CAIRN";
-        String type = "serial";
-        String printIdentifier = "1234-1234";
-
         Controlfield ctrlPpn = new Controlfield();
         ctrlPpn.setTag("001");
-        ctrlPpn.setValue("123456789");
+        ctrlPpn.setValue(PPN_OK);
 
         Controlfield ctrlType = new Controlfield();
         ctrlType.setTag("008");
@@ -575,13 +555,13 @@ class SudocControllerTest {
         notice2.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
         Mockito.when(providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
-        Mockito.when(issnService.checkFormat("1234-1234")).thenReturn(true);
-        Mockito.when(issnService.getPpnFromIdentifiant("1234-1234")).thenReturn(Lists.newArrayList("123456789"));
+        Mockito.doNothing().when(issnService).checkFormat(ISSN_IDENTIFIER_OK);
+        Mockito.when(issnService.getPpnFromIdentifiant(ISSN_IDENTIFIER_OK)).thenReturn(Lists.newArrayList(PPN_OK));
         Mockito.when(noticeService.getEquivalentElectronique(Mockito.any())).thenReturn(Lists.newArrayList("987654321"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
         Mockito.when(noticeService.getNoticeByPpn("987654321")).thenReturn(notice2);
 
-        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + type + "/" + printIdentifier + "/" + provider))
+        this.mockMvc.perform(get("/api/v1/print_identifier_2_ppn/" + SERIAL + "/" + ISSN_IDENTIFIER_OK + "/" + PROVIDER_OK))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ppns[0].ppn").value("987654321"))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false))
@@ -590,13 +570,9 @@ class SudocControllerTest {
 
     @Test
     void doiIdentifier2ppnCasOk() throws Exception {
-        String doi = "10.1006/jmbi.1998.2354";
-
-        String provider = "CAIRN";
-
         Controlfield ctrlPpn2 = new Controlfield();
         ctrlPpn2.setTag("001");
-        ctrlPpn2.setValue("123456789");
+        ctrlPpn2.setValue(PPN_OK);
 
         Controlfield ctrlType2 = new Controlfield();
         ctrlType2.setTag("008");
@@ -606,62 +582,53 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
+        ElementDto providerDto = new ElementDto(PROVIDER_OK, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.when(doiService.getPpnFromIdentifiant(DOI_OK)).thenReturn(Lists.newArrayList(PPN_OK));
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenReturn(true);
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + DOI_OK + "&provider=" + PROVIDER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].typeSupport").value("ELECTRONIQUE"))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(true));
     }
 
     @Test
     void doiIdentifier2ppnErreurFormat() throws Exception {
-        String doi = "dmljksdlmgkjdfmgkljglmf";
+        String doi_ko = "dmljksdlmgkjdfmgkljglmf";
 
-        String provider = "CAIRN";
 
-        ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
+        ElementDto providerDto = new ElementDto(PROVIDER_OK, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(false);
+        Mockito.doThrow(new IllegalArgumentException(DoiService.MESSAGE_ERROR_DOI_FORMAT)).when(doiService).checkFormat(Mockito.anyString());
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi_ko + "&provider=" + PROVIDER_OK))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> Assertions.assertTrue((result.getResolvedException() instanceof IllegalArgumentException)));
     }
 
     @Test
     void doiIdentifier2ppnNoPpnFound() throws Exception {
-        String doi = "10.1006/jmbi.1998.2354";
-
-        String provider = "CAIRN";
-
-        ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
+        ElementDto providerDto = new ElementDto(PROVIDER_OK, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
-        Mockito.when(doiService.getPpnFromIdentifiant(doi)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
+        Mockito.when(doiService.getPpnFromIdentifiant(DOI_OK)).thenThrow(new IllegalPpnException("Aucune notice ne correspond à la recherche"));
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + DOI_OK + "&provider=" + PROVIDER_OK))
                 .andExpect(status().isOk());
     }
 
     @Test
     void doiIdentifier2ppnErreurProvider() throws Exception {
-        String doi = "10.1006/jmbi.1998.2354";
-
-        String provider = "CAIRN";
-
         Controlfield ctrlPpn2 = new Controlfield();
         ctrlPpn2.setTag("001");
-        ctrlPpn2.setValue("123456789");
+        ctrlPpn2.setValue(PPN_OK);
 
         Controlfield ctrlType2 = new Controlfield();
         ctrlType2.setTag("008");
@@ -671,30 +638,26 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
+        ElementDto providerDto = new ElementDto(PROVIDER_OK, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.when(doiService.getPpnFromIdentifiant(DOI_OK)).thenReturn(Lists.newArrayList(PPN_OK));
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
         Mockito.when(this.providerService.checkProviderDansNoticeGeneral(Mockito.any(), Mockito.any())).thenThrow(new IOException());
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + DOI_OK + "&provider=" + PROVIDER_OK))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ppns[0].ppn").value("123456789"))
+                .andExpect(jsonPath("$.ppns[0].ppn").value(PPN_OK))
                 .andExpect(jsonPath("$.ppns[0].typeSupport").value("ELECTRONIQUE"))
                 .andExpect(jsonPath("$.ppns[0].providerPresent").value(false));
     }
 
     @Test
     void doiIdentifier2ppnErreurTypeSupportNotice() throws Exception {
-        String doi = "10.1006/jmbi.1998.2354";
-
-        String provider = "CAIRN";
-
         Controlfield ctrlPpn2 = new Controlfield();
         ctrlPpn2.setTag("001");
-        ctrlPpn2.setValue("123456789");
+        ctrlPpn2.setValue(PPN_OK);
 
         Controlfield ctrlType2 = new Controlfield();
         ctrlType2.setTag("008");
@@ -704,14 +667,14 @@ class SudocControllerTest {
         notice.setLeader("     gam0 22        450 ");
         notice.setControlfields(Lists.newArrayList(ctrlPpn2, ctrlType2));
 
-        ElementDto providerDto = new ElementDto(provider, "CAIRN", 81);
+        ElementDto providerDto = new ElementDto(PROVIDER_OK, "CAIRN", 81);
 
         Mockito.when(providerService.getProviderDisplayName(Mockito.any())).thenReturn(Optional.of(providerDto));
-        Mockito.when(doiService.getPpnFromIdentifiant("10.1006/jmbi.1998.2354")).thenReturn(Lists.newArrayList("123456789"));
-        Mockito.when(noticeService.getNoticeByPpn("123456789")).thenReturn(notice);
-        Mockito.when(doiService.checkFormat(Mockito.anyString())).thenReturn(true);
+        Mockito.when(doiService.getPpnFromIdentifiant(DOI_OK)).thenReturn(Lists.newArrayList(PPN_OK));
+        Mockito.when(noticeService.getNoticeByPpn(PPN_OK)).thenReturn(notice);
+        Mockito.doNothing().when(doiService).checkFormat(Mockito.anyString());
 
-        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + doi + "&provider=" + provider))
+        this.mockMvc.perform(get("/api/v1/doi_identifier_2_ppn?doi=" + DOI_OK + "&provider=" + PROVIDER_OK))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.erreurs[0]").value("Le PPN " + notice.getPpn() + " n'est pas une ressource électronique"));
     }
